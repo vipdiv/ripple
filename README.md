@@ -12,6 +12,25 @@ Over half a million emails were exported from a single Gmail account that's been
 
 These quotes now float as text on a liquid surface. Click and drag to send ripples through 22 years of digital life.
 
+### Themes
+
+Analysis of the quotes revealed 10 recurring life themes across the archive:
+
+- **Arts, Dance & Performance** (412 quotes) — a life woven through Houston's arts scene
+- **Career & Hustle** (213) — job applications, side gigs, career pivots across multiple industries
+- **Family & Togetherness** (209) — the logistics of love: dinners, birthdays, rodeo trips
+- **Community & Volunteering** (171) — student council, bake sales, hurricane relief
+- **Resilience & Crisis** (138) — hurricanes, illness, financial freefall, and the emails that got people through
+- **Student Life & University** (107) — quiz deadlines and Spring Break at the University of Houston
+- **Financial Reality** (102) — overdrawn accounts, debt notices, negative net worth
+- **Early Internet & Social Media** (90) — MySpace, Friendster, Facebook wall posts, Google Buzz
+- **Cultural Identity** (61) — Diwali, Hindi classes, dharma, building brown pride on a Texas campus
+- **The Mundane Beautiful** (38) — taco receipts, Red Lobster cravings, watermelon at watch parties
+
+### Timeline narrative
+
+*It begins in 2004 with three emails and an invitation from a high school teacher. The early years are loud with student council drama, bake sale logistics, and MySpace friend requests — a young person building community in every direction at once. By the late 2000s, the tone shifts: job applications multiply, the recession hits, and emails start carrying the weight of real life — a parent's illness, financial struggle, career reinvention. Through it all, the arts thread never breaks: dance performances, gallery volunteering, documentary dreams, and a creative partnership that runs like a quiet current beneath everything else. The 2020s bring volume — 50,000 emails a year — but also tenderness. Family gatherings get harder to schedule and more precious when they happen. Twenty-two years of inbox, and the pattern is clear: this is someone who keeps showing up.*
+
 ## Privacy
 
 All personal names have been replaced with pseudonyms drawn from the names of Gmail's original development team and early Google engineers — a small tribute to the people who built the platform that held these messages for two decades.
@@ -146,8 +165,10 @@ python scripts/02_analyze.py --dry-run
 | Ollama (with GPU) | 100% local | 30–60 min | Free |
 | AnythingLLM | 100% local | 1–4 hours | Free |
 | Groq | Cloud | 20–30 min | Free tier |
-| Google Gemini Flash | Cloud | 15–20 min | ~$3–5 |
-| OpenAI GPT-4o-mini | Cloud | 10–15 min | ~$2–4 |
+| Google Gemini Flash | Cloud | 15–20 min | ~$10–15 |
+| OpenAI GPT-4o-mini | Cloud | 10–15 min | ~$8–12 |
+
+*Costs can vary significantly based on average email length, batch size, number of retries, and whether you need to re-run due to errors. The estimates above reflect real-world usage including typical retries — budget 2x the estimate to be safe. Local options (Ollama, AnythingLLM) are always free regardless of re-runs.*
 
 ### Step 3: Anonymize for privacy
 

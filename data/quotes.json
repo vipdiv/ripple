@@ -6,8 +6,69 @@
     "generated_at": "2026-05-03T02:51:40.484706",
     "privacy_note": "All personal names have been replaced with pseudonyms drawn from the names of Gmail's original development team and early Google engineers. Any resemblance to real individuals is coincidental."
   },
-  "themes": [],
-  "timeline_narrative": "",
+  "themes": [
+    {
+      "name": "Arts, Dance & Performance",
+      "description": "A life woven through Houston's arts scene — volunteering at galleries, producing dance shows, filming documentaries, and building creative community from the ground up.",
+      "quote_count": 412,
+      "color": "#c084fc"
+    },
+    {
+      "name": "Career & Hustle",
+      "description": "Job applications, career pivots, side gigs, Uber shifts, freelance design work — the constant motion of making a living across multiple industries and roles.",
+      "quote_count": 213,
+      "color": "#f59e0b"
+    },
+    {
+      "name": "Family & Togetherness",
+      "description": "Coordinating dinners, planning rodeo trips, debating pizza toppings, celebrating babies and birthdays — the logistics of love.",
+      "quote_count": 209,
+      "color": "#f472b6"
+    },
+    {
+      "name": "Community & Volunteering",
+      "description": "Hindu Student Council meetings, bake sales, butterfly-folding marathons, hurricane relief — showing up for others, again and again.",
+      "quote_count": 171,
+      "color": "#34d399"
+    },
+    {
+      "name": "Resilience & Crisis",
+      "description": "Hurricanes Katrina, Rita, Ike, and Harvey. A parent's cancer diagnosis. Financial freefall. The moments that test everything and the emails that got people through.",
+      "quote_count": 138,
+      "color": "#60a5fa"
+    },
+    {
+      "name": "Student Life & University",
+      "description": "Quiz deadlines, class registration, professor reviews, Spring Break countdowns — the universal texture of college life at the University of Houston.",
+      "quote_count": 107,
+      "color": "#a78bfa"
+    },
+    {
+      "name": "Financial Reality",
+      "description": "Overdrawn accounts, negative net worth, overdue bills, debt collection notices — the unglamorous truth that lives in everyone's inbox but nobody talks about.",
+      "quote_count": 102,
+      "color": "#fb7185"
+    },
+    {
+      "name": "Early Internet & Social Media",
+      "description": "MySpace friend requests, Facebook wall posts, Friendster invites, Google Buzz skepticism — a time capsule of platforms that shaped how we connected online.",
+      "quote_count": 90,
+      "color": "#38bdf8"
+    },
+    {
+      "name": "Cultural Identity",
+      "description": "Navigating life as a South Asian American — Diwali celebrations, Hindi classes, questioning dharma, building brown pride on a Texas campus.",
+      "quote_count": 61,
+      "color": "#fbbf24"
+    },
+    {
+      "name": "The Mundane Beautiful",
+      "description": "Brothers Taco House receipts, Red Lobster cravings, watermelon at watch parties — the small, forgettable moments that turn out to be the ones you remember.",
+      "quote_count": 38,
+      "color": "#94a3b8"
+    }
+  ],
+  "timeline_narrative": "It begins in 2004 with three emails and an invitation from a high school teacher. The early years are loud with student council drama, bake sale logistics, and MySpace friend requests — a young person building community in every direction at once. By the late 2000s, the tone shifts: job applications multiply, the recession hits, and emails start carrying the weight of real life — a parent's illness, financial struggle, career reinvention. Through it all, the arts thread never breaks: dance performances, gallery volunteering, documentary dreams, and a creative partnership that runs like a quiet current beneath everything else. The 2020s bring volume — 50,000 emails a year — but also tenderness. Family gatherings get harder to schedule and more precious when they happen. Twenty-two years of inbox, and the pattern is clear: this is someone who keeps showing up.",
   "quotes": [
     {
       "text": "As a university student, I am now a 'bathroom singer' and would love to get back into singing with a large group.",
