@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  base: '/email-ripples/',  // change to your repo name
+  base: '/ripple/',  // GitHub Pages: vipdiv.github.io/ripple
   build: {
     outDir: 'dist',
   },
