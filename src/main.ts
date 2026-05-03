@@ -8,7 +8,7 @@
 import './style.css'
 import { RippleField } from './ripple-field'
 import { layoutText, updateParticles, type WordParticle } from './word-layout'
-import { QuoteManager, MOOD_COLORS } from './quotes'
+import { QuoteManager, MOOD_COLORS, THEMES, TIMELINE_NARRATIVE } from './quotes'
 
 // --- Canvas setup ---
 const canvas = document.getElementById('c') as HTMLCanvasElement
@@ -58,6 +58,43 @@ function openInfo() {
 }
 function closeInfo() {
   infoModalEl.hidden = true
+}
+
+function renderInfoExtras() {
+  const card = infoModalEl.querySelector('.info-card') as HTMLElement
+  const controls = card.querySelector('p.controls')!
+
+  if (THEMES.length > 0) {
+    const section = document.createElement('section')
+    section.className = 'info-themes'
+    const h = document.createElement('h3')
+    h.textContent = 'Themes'
+    section.appendChild(h)
+    const ul = document.createElement('ul')
+    for (const t of THEMES) {
+      const li = document.createElement('li')
+      const name = document.createElement('strong')
+      name.textContent = t.name
+      li.appendChild(name)
+      li.appendChild(document.createTextNode(` (${t.quote_count ?? 0}) — ${t.description}`))
+      ul.appendChild(li)
+    }
+    section.appendChild(ul)
+    card.insertBefore(section, controls)
+  }
+
+  if (TIMELINE_NARRATIVE) {
+    const section = document.createElement('section')
+    section.className = 'info-timeline'
+    const h = document.createElement('h3')
+    h.textContent = 'Timeline'
+    section.appendChild(h)
+    const p = document.createElement('p')
+    p.className = 'narrative'
+    p.textContent = TIMELINE_NARRATIVE
+    section.appendChild(p)
+    card.insertBefore(section, controls)
+  }
 }
 
 // --- Mouse ---
@@ -327,6 +364,7 @@ function loop() {
 // --- Init ---
 function init() {
   setDisplayMode(displayMode)
+  renderInfoExtras()
   window.addEventListener('resize', resize)
   resize()
   initialSplash()

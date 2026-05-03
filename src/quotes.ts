@@ -17,12 +17,23 @@ export interface Quote {
   from_type: string
 }
 
+export interface Theme {
+  name: string
+  description: string
+  color_hint?: string
+  quote_count?: number
+}
+
 export interface QuoteData {
   meta: { total_emails_scanned: number; total_quotes: number }
-  themes: Array<{ name: string; description: string; color_hint: string }>
+  themes: Theme[]
   timeline_narrative: string
   quotes: Quote[]
 }
+
+const data = quotesJson as QuoteData
+export const THEMES: Theme[] = data.themes ?? []
+export const TIMELINE_NARRATIVE: string = data.timeline_narrative ?? ''
 
 export const MOODS = [
   'all', 'funny', 'sad', 'outrageous', 'profound',
@@ -239,7 +250,7 @@ export class QuoteManager {
   private filtered: Quote[] = []
 
   constructor() {
-    const bundled = (quotesJson as QuoteData).quotes
+    const bundled = data.quotes
     this.quotes = bundled && bundled.length > 0 ? bundled : PLACEHOLDER_QUOTES
     this.filtered = [...this.quotes]
     this.shuffle()
