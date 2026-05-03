@@ -5,11 +5,62 @@
 }
 
 body {
-  background: #06060c;
+  --bg: #06060c;
+  --chrome: 195, 205, 225;
+  --accent: 140, 175, 255;
+  --mood-text: 255, 195, 140;
+
+  --op-count: 0.6;
+  --op-count-num: 0.85;
+  --op-range: 0.55;
+  --op-mood: 0.7;
+  --op-quote-date: 0.55;
+  --op-quote-context: 0.45;
+  --op-quote-from: 0.5;
+  --op-controls: 0.4;
+  --op-controls-sep: 0.22;
+  --op-button: 0.5;
+  --op-button-hover: 0.85;
+
+  background: var(--bg);
   overflow: hidden;
   cursor: crosshair;
   font-family: 'IBM Plex Mono', monospace;
   -webkit-font-smoothing: antialiased;
+  transition: background 0.4s ease;
+}
+
+body[data-mode="read"] {
+  --op-count: 0.85;
+  --op-count-num: 0.95;
+  --op-range: 0.75;
+  --op-mood: 0.9;
+  --op-quote-date: 0.85;
+  --op-quote-context: 0.75;
+  --op-quote-from: 0.8;
+  --op-controls: 0.65;
+  --op-controls-sep: 0.4;
+  --op-button: 0.75;
+  --op-button-hover: 0.95;
+}
+
+body[data-mode="invert"] {
+  --bg: #f4f3ee;
+  --chrome: 30, 35, 50;
+  --accent: 50, 80, 180;
+  --mood-text: 150, 70, 30;
+
+  --op-count: 0.85;
+  --op-count-num: 0.95;
+  --op-range: 0.7;
+  --op-mood: 0.85;
+  --op-quote-date: 0.8;
+  --op-quote-context: 0.7;
+  --op-quote-from: 0.75;
+  --op-controls: 0.6;
+  --op-controls-sep: 0.3;
+  --op-button: 0.7;
+  --op-button-hover: 0.95;
 }
 
 canvas {
@@ -33,11 +84,11 @@ canvas {
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(180, 190, 210, 0.4);
+  color: rgba(var(--chrome), var(--op-count));
 }
 
 #header .count span {
-  color: rgba(120, 160, 255, 0.6);
+  color: rgba(var(--accent), var(--op-count-num));
   font-weight: 500;
 }
 
@@ -45,7 +96,7 @@ canvas {
   font-size: 10px;
   font-weight: 300;
   letter-spacing: 0.08em;
-  color: rgba(180, 190, 210, 0.25);
+  color: rgba(var(--chrome), var(--op-range));
   margin-top: 2px;
 }
 
@@ -54,9 +105,46 @@ canvas {
   font-weight: 400;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(255, 180, 120, 0.5);
+  color: rgba(var(--mood-text), var(--op-mood));
   margin-top: 8px;
   transition: color 0.6s ease;
+}
+
+#top-right {
+  position: fixed;
+  top: 18px;
+  right: 22px;
+  z-index: 11;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#top-right button {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid rgba(var(--chrome), 0.3);
+  color: rgba(var(--chrome), var(--op-button));
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+#top-right button:hover,
+#top-right button:focus-visible {
+  color: rgba(var(--chrome), var(--op-button-hover));
+  border-color: rgba(var(--chrome), 0.6);
+  outline: none;
+}
+
+#info-button {
+  width: 28px;
+  padding: 6px 0;
+  font-size: 12px;
+  letter-spacing: 0;
 }
 
 #quote-info {
@@ -73,16 +161,25 @@ canvas {
   font-size: 10px;
   font-weight: 300;
   letter-spacing: 0.1em;
-  color: rgba(120, 160, 255, 0.4);
+  color: rgba(var(--accent), var(--op-quote-date));
 }
 
 #quote-context {
   font-size: 9px;
   font-weight: 300;
-  color: rgba(180, 190, 210, 0.2);
+  color: rgba(var(--chrome), var(--op-quote-context));
   margin-top: 2px;
   max-width: 280px;
   font-style: italic;
+}
+
+#quote-from {
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(var(--chrome), var(--op-quote-from));
+  margin-top: 4px;
 }
 
 #controls-hint {
@@ -96,16 +193,102 @@ canvas {
   font-size: 9px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: rgba(180, 190, 210, 0.18);
+  color: rgba(var(--chrome), var(--op-controls));
   white-space: nowrap;
 }
 
 #controls-hint .sep {
   margin: 0 8px;
-  color: rgba(180, 190, 210, 0.1);
+  color: rgba(var(--chrome), var(--op-controls-sep));
 }
 
-/* Mood color accents */
+#info-modal[hidden] {
+  display: none;
+}
+
+#info-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 6, 12, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+body[data-mode="invert"] .info-backdrop {
+  background: rgba(40, 40, 50, 0.55);
+}
+
+.info-card {
+  position: relative;
+  max-width: 540px;
+  width: calc(100% - 48px);
+  background: rgba(15, 15, 22, 0.98);
+  border: 1px solid rgba(var(--chrome), 0.18);
+  color: rgba(var(--chrome), 0.85);
+  padding: 28px 32px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+body[data-mode="invert"] .info-card {
+  background: #fafaf6;
+  color: rgba(var(--chrome), 0.92);
+  border-color: rgba(var(--chrome), 0.25);
+}
+
+.info-card h2 {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(var(--accent), 0.9);
+  margin-bottom: 16px;
+}
+
+.info-card p {
+  margin-bottom: 12px;
+}
+
+.info-card p.controls {
+  margin-top: 18px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(var(--chrome), 0.55);
+  border-top: 1px solid rgba(var(--chrome), 0.12);
+  padding-top: 14px;
+  margin-bottom: 0;
+}
+
+.info-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: rgba(var(--chrome), 0.6);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.info-close:hover,
+.info-close:focus-visible {
+  color: rgba(var(--chrome), 0.95);
+  outline: none;
+}
+
+/* Mood color accents (legacy data attribute, kept for parity) */
 body[data-mood="funny"]       { --mood-hue: 45;  --mood-sat: 90%; }
 body[data-mood="sad"]         { --mood-hue: 220; --mood-sat: 60%; }
 body[data-mood="outrageous"]  { --mood-hue: 350; --mood-sat: 85%; }

@@ -29,6 +29,36 @@ let transitionAlpha = 1
 const moodEl = document.getElementById('current-mood')!
 const quoteDateEl = document.getElementById('quote-date')!
 const quoteContextEl = document.getElementById('quote-context')!
+const quoteFromEl = document.getElementById('quote-from')!
+const modeToggleEl = document.getElementById('mode-toggle') as HTMLButtonElement
+const infoButtonEl = document.getElementById('info-button') as HTMLButtonElement
+const infoModalEl = document.getElementById('info-modal') as HTMLElement
+const infoCloseEl = infoModalEl.querySelector('.info-close') as HTMLButtonElement
+const infoBackdropEl = infoModalEl.querySelector('.info-backdrop') as HTMLElement
+
+// --- Display modes ---
+type DisplayMode = 'art' | 'read' | 'invert'
+const MODES: DisplayMode[] = ['art', 'read', 'invert']
+let displayMode: DisplayMode = 'art'
+
+function setDisplayMode(mode: DisplayMode) {
+  displayMode = mode
+  document.body.dataset.mode = mode
+  modeToggleEl.textContent = mode.toUpperCase()
+}
+
+function cycleDisplayMode() {
+  const i = MODES.indexOf(displayMode)
+  setDisplayMode(MODES[(i + 1) % MODES.length])
+}
+
+// --- Modal ---
+function openInfo() {
+  infoModalEl.hidden = false
+}
+function closeInfo() {
+  infoModalEl.hidden = true
+}
 
 // --- Mouse ---
 let mouseDown = false
@@ -78,12 +108,13 @@ function getPadding(): number {
   return 60
 }
 
-function updateUI(quote: { mood: string; date: string; context: string }) {
+function updateUI(quote: { mood: string; date: string; context: string; from_type: string }) {
   document.body.setAttribute('data-mood', quote.mood)
   moodEl.textContent = quotes.moodLabel
-  moodEl.style.color = getMoodColor(quote.mood, 0.5)
+  moodEl.style.color = getMoodColor(quote.mood, displayMode === 'invert' ? 0.85 : 0.7)
   quoteDateEl.textContent = quote.date
   quoteContextEl.textContent = quote.context
+  quoteFromEl.textContent = quote.from_type ? `from ${quote.from_type}` : ''
 }
 
 function getMoodColor(mood: string, alpha: number = 1): string {
@@ -174,6 +205,12 @@ canvas.addEventListener('touchend', () => { mouseDown = false })
 
 // Keyboard
 window.addEventListener('keydown', e => {
+  if (e.code === 'Escape' && !infoModalEl.hidden) {
+    closeInfo()
+    return
+  }
+  if (!infoModalEl.hidden) return
+
   if (e.code === 'Space') {
     e.preventDefault()
     transitionToNext()
@@ -186,8 +223,16 @@ window.addEventListener('keydown', e => {
     quotes.nextMood(-1)
     relayout()
     ripple.disturb(W / 2, H / 2, 8, 10)
+  } else if (e.code === 'KeyR') {
+    cycleDisplayMode()
   }
 })
+
+// Mode toggle + info modal
+modeToggleEl.addEventListener('click', cycleDisplayMode)
+infoButtonEl.addEventListener('click', openInfo)
+infoCloseEl.addEventListener('click', closeInfo)
+infoBackdropEl.addEventListener('click', closeInfo)
 
 // --- Render ---
 function render() {
@@ -204,6 +249,8 @@ function render() {
   const quote = quotes.current()
   const mood = quote?.mood || 'profound'
   const moodColor = MOOD_COLORS[mood] || { hue: 210, sat: 40, light: 55 }
+
+  const invert = displayMode === 'invert'
 
   for (const w of words) {
     const speed = Math.sqrt(w.vx * w.vx + w.vy * w.vy)
@@ -231,6 +278,13 @@ function render() {
       sat = moodColor.sat * 0.2
       light = 50
       alpha = 0.4
+    }
+
+    if (invert) {
+      // Flip lightness so colors read as dark ink on a light page
+      light = Math.max(8, Math.min(35, 90 - light))
+      sat = Math.min(85, sat + 10)
+      alpha = Math.min(1, alpha + 0.25)
     }
 
     // Apply transition alpha
@@ -272,6 +326,7 @@ function loop() {
 
 // --- Init ---
 function init() {
+  setDisplayMode(displayMode)
   window.addEventListener('resize', resize)
   resize()
   initialSplash()
