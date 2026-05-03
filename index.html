@@ -3,21 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Email Ripples — 333,000 Messages</title>
+  <title>Email Ripples — 512,780 Messages</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 </head>
-<body>
+<body data-mode="art">
   <canvas id="c"></canvas>
   <div id="header">
-    <div class="count"><span id="email-count">333,430</span> emails</div>
+    <div class="count"><span id="email-count">512,780</span> emails</div>
     <div class="range"><span id="date-range">Aug 2004 — Apr 2026</span></div>
     <div class="mood" id="current-mood"></div>
+  </div>
+  <div id="top-right">
+    <button id="mode-toggle" type="button" title="Cycle display mode (R)">ART</button>
+    <button id="info-button" type="button" title="About this project" aria-label="About">?</button>
   </div>
   <div id="quote-info">
     <div id="quote-date"></div>
     <div id="quote-context"></div>
+    <div id="quote-from"></div>
   </div>
   <div id="controls-hint">
     <span>click &amp; drag to ripple</span>
@@ -25,6 +30,18 @@
     <span>space for next quote</span>
     <span class="sep">·</span>
     <span>← → change mood</span>
+    <span class="sep">·</span>
+    <span>R cycles mode</span>
+  </div>
+  <div id="info-modal" hidden>
+    <div class="info-backdrop"></div>
+    <div class="info-card" role="dialog" aria-labelledby="info-title" aria-modal="true">
+      <button class="info-close" type="button" aria-label="Close">×</button>
+      <h2 id="info-title">About</h2>
+      <p>512,780 emails were exported from a single Gmail account active since August 2004. Around 5,000 were sampled and analyzed by AI to extract about 1,460 pull quotes tagged by mood.</p>
+      <p>All names have been replaced with pseudonyms drawn from Gmail's original development team — a tribute to the people who built the platform that held these messages for two decades.</p>
+      <p class="controls">Click and drag to ripple · Spacebar for next quote · Arrow keys filter by mood · R cycles display mode</p>
+    </div>
   </div>
   <script type="module" src="/src/main.ts"></script>
 </body>
