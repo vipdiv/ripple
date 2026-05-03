@@ -271,10 +271,7 @@ function loop() {
 }
 
 // --- Init ---
-async function init() {
-  // Try loading real quotes
-  await quotes.loadFromFile('./data/quotes.json')
-
+function init() {
   window.addEventListener('resize', resize)
   resize()
   initialSplash()
