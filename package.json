@@ -1,0 +1,21 @@
+{
+  "name": "email-ripples",
+  "version": "1.0.0",
+  "description": "333,000 emails visualized as interactive water ripples",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && npx gh-pages -d dist"
+  },
+  "dependencies": {
+    "@chenglou/pretext": "^0.0.3",
+    "lil-gui": "^0.20.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0",
+    "gh-pages": "^6.3.0"
+  }
+}

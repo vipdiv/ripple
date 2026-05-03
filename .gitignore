@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.DS_Store
+
+# Credentials (never commit)
+scripts/credentials/
+
+# Data files (large, generated)
+data/email_metadata.jsonl
+data/email_samples.jsonl
+data/email_stats.json
+
+# Keep quotes.json (curated output) but not raw data
+# Uncomment this if you want to commit your curated quotes:
+!data/quotes.json

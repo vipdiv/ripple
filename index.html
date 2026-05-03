@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Ripples — 333,000 Messages</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div id="header">
+    <div class="count"><span id="email-count">333,430</span> emails</div>
+    <div class="range"><span id="date-range">Aug 2004 — Apr 2026</span></div>
+    <div class="mood" id="current-mood"></div>
+  </div>
+  <div id="quote-info">
+    <div id="quote-date"></div>
+    <div id="quote-context"></div>
+  </div>
+  <div id="controls-hint">
+    <span>click &amp; drag to ripple</span>
+    <span class="sep">·</span>
+    <span>space for next quote</span>
+    <span class="sep">·</span>
+    <span>← → change mood</span>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

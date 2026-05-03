@@ -1,0 +1,118 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #06060c;
+  overflow: hidden;
+  cursor: crosshair;
+  font-family: 'IBM Plex Mono', monospace;
+  -webkit-font-smoothing: antialiased;
+}
+
+canvas {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#header {
+  position: fixed;
+  top: 20px;
+  left: 24px;
+  z-index: 10;
+  pointer-events: none;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+#header .count {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(180, 190, 210, 0.4);
+}
+
+#header .count span {
+  color: rgba(120, 160, 255, 0.6);
+  font-weight: 500;
+}
+
+#header .range {
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: rgba(180, 190, 210, 0.25);
+  margin-top: 2px;
+}
+
+#header .mood {
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 180, 120, 0.5);
+  margin-top: 8px;
+  transition: color 0.6s ease;
+}
+
+#quote-info {
+  position: fixed;
+  bottom: 50px;
+  right: 24px;
+  z-index: 10;
+  pointer-events: none;
+  text-align: right;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+#quote-date {
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: rgba(120, 160, 255, 0.4);
+}
+
+#quote-context {
+  font-size: 9px;
+  font-weight: 300;
+  color: rgba(180, 190, 210, 0.2);
+  margin-top: 2px;
+  max-width: 280px;
+  font-style: italic;
+}
+
+#controls-hint {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(180, 190, 210, 0.18);
+  white-space: nowrap;
+}
+
+#controls-hint .sep {
+  margin: 0 8px;
+  color: rgba(180, 190, 210, 0.1);
+}
+
+/* Mood color accents */
+body[data-mood="funny"]       { --mood-hue: 45;  --mood-sat: 90%; }
+body[data-mood="sad"]         { --mood-hue: 220; --mood-sat: 60%; }
+body[data-mood="outrageous"]  { --mood-hue: 350; --mood-sat: 85%; }
+body[data-mood="profound"]    { --mood-hue: 270; --mood-sat: 50%; }
+body[data-mood="mundane"]     { --mood-hue: 180; --mood-sat: 20%; }
+body[data-mood="tender"]      { --mood-hue: 330; --mood-sat: 50%; }
+body[data-mood="angry"]       { --mood-hue: 5;   --mood-sat: 80%; }
+body[data-mood="absurd"]      { --mood-hue: 160; --mood-sat: 70%; }
+body[data-mood="nostalgic"]   { --mood-hue: 35;  --mood-sat: 40%; }
+body[data-mood="existential"] { --mood-hue: 250; --mood-sat: 30%; }
