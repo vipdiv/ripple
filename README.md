@@ -1,107 +1,214 @@
 # Email Ripples
 
-Your 333,000 Gmail emails visualized as an interactive water ripple surface, powered by [@chenglou/pretext](https://github.com/chenglou/pretext).
+An interactive water ripple visualization of 512,780 Gmail emails spanning 22 years (2004–2026), powered by [@chenglou/pretext](https://github.com/chenglou/pretext).
 
-Pull quotes from 22 years of email history — funny, sad, outrageous, profound — float as text on a liquid surface. Click and drag to send ripples through your digital history.
+**[→ View the live site](https://vipdiv.github.io/ripple/)**
 
-## Architecture
+---
+
+## What is this?
+
+Over half a million emails were exported from a single Gmail account that's been active since August 2004 — just months after Gmail launched by invitation only. A sampling of ~5,000 emails was analyzed by AI to extract ~1,460 pull quotes tagged by mood: funny, sad, outrageous, profound, tender, absurd, nostalgic, existential, angry, and mundane.
+
+These quotes now float as text on a liquid surface. Click and drag to send ripples through 22 years of digital life.
+
+## Privacy
+
+All personal names have been replaced with pseudonyms drawn from the names of Gmail's original development team and early Google engineers — a small tribute to the people who built the platform that held these messages for two decades.
+
+Phone numbers, email addresses, and other identifying information have been removed. Any resemblance to real individuals is coincidental.
+
+The anonymization is handled by `scripts/03_anonymize.py`, which anyone can run on their own data.
+
+---
+
+## How it was made
+
+### The pipeline
 
 ```
-email-ripples/
-├── scripts/           # Python scripts to extract & analyze emails
-│   ├── 01_export.py   # Gmail API bulk export (headers + snippets)
-│   ├── 02_analyze.py  # Theme analysis + quote extraction via Claude API
-│   └── credentials/   # OAuth creds (gitignored)
-├── src/               # Vite + TypeScript frontend
-│   ├── main.ts        # Entry point
-│   ├── ripple-field.ts # Wave simulation engine
-│   ├── word-layout.ts  # Pretext-powered text layout
-│   ├── quotes.ts       # Quote data + rotation logic
-│   └── style.css
-├── public/
-├── data/              # Generated quote JSON (gitignored until curated)
-│   └── quotes.json
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-└── README.md
+Google Takeout (.mbox)
+        ↓
+   01_parse_mbox.py     →  streams 35GB, samples ~5,000 human emails
+        ↓
+   02_analyze.py        →  LLM extracts quotes, tags moods
+        ↓
+   03_anonymize.py      →  replaces names, strips PII
+        ↓
+   quotes.json          →  static data for the ripple site
+        ↓
+   Vite + Pretext        →  interactive visualization
+        ↓
+   GitHub Pages          →  live at vipdiv.github.io/ripple
 ```
 
-## Setup
+### Why Google Takeout and not the Gmail API?
 
-### Step 1: Email Export
+Google Takeout exports your entire archive as a single `.mbox` file — a standard format that can be processed locally without any API keys, rate limits, or internet connection. For 500K+ emails, Takeout is dramatically faster than the Gmail API (which limits you to ~50 emails/second and would take hours of API calls).
 
-You have two options:
+That said, the Gmail API (`scripts/01_export.py`) is included as an alternative for targeted sampling if you don't want to download your entire archive.
 
-#### Option A: Google Takeout (Recommended for full archive)
-1. Go to https://takeout.google.com
+### Why not process everything locally?
+
+You absolutely can — and the project supports it. The `02_analyze.py` script works with:
+
+- **Ollama** — 100% local, free, no data leaves your machine
+- **AnythingLLM** — local RAG-powered analysis with a desktop app
+
+In this project's case, local processing on a Windows laptop without an NVIDIA GPU was extremely slow (~13 minutes per batch, estimated 40+ hours total). The tradeoff was made to use Google's Gemini API instead, which completed in ~20 minutes. Since the emails were exported *from* Google in the first place, no new privacy exposure occurred — Google had already stored these messages for 22 years.
+
+If you have a machine with a decent GPU, local processing via Ollama is the recommended path for maximum privacy.
+
+### Why not live-query the Gmail API from the website?
+
+Several reasons this was built as a static site with pre-extracted data:
+
+- **Privacy** — a live connection would expose your Gmail inbox through the website
+- **Speed** — extracting and analyzing quotes takes minutes, not milliseconds. The ripple visualization needs instant data
+- **Cost** — every visitor would trigger Gmail API calls + LLM calls. A few hundred visitors could cost serious money
+- **Rate limits** — Gmail API throttling would break any public-facing site
+- **Offline works** — the static site works without internet, on any device, forever
+
+The right architecture is: extract once → analyze once → anonymize once → deploy static. No ongoing costs, no API keys exposed, no privacy risk.
+
+### How sampling works
+
+The full archive contained 512,780 emails. The parser filters out automated messages (newsletters, noreply addresses, notifications, marketing) leaving ~322,000 real human emails. From those, 800 are randomly sampled from each of 8 eras (2004–2006, 2007–2009, etc.) for equal time representation.
+
+This means the visualization represents roughly **1.6%** of the total human email archive. Each time you re-run the pipeline, you get a different random sample. To increase coverage, adjust the `SAMPLES_PER_ERA` value in `01_parse_mbox.py`.
+
+---
+
+## Build your own
+
+Want to make this with your own email archive? Here's the full pipeline.
+
+### Prerequisites
+
+- Python 3.10+ with `pip install tqdm`
+- Node.js 18+ with npm
+- An email archive (Gmail via Google Takeout, or any `.mbox` file)
+- An LLM (local via Ollama, or any cloud API)
+
+### Step 1: Export your email
+
+**Option A: Google Takeout (recommended for full archive)**
+1. Go to [takeout.google.com](https://takeout.google.com)
 2. Deselect all, then select only **Mail**
-3. Choose `.mbox` format
-4. Download and extract
-5. Run: `python scripts/01_parse_mbox.py ~/path/to/All\ mail.mbox`
+3. Choose `.mbox` format, download and extract
+4. Run: `python scripts/01_parse_mbox.py "/path/to/All mail Including Spam and Trash.mbox"`
 
-#### Option B: Gmail API (Targeted smart sampling)
-1. Go to https://console.cloud.google.com
-2. Create a project, enable Gmail API
-3. Create OAuth 2.0 credentials (Desktop app)
-4. Download `credentials.json` to `scripts/credentials/`
-5. Run: `python scripts/01_export.py`
+**Option B: Gmail API (targeted sampling, no full download)**
+1. Set up OAuth credentials at [console.cloud.google.com](https://console.cloud.google.com)
+2. Run: `python scripts/01_export.py`
 
-### Step 2: Analyze & Extract Quotes
+**Option C: Any .mbox file**
 
-Pick ANY LLM provider. AnythingLLM (100% local) is recommended for privacy.
+The parser works with any standard `.mbox` file, not just Gmail. If you have email archives from Thunderbird, Apple Mail, or other clients, point the parser at them.
+
+### Step 2: Extract quotes with any LLM
 
 ```bash
-# ── OPTION A: AnythingLLM (local, private, RAG-powered) ──
-# 1. Install AnythingLLM Desktop → https://anythingllm.com
-# 2. Set up a local LLM (built-in Gemma, or connect Ollama)
-# 3. Settings → Developer API → Create API Key
-export ANYTHINGLLM_API_KEY=your-key-here
-python scripts/02_analyze.py --provider anythingllm
-# First run uploads emails to workspace for RAG search
-# Subsequent runs: add --skip-upload to reuse embeddings
-
-# ── OPTION B: Ollama (local, free, no key needed) ──
-# ollama pull llama3.1 && ollama serve
+# LOCAL + FREE (recommended for privacy):
+ollama pull llama3.1 && ollama serve
 python scripts/02_analyze.py --provider ollama
 
-# ── OPTION C: Any cloud provider ──
-export OPENAI_API_KEY=sk-...           # OpenAI
-export ANTHROPIC_API_KEY=sk-ant-...    # Anthropic
-export GOOGLE_API_KEY=AI...            # Google Gemini
-python scripts/02_analyze.py           # auto-detects from env var
+# LOCAL + RAG-POWERED:
+# Install AnythingLLM Desktop, set up a local model, create API key
+export ANYTHINGLLM_API_KEY=your-key
+python scripts/02_analyze.py --provider anythingllm
 
-# ── OPTION D: Free cloud via Groq ──
+# CLOUD (fast, cheap — use if local is too slow):
+export GOOGLE_API_KEY=your-key          # Google Gemini
+python scripts/02_analyze.py --provider google
+
+export OPENAI_API_KEY=sk-...            # OpenAI
+python scripts/02_analyze.py --provider openai
+
+export ANTHROPIC_API_KEY=sk-ant-...     # Anthropic
+python scripts/02_analyze.py            # auto-detects from env var
+
+# FREE CLOUD (Groq):
 export OPENAI_COMPATIBLE_BASE_URL=https://api.groq.com/openai/v1
 export OPENAI_COMPATIBLE_API_KEY=gsk_...
 export OPENAI_COMPATIBLE_MODEL=llama-3.3-70b-versatile
 python scripts/02_analyze.py --provider openai-compatible
 
-# ── Dry run (preview without calling any LLM) ──
+# PREVIEW (see what would happen without calling any LLM):
 python scripts/02_analyze.py --dry-run
 ```
 
-This samples ~5,000 emails across all eras, identifies themes, and extracts ~200 pull quotes tagged by mood.
+**Speed vs privacy tradeoff:**
 
-### Step 3: Build & Deploy
+| Provider | Privacy | Speed (5K emails) | Cost |
+|----------|---------|-------------------|------|
+| Ollama (CPU, no GPU) | 100% local | 4–40 hours | Free |
+| Ollama (with GPU) | 100% local | 30–60 min | Free |
+| AnythingLLM | 100% local | 1–4 hours | Free |
+| Groq | Cloud | 20–30 min | Free tier |
+| Google Gemini Flash | Cloud | 15–20 min | ~$3–5 |
+| OpenAI GPT-4o-mini | Cloud | 10–15 min | ~$2–4 |
+
+### Step 3: Anonymize for privacy
+
+**This step is critical if you plan to publish your visualization.**
+
+```bash
+# Standard anonymization — replaces names, strips PII:
+python scripts/03_anonymize.py
+
+# Preview what would change without modifying anything:
+python scripts/03_anonymize.py --preview
+
+# Keep specific public figure names unchanged:
+python scripts/03_anonymize.py --keep "Rosa Parks,Martin Luther King"
+
+# Add your own names that must be scrubbed:
+python scripts/03_anonymize.py --add-names "MyBoss,MyEx,MyDoctor"
+
+# Use a different pseudonym shuffle:
+python scripts/03_anonymize.py --seed 99
+```
+
+The anonymizer:
+- Detects South Asian and Western names automatically
+- Replaces each name with a consistent pseudonym (same person = same fake name everywhere)
+- Uses names from Gmail's founding team as pseudonyms
+- Strips email addresses, phone numbers, SSNs, credit card numbers, IP addresses, and street addresses
+- Saves a private `data/name_mapping.json` (gitignored) so you can look up who maps to whom
+- Has no dependencies beyond Python's standard library
+
+### Step 4: Build and deploy
 
 ```bash
 npm install
-npm run dev          # local dev server
-npm run build        # production build
+npm run dev          # local dev server at localhost:5173
+npm run build        # production build to dist/
 npm run deploy       # deploy to GitHub Pages
 ```
 
+---
+
 ## Controls
 
-- **Click** — drop a ripple at that point
-- **Click & drag** — draw a continuous ripple trail
-- **Spacebar** — cycle to next quote batch
-- **Arrow keys** — navigate between mood categories
-- Ambient ripples fire automatically every few seconds
+- **Click and drag** — send ripples through the text
+- **Spacebar** — next quote
+- **Left/Right arrow keys** — filter by mood
+- **R** or click the toggle — switch between art mode and read mode
+- **?** or click the info button — about this project
+- Quotes auto-advance every 10 seconds
+- Ambient ripples fire automatically
+
+## Tech
+
+- [Pretext](https://github.com/chenglou/pretext) for text measurement and layout
+- [Vite](https://vite.dev) + TypeScript
+- 2D wave height field simulation inspired by [jeantimex/ripples](https://github.com/jeantimex/ripples)
+- Deployed via GitHub Pages
 
 ## Credits
 
 - Ripple physics inspired by [jeantimex/ripples](https://github.com/jeantimex/ripples)
 - Text layout by [chenglou/pretext](https://github.com/chenglou/pretext)
-- Your 22 years of Gmail history
+- Pseudonyms from [Gmail's founding team](https://en.wikipedia.org/wiki/History_of_Gmail)
+- Built with [Claude](https://claude.ai)
