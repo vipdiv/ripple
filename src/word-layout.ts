@@ -63,10 +63,13 @@ export function layoutText(
     // Stop if we'd go off screen
     if (y > height - 40) break
 
-    // Split line text into words and position them
+    // Split line text into words and position them, centered horizontally
     const lineText = line.text
+    const trimmed = lineText.replace(/\s+$/, '')
+    const lineWidth = ctx.measureText(trimmed).width
+    let x = config.padding + Math.max(0, (maxWidth - lineWidth) / 2)
+
     const words = lineText.split(/(\s+)/)
-    let x = config.padding
 
     for (const word of words) {
       if (!word || /^\s+$/.test(word)) {
