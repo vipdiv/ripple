@@ -110,6 +110,124 @@ canvas {
   transition: color 0.6s ease;
 }
 
+.theme-row {
+  position: relative;
+  margin-top: 6px;
+  pointer-events: auto;
+}
+
+#theme-toggle {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  padding: 2px 0;
+  color: rgba(var(--chrome), var(--op-mood));
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s ease;
+}
+
+#theme-toggle:hover,
+#theme-toggle:focus-visible,
+#theme-toggle[aria-expanded="true"] {
+  color: rgba(var(--chrome), var(--op-button-hover));
+  outline: none;
+}
+
+#theme-toggle .theme-caret {
+  font-size: 9px;
+  opacity: 0.6;
+  transition: transform 0.18s ease;
+}
+
+#theme-toggle[aria-expanded="true"] .theme-caret {
+  transform: translateY(1px) rotate(180deg);
+}
+
+#theme-dropdown[hidden] {
+  display: none;
+}
+
+#theme-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 50;
+  min-width: 240px;
+  max-width: min(320px, calc(100vw - 32px));
+  max-height: min(60vh, 360px);
+  overflow-y: auto;
+  background: rgba(15, 15, 22, 0.98);
+  border: 1px solid rgba(var(--chrome), 0.18);
+  padding: 4px 0;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+}
+
+body[data-mode="invert"] #theme-dropdown {
+  background: #fafaf6;
+  border-color: rgba(var(--chrome), 0.25);
+}
+
+#theme-dropdown button {
+  display: flex;
+  width: 100%;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: rgba(var(--chrome), 0.78);
+  letter-spacing: 0.04em;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+#theme-dropdown button:hover,
+#theme-dropdown button:focus-visible {
+  background: rgba(var(--chrome), 0.08);
+  color: rgba(var(--chrome), 0.98);
+  outline: none;
+}
+
+#theme-dropdown button[aria-selected="true"] {
+  color: rgba(var(--accent), 0.95);
+}
+
+#theme-dropdown button .theme-count {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: rgba(var(--chrome), 0.45);
+  flex-shrink: 0;
+}
+
+#theme-dropdown button[aria-selected="true"] .theme-count {
+  color: rgba(var(--accent), 0.65);
+}
+
+#theme-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+#theme-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+#theme-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(var(--chrome), 0.2);
+  border-radius: 3px;
+}
+#theme-dropdown::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--chrome), 0.35);
+}
+
 #top-right {
   position: fixed;
   top: 18px;

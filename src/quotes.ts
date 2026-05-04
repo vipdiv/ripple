@@ -15,6 +15,8 @@ export interface Quote {
   era: string
   context: string
   from_type: string
+  theme?: string
+  themes?: string[]
 }
 
 export interface Theme {
@@ -243,17 +245,19 @@ const PLACEHOLDER_QUOTES: Quote[] = [
 ]
 
 
+export const ALL_THEMES = 'all'
+
 export class QuoteManager {
   quotes: Quote[] = []
   currentMood: Mood = 'all'
+  currentTheme: string = ALL_THEMES
   currentIndex: number = 0
   private filtered: Quote[] = []
 
   constructor() {
     const bundled = data.quotes
     this.quotes = bundled && bundled.length > 0 ? bundled : PLACEHOLDER_QUOTES
-    this.filtered = [...this.quotes]
-    this.shuffle()
+    this.rebuildFiltered()
   }
 
   private shuffle() {
@@ -263,15 +267,23 @@ export class QuoteManager {
     }
   }
 
-  filterByMood(mood: Mood) {
-    this.currentMood = mood
-    if (mood === 'all') {
-      this.filtered = [...this.quotes]
-    } else {
-      this.filtered = this.quotes.filter(q => q.mood === mood)
-    }
+  private rebuildFiltered() {
+    let f = this.quotes
+    if (this.currentMood !== 'all') f = f.filter(q => q.mood === this.currentMood)
+    if (this.currentTheme !== ALL_THEMES) f = f.filter(q => q.theme === this.currentTheme)
+    this.filtered = [...f]
     this.shuffle()
     this.currentIndex = 0
+  }
+
+  filterByMood(mood: Mood) {
+    this.currentMood = mood
+    this.rebuildFiltered()
+  }
+
+  filterByTheme(theme: string) {
+    this.currentTheme = theme
+    this.rebuildFiltered()
   }
 
   nextMood(direction: 1 | -1 = 1) {
@@ -293,6 +305,10 @@ export class QuoteManager {
 
   get moodLabel(): string {
     return this.currentMood === 'all' ? 'all moods' : this.currentMood
+  }
+
+  get themeLabel(): string {
+    return this.currentTheme === ALL_THEMES ? 'all themes' : this.currentTheme
   }
 
   get count(): number {

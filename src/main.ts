@@ -8,7 +8,7 @@
 import './style.css'
 import { RippleField } from './ripple-field'
 import { layoutText, updateParticles, type WordParticle } from './word-layout'
-import { QuoteManager, MOOD_COLORS, TIMELINE_NARRATIVE } from './quotes'
+import { QuoteManager, MOOD_COLORS, TIMELINE_NARRATIVE, THEMES, ALL_THEMES } from './quotes'
 
 // --- Canvas setup ---
 const canvas = document.getElementById('c') as HTMLCanvasElement
@@ -35,6 +35,9 @@ const infoButtonEl = document.getElementById('info-button') as HTMLButtonElement
 const infoModalEl = document.getElementById('info-modal') as HTMLElement
 const infoCloseEl = infoModalEl.querySelector('.info-close') as HTMLButtonElement
 const infoBackdropEl = infoModalEl.querySelector('.info-backdrop') as HTMLElement
+const themeToggleEl = document.getElementById('theme-toggle') as HTMLButtonElement
+const themeLabelEl = document.getElementById('theme-label')!
+const themeDropdownEl = document.getElementById('theme-dropdown') as HTMLElement
 
 // --- Display modes ---
 type DisplayMode = 'art' | 'read' | 'invert'
@@ -58,6 +61,64 @@ function openInfo() {
 }
 function closeInfo() {
   infoModalEl.hidden = true
+}
+
+// --- Theme dropdown ---
+function buildThemeDropdown() {
+  themeDropdownEl.replaceChildren()
+  const items: { value: string; label: string; count: number }[] = [
+    { value: ALL_THEMES, label: 'all', count: quotes.quotes.length },
+    ...THEMES.map(t => ({
+      value: t.name,
+      label: t.name,
+      count: t.quote_count ?? quotes.quotes.filter(q => q.theme === t.name).length,
+    })),
+  ]
+  for (const item of items) {
+    const btn = document.createElement('button')
+    btn.type = 'button'
+    btn.role = 'option'
+    btn.dataset.value = item.value
+    const label = document.createElement('span')
+    label.className = 'theme-name'
+    label.textContent = item.label
+    const count = document.createElement('span')
+    count.className = 'theme-count'
+    count.textContent = String(item.count)
+    btn.appendChild(label)
+    btn.appendChild(count)
+    btn.addEventListener('click', () => selectTheme(item.value))
+    themeDropdownEl.appendChild(btn)
+  }
+  refreshThemeSelection()
+}
+
+function refreshThemeSelection() {
+  themeLabelEl.textContent = quotes.themeLabel
+  for (const btn of themeDropdownEl.querySelectorAll<HTMLButtonElement>('button')) {
+    btn.setAttribute('aria-selected', btn.dataset.value === quotes.currentTheme ? 'true' : 'false')
+  }
+}
+
+function openThemeDropdown() {
+  themeDropdownEl.hidden = false
+  themeToggleEl.setAttribute('aria-expanded', 'true')
+}
+function closeThemeDropdown() {
+  themeDropdownEl.hidden = true
+  themeToggleEl.setAttribute('aria-expanded', 'false')
+}
+function toggleThemeDropdown() {
+  if (themeDropdownEl.hidden) openThemeDropdown()
+  else closeThemeDropdown()
+}
+
+function selectTheme(theme: string) {
+  quotes.filterByTheme(theme)
+  refreshThemeSelection()
+  relayout()
+  ripple.disturb(W / 2, H / 2, 8, 10)
+  closeThemeDropdown()
 }
 
 function renderInfoExtras() {
@@ -223,9 +284,15 @@ canvas.addEventListener('touchend', () => { mouseDown = false })
 
 // Keyboard
 window.addEventListener('keydown', e => {
-  if (e.code === 'Escape' && !infoModalEl.hidden) {
-    closeInfo()
-    return
+  if (e.code === 'Escape') {
+    if (!infoModalEl.hidden) {
+      closeInfo()
+      return
+    }
+    if (!themeDropdownEl.hidden) {
+      closeThemeDropdown()
+      return
+    }
   }
   if (!infoModalEl.hidden) return
 
@@ -251,6 +318,16 @@ modeToggleEl.addEventListener('click', cycleDisplayMode)
 infoButtonEl.addEventListener('click', openInfo)
 infoCloseEl.addEventListener('click', closeInfo)
 infoBackdropEl.addEventListener('click', closeInfo)
+
+// Theme dropdown
+themeToggleEl.addEventListener('click', e => {
+  e.stopPropagation()
+  toggleThemeDropdown()
+})
+themeDropdownEl.addEventListener('click', e => e.stopPropagation())
+document.addEventListener('click', () => {
+  if (!themeDropdownEl.hidden) closeThemeDropdown()
+})
 
 // --- Render ---
 function render() {
@@ -346,6 +423,7 @@ function loop() {
 function init() {
   setDisplayMode(displayMode)
   renderInfoExtras()
+  buildThemeDropdown()
   window.addEventListener('resize', resize)
   resize()
   initialSplash()
