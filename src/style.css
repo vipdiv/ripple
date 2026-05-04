@@ -300,6 +300,15 @@ body[data-mode="invert"] #theme-dropdown {
   margin-top: 4px;
 }
 
+#quote-font {
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.14em;
+  font-style: italic;
+  color: rgba(var(--chrome), calc(var(--op-quote-from) * 0.75));
+  margin-top: 6px;
+}
+
 #controls-hint {
   position: fixed;
   bottom: 16px;

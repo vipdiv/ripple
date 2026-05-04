@@ -30,6 +30,7 @@ const moodEl = document.getElementById('current-mood')!
 const quoteDateEl = document.getElementById('quote-date')!
 const quoteContextEl = document.getElementById('quote-context')!
 const quoteFromEl = document.getElementById('quote-from')!
+const quoteFontEl = document.getElementById('quote-font')!
 const modeToggleEl = document.getElementById('mode-toggle') as HTMLButtonElement
 const infoButtonEl = document.getElementById('info-button') as HTMLButtonElement
 const infoModalEl = document.getElementById('info-modal') as HTMLElement
@@ -139,6 +140,19 @@ function renderInfoExtras() {
   }
 }
 
+// --- Era → Gmail font ---
+type EraFont = { family: string; label: string }
+const FONT_ARIAL: EraFont = { family: 'Arial, sans-serif', label: 'Arial' }
+const FONT_ROBOTO: EraFont = { family: '"Roboto", "Helvetica Neue", Arial, sans-serif', label: 'Roboto' }
+
+function getEraFont(era: string | undefined): EraFont {
+  const start = parseInt((era ?? '').slice(0, 4), 10)
+  if (Number.isFinite(start) && start >= 2016) return FONT_ROBOTO
+  return FONT_ARIAL
+}
+
+let currentFont: EraFont = FONT_ARIAL
+
 // --- Mouse ---
 let mouseDown = false
 let lastDragX = -999
@@ -162,8 +176,9 @@ function relayout() {
   const quote = quotes.current()
   if (!quote) return
 
+  currentFont = getEraFont(quote.era)
   words = layoutText(quote.text, W, H, {
-    font: `${getFontSize()}px "IBM Plex Mono", monospace`,
+    font: `${getFontSize()}px ${currentFont.family}`,
     fontSize: getFontSize(),
     lineHeight: Math.round(getFontSize() * 1.7),
     padding: getPadding(),
@@ -194,6 +209,7 @@ function updateUI(quote: { mood: string; date: string; context: string; from_typ
   quoteDateEl.textContent = quote.date
   quoteContextEl.textContent = quote.context
   quoteFromEl.textContent = quote.from_type ? `from ${quote.from_type}` : ''
+  quoteFontEl.textContent = `set in ${currentFont.label}`
 }
 
 function getMoodColor(mood: string, alpha: number = 1): string {
@@ -338,7 +354,7 @@ function render() {
 
   // Draw words
   const fontSize = getFontSize()
-  ctx.font = `${fontSize}px "IBM Plex Mono", monospace`
+  ctx.font = `${fontSize}px ${currentFont.family}`
   ctx.textBaseline = 'top'
 
   const quote = quotes.current()
@@ -427,6 +443,10 @@ function init() {
   window.addEventListener('resize', resize)
   resize()
   initialSplash()
+  // Re-measure once Roboto/Plex actually finish loading
+  if ('fonts' in document) {
+    document.fonts.ready.then(relayout).catch(() => {})
+  }
   
   // Ambient ripples
   setInterval(ambientRipple, 3500)
