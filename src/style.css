@@ -686,6 +686,10 @@ body[data-mode="invert"] .info-card {
   margin-bottom: 0;
 }
 
+@media (hover: none) and (pointer: coarse), (max-width: 720px) {
+  .info-card p.controls { display: none; }
+}
+
 .info-card section {
   margin-top: 18px;
   padding-top: 14px;
