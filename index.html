@@ -21,6 +21,13 @@
       </button>
       <div id="theme-dropdown" hidden role="listbox" aria-label="Filter by theme"></div>
     </div>
+    <div class="tag-row" id="tag-row" hidden>
+      <button id="tag-toggle" type="button" aria-haspopup="listbox" aria-expanded="false">
+        <span id="tag-label">tags</span>
+        <span class="theme-caret" aria-hidden="true">▾</span>
+      </button>
+      <div id="tag-cloud" hidden role="listbox" aria-label="Filter by tag"></div>
+    </div>
   </div>
   <div id="top-right">
     <button id="mode-toggle" type="button" title="Cycle display mode (R)">ART</button>
@@ -42,6 +49,16 @@
     <span class="sep">·</span>
     <span>R cycles mode</span>
   </div>
+  <nav id="mobile-bar" aria-label="Mobile controls">
+    <button id="m-mood-prev" type="button" class="m-icon" aria-label="Previous mood">◀</button>
+    <button id="m-mood" type="button" class="m-pill" aria-label="Current mood (tap to cycle)">mood</button>
+    <button id="m-mood-next" type="button" class="m-icon" aria-label="Next mood">▶</button>
+    <button id="m-next" type="button" class="m-icon" aria-label="Next quote">⏭</button>
+    <button id="m-theme" type="button" class="m-pill" aria-label="Open themes">themes</button>
+    <button id="m-mode" type="button" class="m-icon" aria-label="Cycle display mode">◐</button>
+    <button id="m-sound" type="button" class="m-icon" aria-label="Toggle sound">🔇</button>
+    <button id="m-info" type="button" class="m-icon" aria-label="About">?</button>
+  </nav>
   <div id="info-modal" hidden>
     <div class="info-backdrop"></div>
     <div class="info-card" role="dialog" aria-labelledby="info-title" aria-modal="true">
@@ -50,6 +67,7 @@
       <p>512,780 emails were exported from a single Gmail account active since August 2004. Around 5,000 were sampled and analyzed by AI to extract about 1,460 pull quotes tagged by mood.</p>
       <p>All names have been replaced with pseudonyms drawn from Gmail's original development team — a tribute to the people who built the platform that held these messages for two decades.</p>
       <p>Quotes are rendered in the Gmail default font from their era — Arial for 2004–2017, Roboto from 2018 onward — so each message looks the way it would have when it first arrived in the inbox.</p>
+      <p class="info-mobile-note">Tap and drag to create ripples and trigger sounds. Use the bottom bar to change moods, advance quotes, switch themes, toggle display modes, and control sound.</p>
       <p class="controls">Click and drag to ripple · Spacebar or scroll for next quote · Arrow keys filter by mood · R cycles display mode</p>
     </div>
   </div>

@@ -17,6 +17,7 @@ export interface Quote {
   from_type: string
   theme?: string
   themes?: string[]
+  tags?: string[]
 }
 
 export interface Theme {
@@ -251,6 +252,7 @@ export class QuoteManager {
   quotes: Quote[] = []
   currentMood: Mood = 'all'
   currentTheme: string = ALL_THEMES
+  currentTag: string | null = null
   currentIndex: number = 0
   private filtered: Quote[] = []
 
@@ -271,6 +273,10 @@ export class QuoteManager {
     let f = this.quotes
     if (this.currentMood !== 'all') f = f.filter(q => q.mood === this.currentMood)
     if (this.currentTheme !== ALL_THEMES) f = f.filter(q => q.theme === this.currentTheme)
+    if (this.currentTag) {
+      const tag = this.currentTag
+      f = f.filter(q => Array.isArray(q.tags) && q.tags.includes(tag))
+    }
     this.filtered = [...f]
     this.shuffle()
     this.currentIndex = 0
@@ -282,8 +288,30 @@ export class QuoteManager {
   }
 
   filterByTheme(theme: string) {
+    if (theme === this.currentTheme) return
     this.currentTheme = theme
+    // Tag is theme-scoped; clear it when the theme changes
+    this.currentTag = null
     this.rebuildFiltered()
+  }
+
+  /** Toggle a tag on/off. Pass null to clear. */
+  filterByTag(tag: string | null) {
+    this.currentTag = tag
+    this.rebuildFiltered()
+  }
+
+  /** Tags + counts limited to the currently selected theme. */
+  tagsInCurrentTheme(): Array<{ tag: string; count: number }> {
+    const counts = new Map<string, number>()
+    for (const q of this.quotes) {
+      if (this.currentTheme !== ALL_THEMES && q.theme !== this.currentTheme) continue
+      if (!Array.isArray(q.tags)) continue
+      for (const t of q.tags) counts.set(t, (counts.get(t) ?? 0) + 1)
+    }
+    return [...counts.entries()]
+      .map(([tag, count]) => ({ tag, count }))
+      .sort((a, b) => b.count - a.count)
   }
 
   nextMood(direction: 1 | -1 = 1) {
