@@ -110,9 +110,15 @@ function buildThemeDropdown() {
   refreshThemeSelection()
 }
 
+// Mobile uses a static "themes"/"tags" label; the chosen one is highlighted
+// inside the dropdown/cloud when opened.
+const mobileMq = window.matchMedia('(hover: none) and (pointer: coarse), (max-width: 720px)')
+
 function refreshThemeSelection() {
   themeLabelEl.textContent = quotes.themeLabel
-  if (mobileThemeEl) mobileThemeEl.textContent = quotes.themeLabel
+  if (mobileThemeEl) {
+    mobileThemeEl.textContent = mobileMq.matches ? 'themes' : quotes.themeLabel
+  }
   for (const btn of themeDropdownEl.querySelectorAll<HTMLButtonElement>('button')) {
     btn.setAttribute('aria-selected', btn.dataset.value === quotes.currentTheme ? 'true' : 'false')
   }
@@ -173,7 +179,8 @@ function buildTagCloud() {
 }
 
 function refreshTagLabel() {
-  tagLabelEl.textContent = quotes.currentTag ?? 'tags'
+  const showStatic = mobileMq.matches || !quotes.currentTag
+  tagLabelEl.textContent = showStatic ? 'tags' : (quotes.currentTag as string)
   for (const btn of tagCloudEl.querySelectorAll<HTMLButtonElement>('button')) {
     btn.setAttribute('aria-pressed', btn.dataset.tag === quotes.currentTag ? 'true' : 'false')
   }
@@ -612,6 +619,10 @@ function init() {
   buildThemeDropdown()
   refreshTagRow()
   window.addEventListener('resize', resize)
+  mobileMq.addEventListener('change', () => {
+    refreshThemeSelection()
+    refreshTagLabel()
+  })
   resize()
   initialSplash()
   // Re-measure once Roboto/Plex actually finish loading
