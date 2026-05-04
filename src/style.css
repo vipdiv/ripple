@@ -230,6 +230,8 @@ body[data-mode="invert"] .info-backdrop {
   position: relative;
   max-width: 540px;
   width: calc(100% - 48px);
+  max-height: 80vh;
+  overflow-y: auto;
   background: rgba(15, 15, 22, 0.98);
   border: 1px solid rgba(var(--chrome), 0.18);
   color: rgba(var(--chrome), 0.85);
