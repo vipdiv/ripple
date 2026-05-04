@@ -239,8 +239,6 @@ body[data-mode="invert"] .info-backdrop {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 13px;
   line-height: 1.6;
-  scrollbar-width: thin;
-  scrollbar-color: #4285f4 transparent;
 }
 
 .info-card::-webkit-scrollbar {
