@@ -345,6 +345,15 @@ document.addEventListener('click', () => {
   if (!themeDropdownEl.hidden) closeThemeDropdown()
 })
 
+// Mouse wheel — advance to next quote (acts like Spacebar)
+window.addEventListener('wheel', e => {
+  // Let the modal and theme dropdown handle their own scrolling
+  if (!infoModalEl.hidden) return
+  if (!themeDropdownEl.hidden) return
+  e.preventDefault()
+  transitionToNext()
+}, { passive: false })
+
 // --- Render ---
 function render() {
   ctx.clearRect(0, 0, W, H)

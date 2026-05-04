@@ -39,6 +39,10 @@ Phone numbers, email addresses, and other identifying information have been remo
 
 The anonymization is handled by `scripts/03_anonymize.py`, which anyone can run on their own data.
 
+## Typography
+
+The floating quote text is rendered in the Gmail default font from each quote's era — Arial through 2017, Roboto from 2018 onward — so each message looks the way it would have when it first arrived in the inbox. UI chrome (header, controls, mood label) stays in IBM Plex Mono throughout.
+
 ---
 
 ## How it was made
@@ -213,7 +217,7 @@ npm run deploy       # deploy to GitHub Pages
 ## Controls
 
 - **Click and drag** — send ripples through the text
-- **Spacebar** — next quote
+- **Spacebar** or **mouse wheel** — next quote
 - **Left/Right arrow keys** — filter by mood
 - **R** or click the toggle — switch between art mode and read mode
 - **?** or click the info button — about this project
