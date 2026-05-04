@@ -240,7 +240,7 @@ body[data-mode="invert"] .info-backdrop {
   font-size: 13px;
   line-height: 1.6;
   scrollbar-width: thin;
-  scrollbar-color: rgba(var(--chrome), 0.25) transparent;
+  scrollbar-color: #4285f4 transparent;
 }
 
 .info-card::-webkit-scrollbar {
@@ -251,16 +251,27 @@ body[data-mode="invert"] .info-backdrop {
   background: transparent;
 }
 
+/* Gmail/Google four-color vertical gradient — a nod to the founders */
 .info-card::-webkit-scrollbar-thumb {
-  background: rgba(var(--chrome), 0.18);
+  background: linear-gradient(
+    to bottom,
+    #ea4335 0%,
+    #ea4335 25%,
+    #fbbc05 25%,
+    #fbbc05 50%,
+    #34a853 50%,
+    #34a853 75%,
+    #4285f4 75%,
+    #4285f4 100%
+  );
   border-radius: 4px;
   border: 2px solid transparent;
   background-clip: padding-box;
+  opacity: 0.85;
 }
 
 .info-card::-webkit-scrollbar-thumb:hover {
-  background: rgba(var(--chrome), 0.32);
-  background-clip: padding-box;
+  opacity: 1;
 }
 
 body[data-mode="invert"] .info-card {
