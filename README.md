@@ -288,6 +288,9 @@ The font changes automatically as quotes transition between eras. A small "set i
 - [Vite](https://vite.dev) + TypeScript
 - 2D wave height field simulation inspired by [jeantimex/ripples](https://github.com/jeantimex/ripples)
 - Era-based typography matching Gmail's actual default fonts (2004-present)
+- Generative ambient sound via the native [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) — no audio files, no Tone.js dependency
+- Three display modes (art / read / invert) keyed off CSS variables
+- Responsive layout with a touch-only control bar for phones and tablets
 - Deployed via GitHub Pages
 
 ## Run locally
