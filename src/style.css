@@ -239,6 +239,28 @@ body[data-mode="invert"] .info-backdrop {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 13px;
   line-height: 1.6;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--chrome), 0.25) transparent;
+}
+
+.info-card::-webkit-scrollbar {
+  width: 8px;
+}
+
+.info-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.info-card::-webkit-scrollbar-thumb {
+  background: rgba(var(--chrome), 0.18);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.info-card::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--chrome), 0.32);
+  background-clip: padding-box;
 }
 
 body[data-mode="invert"] .info-card {
