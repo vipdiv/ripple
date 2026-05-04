@@ -331,6 +331,31 @@ body[data-mode="invert"] #tag-cloud {
   display: none;
 }
 
+#tag-cloud::-webkit-scrollbar {
+  width: 6px;
+}
+#tag-cloud::-webkit-scrollbar-track {
+  background: transparent;
+}
+#tag-cloud::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    to bottom,
+    #ea4335 0%,
+    #ea4335 25%,
+    #fbbc05 25%,
+    #fbbc05 50%,
+    #34a853 50%,
+    #34a853 75%,
+    #4285f4 75%,
+    #4285f4 100%
+  );
+  border-radius: 3px;
+  opacity: 0.85;
+}
+#tag-cloud::-webkit-scrollbar-thumb:hover {
+  opacity: 1;
+}
+
 /* Mobile control bar */
 #mobile-bar {
   display: none;
