@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Email Ripples — Sound Preview</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#07070d;color:rgba(180,190,210,.6);font-family:'JetBrains Mono',monospace;overflow:hidden;cursor:crosshair;height:100vh;-webkit-font-smoothing:antialiased}
+canvas{display:block;position:fixed;top:0;left:0}
+#ui{position:fixed;top:20px;left:24px;z-index:10;pointer-events:none;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+#ui .label{color:rgba(180,190,210,.35);margin-bottom:4px}
+#ui .mood{color:rgba(255,180,120,.45);font-size:10px;letter-spacing:.2em;margin-top:8px}
+#ui .status{color:rgba(120,160,255,.4);font-size:9px;margin-top:4px}
+#controls{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:10;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(180,190,210,.3);white-space:nowrap;pointer-events:none}
+#sound-toggle{position:fixed;bottom:14px;right:24px;z-index:10;background:rgba(180,190,210,.08);border:1px solid rgba(180,190,210,.15);color:rgba(180,190,210,.5);font-family:'JetBrains Mono',monospace;font-size:18px;width:40px;height:40px;cursor:pointer;border-radius:4px;transition:all .3s;display:flex;align-items:center;justify-content:center}
+#sound-toggle:hover{background:rgba(180,190,210,.15);color:rgba(180,190,210,.8)}
+#sound-toggle.muted{color:rgba(255,100,100,.5)}
+#mood-selector{position:fixed;top:20px;right:24px;z-index:10;display:flex;flex-direction:column;gap:4px}
+.mood-btn{background:rgba(180,190,210,.06);border:1px solid rgba(180,190,210,.1);color:rgba(180,190,210,.35);font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.15em;text-transform:uppercase;padding:4px 10px;cursor:pointer;border-radius:2px;transition:all .2s}
+.mood-btn:hover{background:rgba(180,190,210,.12);color:rgba(180,190,210,.6)}
+.mood-btn.active{background:rgba(120,160,255,.15);border-color:rgba(120,160,255,.3);color:rgba(120,160,255,.6)}
+#start-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#07070d;cursor:pointer}
+#start-overlay h1{font-size:18px;font-weight:300;color:rgba(200,210,230,.5);letter-spacing:.1em}
+#start-overlay .hint{font-size:10px;color:rgba(180,190,210,.25);margin-top:16px;letter-spacing:.1em;animation:pulse 2.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.25}50%{opacity:.5}}
+#start-overlay.hidden{display:none}
+#info{position:fixed;bottom:50px;right:24px;z-index:10;pointer-events:none;text-align:right;font-size:9px;color:rgba(180,190,210,.3)}
+</style>
+</head>
+<body>
+
+<div id="start-overlay">
+  <h1>sound design preview</h1>
+  <div class="hint">click anywhere to begin · turn volume up</div>
+</div>
+
+<div id="ui">
+  <div class="label">sound preview</div>
+  <div class="mood" id="mood-label">mundane</div>
+  <div class="status" id="status">click to start audio</div>
+</div>
+
+<div id="mood-selector">
+  <button class="mood-btn active" data-mood="mundane">mundane</button>
+  <button class="mood-btn" data-mood="tender">tender</button>
+  <button class="mood-btn" data-mood="funny">funny</button>
+  <button class="mood-btn" data-mood="sad">sad</button>
+  <button class="mood-btn" data-mood="profound">profound</button>
+  <button class="mood-btn" data-mood="angry">angry</button>
+  <button class="mood-btn" data-mood="nostalgic">nostalgic</button>
+  <button class="mood-btn" data-mood="existential">existential</button>
+</div>
+
+<div id="info"><div id="drag-info"></div></div>
+
+<div id="controls">click &amp; drag to hear · mood buttons change tone · spacebar = transition · speaker to mute</div>
+
+<button id="sound-toggle" title="Toggle sound">🔊</button>
+
+<canvas id="c"></canvas>
+
+<script>
+// ─── RIPPLE FIELD ───
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const dpr = Math.min(devicePixelRatio||1,2);
+const CELL=8;
+let W,H,cols,rows,field,vel;
+
+function resize(){
+  W=innerWidth;H=innerHeight;
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  cols=Math.ceil(W/CELL)+1;rows=Math.ceil(H/CELL)+1;
+  field=new Float32Array(cols*rows);vel=new Float32Array(cols*rows);
+}
+function idx(c,r){return r*cols+c}
+function disturb(px,py,radius,strength){
+  const fc=px/CELL,fr=py/CELL;
+  for(let dr=-radius;dr<=radius;dr++){for(let dc=-radius;dc<=radius;dc++){
+    const c=Math.round(fc+dc),r=Math.round(fr+dr);
+    if(c<0||c>=cols||r<0||r>=rows)continue;
+    const d=Math.sqrt(dc*dc+dr*dr);if(d>radius)continue;
+    const t=1-d/radius;field[idx(c,r)]+=strength*t*t*(3-2*t);
+  }}
+}
+function stepField(){
+  const next=new Float32Array(cols*rows);
+  for(let r=1;r<rows-1;r++){for(let c=1;c<cols-1;c++){
+    const i=idx(c,r);
+    const avg=(field[idx(c-1,r)]+field[idx(c+1,r)]+field[idx(c,r-1)]+field[idx(c,r+1)])*.25;
+    vel[i]+=(avg-field[i])*.38;vel[i]*=.985;next[i]=field[i]+vel[i];
+  }}
+  field.set(next);
+}
+function render(){
+  ctx.clearRect(0,0,W,H);
+  for(let r=0;r<rows;r++){for(let c=0;c<cols;c++){
+    const h=field[idx(c,r)];const ah=Math.abs(h);if(ah<.06)continue;
+    ctx.fillStyle='hsla(220,40%,40%,'+Math.min(ah*.03,.1)+')';
+    ctx.fillRect(c*CELL,r*CELL,CELL-1,CELL-1);
+  }}
+}
+
+// ─── SOUND ENGINE (native Web Audio API) ───
+let actx = null;
+let audioStarted = false;
+let muted = false;
+let currentMood = 'mundane';
+let isDragging = false;
+
+// Nodes
+let droneOsc1, droneOsc2, droneGain, droneFilter;
+let noiseNode, noiseGain;
+let interactOsc, interactGain, interactFilter;
+let masterGain;
+let convolver; // reverb
+
+// Each mood gets a distinct sonic character — not just a pitch shift
+const MOOD_TONES = {
+  mundane:     {root:65,  osc1:'triangle', osc2:'sine',     filter:200, q:1,  noise:.008, wet:.3,  detune:0.3  },
+  tender:      {root:82,  osc1:'sine',     osc2:'sine',     filter:350, q:0.5,noise:.012, wet:.5,  detune:0.5  },
+  nostalgic:   {root:55,  osc1:'triangle', osc2:'triangle', filter:280, q:2,  noise:.02,  wet:.6,  detune:1.5  },
+  funny:       {root:130, osc1:'square',   osc2:'sawtooth', filter:500, q:1,  noise:.005, wet:.2,  detune:0.8  },
+  absurd:      {root:147, osc1:'sawtooth', osc2:'square',   filter:600, q:3,  noise:.015, wet:.25, detune:3    },
+  sad:         {root:44,  osc1:'sine',     osc2:'triangle', filter:120, q:4,  noise:.025, wet:.65, detune:0.2  },
+  existential: {root:38,  osc1:'sine',     osc2:'sine',     filter:100, q:6,  noise:.03,  wet:.7,  detune:0.1  },
+  angry:       {root:55,  osc1:'sawtooth', osc2:'sawtooth', filter:350, q:8,  noise:.04,  wet:.15, detune:5    },
+  outrageous:  {root:73,  osc1:'square',   osc2:'sawtooth', filter:400, q:5,  noise:.03,  wet:.2,  detune:4    },
+  profound:    {root:62,  osc1:'sine',     osc2:'triangle', filter:250, q:1,  noise:.01,  wet:.7,  detune:0.4  },
+};
+
+// Create simple reverb impulse
+function createReverb(ctx, duration, decay) {
+  const len = ctx.sampleRate * duration;
+  const impulse = ctx.createBuffer(2, len, ctx.sampleRate);
+  for (let ch = 0; ch < 2; ch++) {
+    const data = impulse.getChannelData(ch);
+    for (let i = 0; i < len; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+    }
+  }
+  const conv = ctx.createConvolver();
+  conv.buffer = impulse;
+  return conv;
+}
+
+// Create pink noise
+function createPinkNoise(ctx) {
+  const bufferSize = 2 * ctx.sampleRate;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+  for (let i = 0; i < bufferSize; i++) {
+    const white = Math.random() * 2 - 1;
+    b0 = 0.99886*b0 + white*0.0555179;
+    b1 = 0.99332*b1 + white*0.0750759;
+    b2 = 0.96900*b2 + white*0.1538520;
+    b3 = 0.86650*b3 + white*0.3104856;
+    b4 = 0.55000*b4 + white*0.5329522;
+    b5 = -0.7616*b5 - white*0.0168980;
+    data[i] = (b0+b1+b2+b3+b4+b5+b6+white*0.5362) * 0.05;
+    b6 = white * 0.115926;
+  }
+  const node = ctx.createBufferSource();
+  node.buffer = buffer;
+  node.loop = true;
+  return node;
+}
+
+function initAudio() {
+  actx = new (window.AudioContext || window.webkitAudioContext)();
+
+  // Master
+  masterGain = actx.createGain();
+  masterGain.gain.value = 0.8;
+
+  // Reverb
+  convolver = createReverb(actx, 3, 2.5);
+  const reverbGain = actx.createGain();
+  reverbGain.gain.value = 0.3;
+  convolver.connect(reverbGain);
+  reverbGain.connect(masterGain);
+
+  // Dry path
+  const dryGain = actx.createGain();
+  dryGain.gain.value = 0.7;
+  dryGain.connect(masterGain);
+
+  masterGain.connect(actx.destination);
+
+  // ── DRONE ──
+  droneFilter = actx.createBiquadFilter();
+  droneFilter.type = 'lowpass';
+  droneFilter.frequency.value = 200;
+  droneFilter.Q.value = 2;
+  droneFilter.connect(dryGain);
+  droneFilter.connect(convolver);
+
+  droneGain = actx.createGain();
+  droneGain.gain.value = 0.015; // very quiet at rest
+  droneGain.connect(droneFilter);
+
+  droneOsc1 = actx.createOscillator();
+  droneOsc1.type = 'sawtooth';
+  droneOsc1.frequency.value = 65;
+  droneOsc1.connect(droneGain);
+  droneOsc1.start();
+
+  droneOsc2 = actx.createOscillator();
+  droneOsc2.type = 'triangle';
+  droneOsc2.frequency.value = 65.3; // slight detune for warmth
+  droneOsc2.connect(droneGain);
+  droneOsc2.start();
+
+  // LFO on filter for organic movement
+  const lfo = actx.createOscillator();
+  lfo.type = 'sine';
+  lfo.frequency.value = 0.08; // very slow
+  const lfoGain = actx.createGain();
+  lfoGain.gain.value = 60; // modulation depth
+  lfo.connect(lfoGain);
+  lfoGain.connect(droneFilter.frequency);
+  lfo.start();
+
+  // ── PINK NOISE (analog warmth) ──
+  noiseGain = actx.createGain();
+  noiseGain.gain.value = 0.008;
+  const noiseFilter = actx.createBiquadFilter();
+  noiseFilter.type = 'lowpass';
+  noiseFilter.frequency.value = 600;
+  noiseGain.connect(noiseFilter);
+  noiseFilter.connect(dryGain);
+
+  noiseNode = createPinkNoise(actx);
+  noiseNode.connect(noiseGain);
+  noiseNode.start();
+
+  // ── INTERACTION LAYER ──
+  interactFilter = actx.createBiquadFilter();
+  interactFilter.type = 'lowpass';
+  interactFilter.frequency.value = 200;
+  interactFilter.connect(dryGain);
+  interactFilter.connect(convolver);
+
+  interactGain = actx.createGain();
+  interactGain.gain.value = 0; // silent at rest
+  interactGain.connect(interactFilter);
+
+  interactOsc = actx.createOscillator();
+  interactOsc.type = 'sine';
+  interactOsc.frequency.value = 130;
+  interactOsc.connect(interactGain);
+  interactOsc.start();
+
+  audioStarted = true;
+  updateMood(currentMood);
+  document.getElementById('status').textContent = 'audio active';
+}
+
+function updateMood(mood) {
+  if (!actx) return;
+  currentMood = mood;
+  const t = MOOD_TONES[mood] || MOOD_TONES.mundane;
+  const now = actx.currentTime;
+
+  // Change oscillator waveforms (this is what makes moods SOUND different)
+  droneOsc1.type = t.osc1;
+  droneOsc2.type = t.osc2;
+
+  // Root pitch — wider range now (38Hz to 147Hz)
+  droneOsc1.frequency.cancelScheduledValues(now);
+  droneOsc1.frequency.linearRampToValueAtTime(t.root, now + 1.5);
+  droneOsc2.frequency.cancelScheduledValues(now);
+  droneOsc2.frequency.linearRampToValueAtTime(t.root + t.detune, now + 1.5);
+  interactOsc.frequency.cancelScheduledValues(now);
+  interactOsc.frequency.linearRampToValueAtTime(t.root * 2, now + 1.5);
+
+  // Filter — character of the sound
+  droneFilter.frequency.cancelScheduledValues(now);
+  droneFilter.frequency.linearRampToValueAtTime(t.filter, now + 1.5);
+  droneFilter.Q.cancelScheduledValues(now);
+  droneFilter.Q.linearRampToValueAtTime(t.q, now + 1.5);
+
+  // Noise level — more noise = grittier/sadder
+  noiseGain.gain.cancelScheduledValues(now);
+  noiseGain.gain.linearRampToValueAtTime(t.noise, now + 1.5);
+
+  // LFO speed shifts per mood
+  // (can't ramp LFO frequency easily, but we can adjust modulation depth)
+}
+
+function triggerPing(x, y) {
+  if (!actx || muted) return;
+  const now = actx.currentTime;
+
+  // Randomize pitch based on position
+  const freq = 800 + (x / W) * 1200 + Math.random() * 400;
+
+  const osc = actx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.value = freq;
+
+  const gain = actx.createGain();
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.12, now + 0.005);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+
+  osc.connect(gain);
+  gain.connect(convolver);
+  gain.connect(masterGain);
+
+  osc.start(now);
+  osc.stop(now + 0.6);
+}
+
+function onDragStart() {
+  if (!actx || muted) return;
+  isDragging = true;
+  const now = actx.currentTime;
+
+  droneGain.gain.cancelScheduledValues(now);
+  droneGain.gain.linearRampToValueAtTime(0.12, now + 0.4);
+
+  noiseGain.gain.cancelScheduledValues(now);
+  noiseGain.gain.linearRampToValueAtTime(0.04, now + 0.4);
+
+  interactGain.gain.cancelScheduledValues(now);
+  interactGain.gain.linearRampToValueAtTime(0.08, now + 0.2);
+
+  // Open up the drone filter too
+  droneFilter.frequency.cancelScheduledValues(now);
+  droneFilter.frequency.linearRampToValueAtTime(400, now + 0.4);
+}
+
+function onDragMove(speed, x, y) {
+  if (!actx || muted || !isDragging) return;
+  const now = actx.currentTime;
+
+  const t = MOOD_TONES[currentMood] || MOOD_TONES.mundane;
+  const clampedSpeed = Math.min(speed / 10, 1);
+
+  // Filter opens wide with speed (200 → 800Hz range)
+  const filterTarget = t.filter + 600 * clampedSpeed;
+  interactFilter.frequency.cancelScheduledValues(now);
+  interactFilter.frequency.linearRampToValueAtTime(filterTarget, now + 0.08);
+
+  // Drone filter also responds
+  const droneFilterTarget = t.filter + 400 * clampedSpeed;
+  droneFilter.frequency.cancelScheduledValues(now);
+  droneFilter.frequency.linearRampToValueAtTime(droneFilterTarget, now + 0.1);
+
+  // Volume rises noticeably with speed
+  const volTarget = 0.08 + clampedSpeed * 0.12;
+  interactGain.gain.cancelScheduledValues(now);
+  interactGain.gain.linearRampToValueAtTime(volTarget, now + 0.08);
+
+  // Pitch follows vertical position (top = higher, bottom = lower)
+  const yNorm = 1 - (y / H); // 0 at bottom, 1 at top
+  const pitchMult = 0.8 + yNorm * 0.8; // 0.8x to 1.6x
+  interactOsc.frequency.cancelScheduledValues(now);
+  interactOsc.frequency.linearRampToValueAtTime(t.root * 2 * pitchMult, now + 0.08);
+
+  // Detune the drone slightly based on horizontal position for stereo-like width
+  const xNorm = (x / W) - 0.5; // -0.5 to 0.5
+  droneOsc2.frequency.cancelScheduledValues(now);
+  droneOsc2.frequency.linearRampToValueAtTime(t.root * 1.003 + xNorm * 4, now + 0.1);
+
+  document.getElementById('drag-info').textContent =
+    'speed: ' + speed.toFixed(1) + ' · filter: ' + filterTarget.toFixed(0) + 'Hz · pitch: ' + (pitchMult).toFixed(2) + 'x';
+}
+
+function onDragEnd() {
+  if (!actx) return;
+  isDragging = false;
+  const now = actx.currentTime;
+  const t = MOOD_TONES[currentMood] || MOOD_TONES.mundane;
+
+  // Settle back to rest
+  droneGain.gain.cancelScheduledValues(now);
+  droneGain.gain.linearRampToValueAtTime(0.015, now + 1.2);
+
+  noiseGain.gain.cancelScheduledValues(now);
+  noiseGain.gain.linearRampToValueAtTime(0.008, now + 1);
+
+  interactGain.gain.cancelScheduledValues(now);
+  interactGain.gain.linearRampToValueAtTime(0, now + 0.8);
+
+  interactFilter.frequency.cancelScheduledValues(now);
+  interactFilter.frequency.linearRampToValueAtTime(200, now + 1);
+
+  droneFilter.frequency.cancelScheduledValues(now);
+  droneFilter.frequency.linearRampToValueAtTime(t.filter, now + 1.2);
+
+  droneOsc2.frequency.cancelScheduledValues(now);
+  droneOsc2.frequency.linearRampToValueAtTime(t.root * 1.003, now + 1);
+
+  setTimeout(() => { document.getElementById('drag-info').textContent = ''; }, 1500);
+}
+
+function triggerTransitionSwell() {
+  if (!actx || muted) return;
+  const now = actx.currentTime;
+
+  droneGain.gain.cancelScheduledValues(now);
+  droneGain.gain.linearRampToValueAtTime(0.05, now + 0.3);
+  droneGain.gain.linearRampToValueAtTime(0.015, now + 1.8);
+
+  noiseGain.gain.cancelScheduledValues(now);
+  noiseGain.gain.linearRampToValueAtTime(0.02, now + 0.3);
+  noiseGain.gain.linearRampToValueAtTime(0.008, now + 1.8);
+}
+
+// ─── INPUT ───
+let mouseDown = false, lastDX = 0, lastDY = 0;
+const DRAG_SPACE = 12;
+
+canvas.addEventListener('mousedown', e => {
+  mouseDown = true; lastDX = e.clientX; lastDY = e.clientY;
+  disturb(e.clientX, e.clientY, 6, 14);
+  triggerPing(e.clientX, e.clientY);
+  onDragStart();
+});
+canvas.addEventListener('mousemove', e => {
+  if (!mouseDown) return;
+  const dx = e.clientX - lastDX, dy = e.clientY - lastDY;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  if (dist >= DRAG_SPACE) {
+    disturb(e.clientX, e.clientY, 4, 6);
+    onDragMove(dist, e.clientX, e.clientY);
+    lastDX = e.clientX; lastDY = e.clientY;
+  }
+});
+canvas.addEventListener('mouseup', () => { mouseDown = false; onDragEnd(); });
+canvas.addEventListener('mouseleave', () => { mouseDown = false; onDragEnd(); });
+
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault(); const t = e.touches[0];
+  mouseDown = true; lastDX = t.clientX; lastDY = t.clientY;
+  disturb(t.clientX, t.clientY, 6, 14);
+  triggerPing(t.clientX, t.clientY);
+  onDragStart();
+}, {passive:false});
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault(); if (!mouseDown) return;
+  const t = e.touches[0];
+  const dx = t.clientX - lastDX, dy = t.clientY - lastDY;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  if (dist >= DRAG_SPACE) {
+    disturb(t.clientX, t.clientY, 4, 6);
+    onDragMove(dist, t.clientX, t.clientY);
+    lastDX = t.clientX; lastDY = t.clientY;
+  }
+}, {passive:false});
+canvas.addEventListener('touchend', () => { mouseDown = false; onDragEnd(); });
+
+addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); triggerTransitionSwell(); disturb(W/2, H/2, 8, 12); }
+});
+
+// ─── MUTE ───
+const toggleBtn = document.getElementById('sound-toggle');
+toggleBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  muted = !muted;
+  toggleBtn.textContent = muted ? '🔇' : '🔊';
+  toggleBtn.classList.toggle('muted', muted);
+  if (actx) masterGain.gain.linearRampToValueAtTime(muted ? 0 : 0.8, actx.currentTime + 0.2);
+});
+
+// ─── MOOD BUTTONS ───
+document.querySelectorAll('.mood-btn').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('mood-label').textContent = btn.dataset.mood;
+    updateMood(btn.dataset.mood);
+  });
+});
+
+// ─── START ───
+const overlay = document.getElementById('start-overlay');
+overlay.addEventListener('click', () => {
+  overlay.classList.add('hidden');
+  overlay.style.display = 'none';
+  initAudio();
+});
+
+// Ambient ripples
+setInterval(() => { if (audioStarted) disturb(Math.random()*W, Math.random()*H, 3, 2.5); }, 3500);
+
+// ─── LOOP ───
+function loop() { stepField(); render(); requestAnimationFrame(loop); }
+addEventListener('resize', resize);
+resize(); loop();
+</script>
+</body>
+</html>
