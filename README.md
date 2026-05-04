@@ -256,7 +256,7 @@ npm run deploy       # deploy to GitHub Pages
 - **?** or click the info button — about this project
 - Quotes auto-advance every 10 seconds
 - Ambient ripples fire automatically
-- On phones and tablets a thin tappable control bar appears at the bottom (mood, next, themes, mode, sound, info)
+- On phones and tablets a thin tappable control bar appears at the bottom (mood, next, themes, mode); sound and info stay in the top right
 
 ## Sound design
 
