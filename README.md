@@ -220,11 +220,24 @@ npm run deploy       # deploy to GitHub Pages
 - Quotes auto-advance every 10 seconds
 - Ambient ripples fire automatically
 
+## Typography
+
+Quotes are rendered in the actual default font Gmail used during each quote's era — a subtle detail that makes the text feel native to the time it was written.
+
+| Era | Font | Why |
+|-----|------|-----|
+| 2004–2017 | Arial | Gmail's original default from launch day through 14 years of dominance |
+| 2018–2021 | Roboto | Google's Material Design overhaul brought Roboto to Gmail around 2018 |
+| 2022–now | Roboto | Closest publicly available match to Google Sans, Gmail's current proprietary interface font |
+
+The font changes automatically as quotes transition between eras. A small "set in Arial" or "set in Roboto" label appears near the quote info as a nod to this history.
+
 ## Tech
 
 - [Pretext](https://github.com/chenglou/pretext) for text measurement and layout
 - [Vite](https://vite.dev) + TypeScript
 - 2D wave height field simulation inspired by [jeantimex/ripples](https://github.com/jeantimex/ripples)
+- Era-based typography matching Gmail's actual default fonts (2004–present)
 - Deployed via GitHub Pages
 
 ## Credits
