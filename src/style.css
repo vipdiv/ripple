@@ -398,10 +398,11 @@ body[data-mode="invert"] #mobile-bar {
 }
 
 #mobile-bar .m-icon {
-  width: 40px;
-  font-size: 14px;
+  width: 44px;
+  font-size: 18px;
   letter-spacing: 0;
   flex: 0 0 auto;
+  line-height: 1;
 }
 
 #mobile-bar .m-pill {
@@ -428,7 +429,7 @@ body[data-mode="invert"] #mobile-bar {
 
 @media (max-width: 480px) {
   #quote-info { bottom: 78px; }
-  #mobile-bar .m-icon { width: 38px; font-size: 14px; }
+  #mobile-bar .m-icon { width: 40px; font-size: 17px; }
   #mobile-bar .m-pill { font-size: 10px; letter-spacing: 0.1em; }
 }
 
