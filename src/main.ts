@@ -9,6 +9,7 @@ import './style.css'
 import { RippleField } from './ripple-field'
 import { layoutText, updateParticles, type WordParticle } from './word-layout'
 import { QuoteManager, MOOD_COLORS, TIMELINE_NARRATIVE, THEMES, ALL_THEMES } from './quotes'
+import { SoundEngine } from './sound'
 
 // --- Canvas setup ---
 const canvas = document.getElementById('c') as HTMLCanvasElement
@@ -21,6 +22,7 @@ let H = 0
 // --- State ---
 const ripple = new RippleField()
 const quotes = new QuoteManager()
+const sound = new SoundEngine()
 let words: WordParticle[] = []
 let transitioning = false
 let transitionAlpha = 1
@@ -39,6 +41,19 @@ const infoBackdropEl = infoModalEl.querySelector('.info-backdrop') as HTMLElemen
 const themeToggleEl = document.getElementById('theme-toggle') as HTMLButtonElement
 const themeLabelEl = document.getElementById('theme-label')!
 const themeDropdownEl = document.getElementById('theme-dropdown') as HTMLElement
+const soundToggleEl = document.getElementById('sound-toggle') as HTMLButtonElement
+const tagRowEl = document.getElementById('tag-row') as HTMLElement
+const tagToggleEl = document.getElementById('tag-toggle') as HTMLButtonElement
+const tagLabelEl = document.getElementById('tag-label')!
+const tagCloudEl = document.getElementById('tag-cloud') as HTMLElement
+const mobileMoodPrevEl = document.getElementById('m-mood-prev') as HTMLButtonElement
+const mobileMoodEl = document.getElementById('m-mood') as HTMLButtonElement
+const mobileMoodNextEl = document.getElementById('m-mood-next') as HTMLButtonElement
+const mobileNextEl = document.getElementById('m-next') as HTMLButtonElement
+const mobileThemeEl = document.getElementById('m-theme') as HTMLButtonElement
+const mobileModeEl = document.getElementById('m-mode') as HTMLButtonElement
+const mobileSoundEl = document.getElementById('m-sound') as HTMLButtonElement
+const mobileInfoEl = document.getElementById('m-info') as HTMLButtonElement
 
 // --- Display modes ---
 type DisplayMode = 'art' | 'read' | 'invert'
@@ -49,6 +64,7 @@ function setDisplayMode(mode: DisplayMode) {
   displayMode = mode
   document.body.dataset.mode = mode
   modeToggleEl.textContent = mode.toUpperCase()
+  if (mobileModeEl) mobileModeEl.textContent = mode === 'invert' ? '☀' : mode === 'read' ? '☾' : '◐'
 }
 
 function cycleDisplayMode() {
@@ -96,6 +112,7 @@ function buildThemeDropdown() {
 
 function refreshThemeSelection() {
   themeLabelEl.textContent = quotes.themeLabel
+  if (mobileThemeEl) mobileThemeEl.textContent = quotes.themeLabel
   for (const btn of themeDropdownEl.querySelectorAll<HTMLButtonElement>('button')) {
     btn.setAttribute('aria-selected', btn.dataset.value === quotes.currentTheme ? 'true' : 'false')
   }
@@ -117,9 +134,72 @@ function toggleThemeDropdown() {
 function selectTheme(theme: string) {
   quotes.filterByTheme(theme)
   refreshThemeSelection()
+  refreshTagRow()
   relayout()
   ripple.disturb(W / 2, H / 2, 8, 10)
   closeThemeDropdown()
+}
+
+// --- Tag cloud ---
+function refreshTagRow() {
+  const hasTheme = quotes.currentTheme !== ALL_THEMES
+  tagRowEl.hidden = !hasTheme
+  if (!hasTheme) {
+    closeTagCloud()
+    return
+  }
+  buildTagCloud()
+  refreshTagLabel()
+}
+
+function buildTagCloud() {
+  tagCloudEl.replaceChildren()
+  const items = quotes.tagsInCurrentTheme()
+  for (const { tag, count } of items) {
+    const btn = document.createElement('button')
+    btn.type = 'button'
+    btn.dataset.tag = tag
+    btn.setAttribute('aria-pressed', tag === quotes.currentTag ? 'true' : 'false')
+    const label = document.createElement('span')
+    label.textContent = tag
+    const c = document.createElement('span')
+    c.className = 'tag-count'
+    c.textContent = String(count)
+    btn.appendChild(label)
+    btn.appendChild(c)
+    btn.addEventListener('click', () => toggleTag(tag))
+    tagCloudEl.appendChild(btn)
+  }
+}
+
+function refreshTagLabel() {
+  tagLabelEl.textContent = quotes.currentTag ?? 'tags'
+  for (const btn of tagCloudEl.querySelectorAll<HTMLButtonElement>('button')) {
+    btn.setAttribute('aria-pressed', btn.dataset.tag === quotes.currentTag ? 'true' : 'false')
+  }
+}
+
+function toggleTag(tag: string) {
+  const next = quotes.currentTag === tag ? null : tag
+  quotes.filterByTag(next)
+  refreshTagLabel()
+  relayout()
+  ripple.disturb(W / 2, H / 2, 6, 8)
+  closeTagCloud()
+}
+
+function openTagCloud() {
+  if (quotes.currentTheme === ALL_THEMES) return
+  tagCloudEl.hidden = false
+  tagToggleEl.setAttribute('aria-expanded', 'true')
+}
+function closeTagCloud() {
+  tagCloudEl.hidden = true
+  tagToggleEl.setAttribute('aria-expanded', 'false')
+}
+function toggleTagCloud() {
+  if (tagCloudEl.hidden) openTagCloud()
+  else closeTagCloud()
 }
 
 function renderInfoExtras() {
@@ -210,6 +290,8 @@ function updateUI(quote: { mood: string; date: string; context: string; from_typ
   quoteContextEl.textContent = quote.context
   quoteFromEl.textContent = quote.from_type ? `from ${quote.from_type}` : ''
   quoteFontEl.textContent = `set in ${currentFont.label}`
+  if (mobileMoodEl) mobileMoodEl.textContent = quotes.moodLabel
+  sound.setMood(quote.mood)
 }
 
 const MONTH_NAMES = [
@@ -240,6 +322,7 @@ function transitionToNext() {
 
   // Burst ripple at center
   ripple.disturb(W / 2, H / 2, 10, 15)
+  sound.triggerTransitionSwell()
   
   // Fade out
   const fadeOut = () => {
@@ -272,21 +355,31 @@ canvas.addEventListener('mousedown', e => {
   lastDragX = e.clientX
   lastDragY = e.clientY
   ripple.click(e.clientX, e.clientY)
+  sound.triggerPing(e.clientX, e.clientY, W)
+  sound.onDragStart()
 })
 
 canvas.addEventListener('mousemove', e => {
   if (!mouseDown) return
   const dx = e.clientX - lastDragX
   const dy = e.clientY - lastDragY
-  if (Math.sqrt(dx * dx + dy * dy) >= ripple.config.dragSpacing) {
+  const dist = Math.sqrt(dx * dx + dy * dy)
+  if (dist >= ripple.config.dragSpacing) {
     ripple.drag(e.clientX, e.clientY)
+    sound.onDragMove(dist, e.clientX, e.clientY, W, H)
     lastDragX = e.clientX
     lastDragY = e.clientY
   }
 })
 
-canvas.addEventListener('mouseup', () => { mouseDown = false })
-canvas.addEventListener('mouseleave', () => { mouseDown = false })
+canvas.addEventListener('mouseup', () => {
+  mouseDown = false
+  sound.onDragEnd()
+})
+canvas.addEventListener('mouseleave', () => {
+  mouseDown = false
+  sound.onDragEnd()
+})
 
 // Touch
 canvas.addEventListener('touchstart', e => {
@@ -296,6 +389,8 @@ canvas.addEventListener('touchstart', e => {
   lastDragX = t.clientX
   lastDragY = t.clientY
   ripple.click(t.clientX, t.clientY)
+  sound.triggerPing(t.clientX, t.clientY, W)
+  sound.onDragStart()
 }, { passive: false })
 
 canvas.addEventListener('touchmove', e => {
@@ -304,26 +399,26 @@ canvas.addEventListener('touchmove', e => {
   if (!mouseDown) return
   const dx = t.clientX - lastDragX
   const dy = t.clientY - lastDragY
-  if (Math.sqrt(dx * dx + dy * dy) >= ripple.config.dragSpacing) {
+  const dist = Math.sqrt(dx * dx + dy * dy)
+  if (dist >= ripple.config.dragSpacing) {
     ripple.drag(t.clientX, t.clientY)
+    sound.onDragMove(dist, t.clientX, t.clientY, W, H)
     lastDragX = t.clientX
     lastDragY = t.clientY
   }
 }, { passive: false })
 
-canvas.addEventListener('touchend', () => { mouseDown = false })
+canvas.addEventListener('touchend', () => {
+  mouseDown = false
+  sound.onDragEnd()
+})
 
 // Keyboard
 window.addEventListener('keydown', e => {
   if (e.code === 'Escape') {
-    if (!infoModalEl.hidden) {
-      closeInfo()
-      return
-    }
-    if (!themeDropdownEl.hidden) {
-      closeThemeDropdown()
-      return
-    }
+    if (!infoModalEl.hidden) { closeInfo(); return }
+    if (!themeDropdownEl.hidden) { closeThemeDropdown(); return }
+    if (!tagCloudEl.hidden) { closeTagCloud(); return }
   }
   if (!infoModalEl.hidden) return
 
@@ -333,7 +428,6 @@ window.addEventListener('keydown', e => {
   } else if (e.code === 'ArrowRight') {
     quotes.nextMood(1)
     relayout()
-    // Burst
     ripple.disturb(W / 2, H / 2, 8, 10)
   } else if (e.code === 'ArrowLeft') {
     quotes.nextMood(-1)
@@ -350,15 +444,67 @@ infoButtonEl.addEventListener('click', openInfo)
 infoCloseEl.addEventListener('click', closeInfo)
 infoBackdropEl.addEventListener('click', closeInfo)
 
+// Sound toggle (off by default; first click triggers AudioContext init)
+function refreshSoundButton() {
+  const on = sound.isEnabled
+  const icon = on ? '🔊' : '🔇'
+  soundToggleEl.textContent = icon
+  soundToggleEl.setAttribute('aria-pressed', on ? 'true' : 'false')
+  soundToggleEl.title = on ? 'Mute sound' : 'Turn on sound'
+  if (mobileSoundEl) {
+    mobileSoundEl.textContent = icon
+    mobileSoundEl.setAttribute('aria-pressed', on ? 'true' : 'false')
+  }
+}
+soundToggleEl.addEventListener('click', () => {
+  sound.toggle()
+  // Re-apply current quote's mood now that audio may be live
+  const q = quotes.current()
+  if (q) sound.setMood(q.mood)
+  refreshSoundButton()
+})
+refreshSoundButton()
+
 // Theme dropdown
 themeToggleEl.addEventListener('click', e => {
   e.stopPropagation()
+  closeTagCloud()
   toggleThemeDropdown()
 })
 themeDropdownEl.addEventListener('click', e => e.stopPropagation())
+
+// Tag cloud
+tagToggleEl.addEventListener('click', e => {
+  e.stopPropagation()
+  closeThemeDropdown()
+  toggleTagCloud()
+})
+tagCloudEl.addEventListener('click', e => e.stopPropagation())
+
 document.addEventListener('click', () => {
   if (!themeDropdownEl.hidden) closeThemeDropdown()
+  if (!tagCloudEl.hidden) closeTagCloud()
 })
+
+// Mobile control bar
+function bumpRipple() { ripple.disturb(W / 2, H / 2, 6, 6) }
+mobileMoodPrevEl.addEventListener('click', () => { quotes.nextMood(-1); relayout(); bumpRipple() })
+mobileMoodNextEl.addEventListener('click', () => { quotes.nextMood(1); relayout(); bumpRipple() })
+mobileMoodEl.addEventListener('click', () => { quotes.nextMood(1); relayout(); bumpRipple() })
+mobileNextEl.addEventListener('click', () => transitionToNext())
+mobileThemeEl.addEventListener('click', e => {
+  e.stopPropagation()
+  closeTagCloud()
+  toggleThemeDropdown()
+})
+mobileModeEl.addEventListener('click', cycleDisplayMode)
+mobileSoundEl.addEventListener('click', () => {
+  sound.toggle()
+  const q = quotes.current()
+  if (q) sound.setMood(q.mood)
+  refreshSoundButton()
+})
+mobileInfoEl.addEventListener('click', openInfo)
 
 // Mouse wheel — advance to next quote (acts like Spacebar)
 window.addEventListener('wheel', e => {
@@ -464,6 +610,7 @@ function init() {
   setDisplayMode(displayMode)
   renderInfoExtras()
   buildThemeDropdown()
+  refreshTagRow()
   window.addEventListener('resize', resize)
   resize()
   initialSplash()

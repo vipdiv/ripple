@@ -247,14 +247,28 @@ npm run deploy       # deploy to GitHub Pages
 ## Controls
 
 - **Click and drag** — send ripples through the text
-- **Spacebar** — next quote
+- **Spacebar** or **mouse wheel** — next quote
 - **Left/Right arrow keys** — filter by mood
 - **Theme dropdown** — filter by life theme (Arts, Career, Family, etc.)
 - **Tag cloud** — when a theme is selected, drill down into subtopics
-- **R** or click the toggle — cycle between art, read, and invert modes
+- **R** or click the toggle — cycle Art / Read / Invert display modes
+- **🔇 / 🔊** — toggle ambient sound (off by default)
 - **?** or click the info button — about this project
 - Quotes auto-advance every 10 seconds
 - Ambient ripples fire automatically
+- On phones and tablets a thin tappable control bar appears at the bottom (mood, next, themes, mode, sound, info)
+
+## Sound design
+
+A tap on the speaker icon turns on a generative ambient layer built with the Web Audio API — no audio files, every sound is synthesized at runtime:
+
+- A faint warm drone (dual oscillators with slight detune, pink-noise bed, slow LFO sweeping the filter cutoff) sits below everything as the resting state
+- Each click triggers a short glass-like ping with a slight pitch randomization
+- Dragging opens the filter and raises the volume in real time — speed maps to brightness, vertical position maps to pitch, horizontal position detunes the drone
+- The current quote's mood selects a different oscillator waveform, root frequency, filter character, and noise floor — a sad/existential quote sounds darker and grittier than a funny/absurd one. Transitions between moods crossfade smoothly
+- Advancing a quote produces a soft tonal swell, like a breath
+
+Sound is **off by default** and only initialized on the first toggle click (browser autoplay policy).
 
 ## Typography
 
