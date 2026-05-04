@@ -284,24 +284,6 @@ body[data-mode="invert"] .info-card {
   margin-bottom: 10px;
 }
 
-.info-themes ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.55;
-}
-
-.info-themes li {
-  margin-bottom: 6px;
-  color: rgba(var(--chrome), 0.8);
-}
-
-.info-themes li strong {
-  font-weight: 500;
-  color: rgba(var(--chrome), 0.95);
-}
-
 .info-timeline .narrative {
   font-style: italic;
   font-size: 12px;
