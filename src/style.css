@@ -398,18 +398,19 @@ body[data-mode="invert"] #mobile-bar {
 }
 
 #mobile-bar .m-icon {
-  width: 40px;
-  font-size: 14px;
+  width: 44px;
+  font-size: 18px;
   letter-spacing: 0;
   flex: 0 0 auto;
+  line-height: 1;
 }
 
 #mobile-bar .m-pill {
   flex: 1 1 auto;
-  font-size: 9px;
-  letter-spacing: 0.12em;
+  font-size: 11px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  padding: 0 4px;
+  padding: 0 6px;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -428,8 +429,8 @@ body[data-mode="invert"] #mobile-bar {
 
 @media (max-width: 480px) {
   #quote-info { bottom: 78px; }
-  #mobile-bar .m-icon { width: 36px; font-size: 13px; }
-  #mobile-bar .m-pill { font-size: 8px; letter-spacing: 0.08em; }
+  #mobile-bar .m-icon { width: 40px; font-size: 17px; }
+  #mobile-bar .m-pill { font-size: 10px; letter-spacing: 0.1em; }
 }
 
 /* Mobile-only modal note: hide on desktop */

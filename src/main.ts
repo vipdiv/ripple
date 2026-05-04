@@ -52,8 +52,6 @@ const mobileMoodNextEl = document.getElementById('m-mood-next') as HTMLButtonEle
 const mobileNextEl = document.getElementById('m-next') as HTMLButtonElement
 const mobileThemeEl = document.getElementById('m-theme') as HTMLButtonElement
 const mobileModeEl = document.getElementById('m-mode') as HTMLButtonElement
-const mobileSoundEl = document.getElementById('m-sound') as HTMLButtonElement
-const mobileInfoEl = document.getElementById('m-info') as HTMLButtonElement
 
 // --- Display modes ---
 type DisplayMode = 'art' | 'read' | 'invert'
@@ -458,10 +456,6 @@ function refreshSoundButton() {
   soundToggleEl.textContent = icon
   soundToggleEl.setAttribute('aria-pressed', on ? 'true' : 'false')
   soundToggleEl.title = on ? 'Mute sound' : 'Turn on sound'
-  if (mobileSoundEl) {
-    mobileSoundEl.textContent = icon
-    mobileSoundEl.setAttribute('aria-pressed', on ? 'true' : 'false')
-  }
 }
 soundToggleEl.addEventListener('click', () => {
   sound.toggle()
@@ -505,13 +499,6 @@ mobileThemeEl.addEventListener('click', e => {
   toggleThemeDropdown()
 })
 mobileModeEl.addEventListener('click', cycleDisplayMode)
-mobileSoundEl.addEventListener('click', () => {
-  sound.toggle()
-  const q = quotes.current()
-  if (q) sound.setMood(q.mood)
-  refreshSoundButton()
-})
-mobileInfoEl.addEventListener('click', openInfo)
 
 // Mouse wheel — advance to next quote (acts like Spacebar)
 window.addEventListener('wheel', e => {
