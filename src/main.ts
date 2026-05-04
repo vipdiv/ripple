@@ -206,10 +206,25 @@ function updateUI(quote: { mood: string; date: string; context: string; from_typ
   document.body.setAttribute('data-mood', quote.mood)
   moodEl.textContent = quotes.moodLabel
   moodEl.style.color = getMoodColor(quote.mood, displayMode === 'invert' ? 0.85 : 0.7)
-  quoteDateEl.textContent = quote.date
+  quoteDateEl.textContent = formatDate(quote.date)
   quoteContextEl.textContent = quote.context
   quoteFromEl.textContent = quote.from_type ? `from ${quote.from_type}` : ''
   quoteFontEl.textContent = `set in ${currentFont.label}`
+}
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+]
+
+function formatDate(iso: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso ?? '')
+  if (!m) return iso
+  const year = Number(m[1])
+  const month = Number(m[2])
+  const day = Number(m[3])
+  if (!year || month < 1 || month > 12 || !day) return iso
+  return `${MONTH_NAMES[month - 1]} ${day}, ${year}`
 }
 
 function getMoodColor(mood: string, alpha: number = 1): string {
