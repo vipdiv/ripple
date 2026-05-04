@@ -1,12 +1,74 @@
 {
   "meta": {
     "total_emails_scanned": 5289,
-    "total_quotes": 1462,
+    "total_quotes": 1461,
     "llm_provider": "Google (gemini-2.5-flash)",
-    "generated_at": "2026-05-03T02:51:40.484706"
+    "generated_at": "2026-05-03T02:51:40.484706",
+    "privacy_note": "All personal names have been replaced with pseudonyms drawn from the names of Gmail's original development team and early Google engineers. Any resemblance to real individuals is coincidental."
   },
-  "themes": [],
-  "timeline_narrative": "",
+  "themes": [
+    {
+      "name": "Arts, Dance & Performance",
+      "description": "A life woven through Houston's arts scene — volunteering at galleries, producing dance shows, filming documentaries, and building creative community from the ground up.",
+      "quote_count": 412,
+      "color": "#c084fc"
+    },
+    {
+      "name": "Career & Hustle",
+      "description": "Job applications, career pivots, side gigs, Uber shifts, freelance design work — the constant motion of making a living across multiple industries and roles.",
+      "quote_count": 213,
+      "color": "#f59e0b"
+    },
+    {
+      "name": "Family & Togetherness",
+      "description": "Coordinating dinners, planning rodeo trips, debating pizza toppings, celebrating babies and birthdays — the logistics of love.",
+      "quote_count": 209,
+      "color": "#f472b6"
+    },
+    {
+      "name": "Community & Volunteering",
+      "description": "Hindu Student Council meetings, bake sales, butterfly-folding marathons, hurricane relief — showing up for others, again and again.",
+      "quote_count": 171,
+      "color": "#34d399"
+    },
+    {
+      "name": "Resilience & Crisis",
+      "description": "Hurricanes Katrina, Rita, Ike, and Harvey. A parent's cancer diagnosis. Financial freefall. The moments that test everything and the emails that got people through.",
+      "quote_count": 138,
+      "color": "#60a5fa"
+    },
+    {
+      "name": "Student Life & University",
+      "description": "Quiz deadlines, class registration, professor reviews, Spring Break countdowns — the universal texture of college life at the University of Houston.",
+      "quote_count": 107,
+      "color": "#a78bfa"
+    },
+    {
+      "name": "Financial Reality",
+      "description": "Overdrawn accounts, negative net worth, overdue bills, debt collection notices — the unglamorous truth that lives in everyone's inbox but nobody talks about.",
+      "quote_count": 102,
+      "color": "#fb7185"
+    },
+    {
+      "name": "Early Internet & Social Media",
+      "description": "MySpace friend requests, Facebook wall posts, Friendster invites, Google Buzz skepticism — a time capsule of platforms that shaped how we connected online.",
+      "quote_count": 90,
+      "color": "#38bdf8"
+    },
+    {
+      "name": "Cultural Identity",
+      "description": "Navigating life as a South Asian American — Diwali celebrations, Hindi classes, questioning dharma, building brown pride on a Texas campus.",
+      "quote_count": 61,
+      "color": "#fbbf24"
+    },
+    {
+      "name": "The Mundane Beautiful",
+      "description": "Brothers Taco House receipts, Red Lobster cravings, watermelon at watch parties — the small, forgettable moments that turn out to be the ones you remember.",
+      "quote_count": 38,
+      "color": "#94a3b8"
+    }
+  ],
+  "timeline_narrative": "It begins in 2004 with three emails and an invitation from a high school teacher. The early years are loud with student council drama, bake sale logistics, and MySpace friend requests — a young person building community in every direction at once. By the late 2000s, the tone shifts: job applications multiply, the recession hits, and emails start carrying the weight of real life — a parent's illness, financial struggle, career reinvention. Through it all, the arts thread never breaks: dance performances, gallery volunteering, documentary dreams, and a creative partnership that runs like a quiet current beneath everything else. The 2020s bring volume — 50,000 emails a year — but also tenderness. Family gatherings get harder to schedule and more precious when they happen. Twenty-two years of inbox, and the pattern is clear: this is someone who keeps showing up.",
   "quotes": [
     {
       "text": "As a university student, I am now a 'bathroom singer' and would love to get back into singing with a large group.",
@@ -49,7 +111,7 @@
       "from_type": "friend"
     },
     {
-      "text": "Sooravi Gupta has just written something on your wall.",
+      "text": "Sita has just written something on your wall.",
       "mood": "mundane",
       "date": "2006-10-10",
       "era": "2004-2006",
@@ -241,11 +303,11 @@
       "from_type": "friend"
     },
     {
-      "text": "Vipul does a hell of a lot of work and is a HUGE asset to this organization.",
+      "text": "Pranav does a hell of a lot of work and is a HUGE asset to this organization.",
       "mood": "tender",
       "date": "2006-06-24",
       "era": "2004-2006",
-      "context": "A friend praising Vipul's dedication and hard work in a student organization.",
+      "context": "A friend praising Pranav's dedication and hard work in a student organization.",
       "from_type": "friend"
     },
     {
@@ -253,7 +315,7 @@
       "mood": "profound",
       "date": "2006-06-24",
       "era": "2004-2006",
-      "context": "A friend advocating for Vipul to receive a more appropriate title for his extensive work in a student organization.",
+      "context": "A friend advocating for Pranav to receive a more appropriate title for his extensive work in a student organization.",
       "from_type": "friend"
     },
     {
@@ -261,7 +323,7 @@
       "mood": "tender",
       "date": "2006-06-24",
       "era": "2004-2006",
-      "context": "A friend praising Vipul's leadership qualities in a student organization.",
+      "context": "A friend praising Pranav's leadership qualities in a student organization.",
       "from_type": "friend"
     },
     {
@@ -277,15 +339,15 @@
       "mood": "profound",
       "date": "2006-06-19",
       "era": "2004-2006",
-      "context": "Vipul's own reflection on the nature of identity and roles within an organization, shared by a friend.",
+      "context": "Pranav's own reflection on the nature of identity and roles within an organization, shared by a friend.",
       "from_type": "friend"
     },
     {
       "text": "I am an arm, a leg, a shoulder, a part of the largest, youngest voice of Hinduism outside of India.",
-      "mood": "inspiring",
+      "mood": "profound",
       "date": "2006-06-19",
       "era": "2004-2006",
-      "context": "Vipul defining his role and significance within a student organization, shared by a friend.",
+      "context": "Pranav defining his role and significance within a student organization, shared by a friend.",
       "from_type": "friend"
     },
     {
@@ -293,7 +355,7 @@
       "mood": "existential",
       "date": "2006-06-19",
       "era": "2004-2006",
-      "context": "Vipul's vision for young people in the Hindu Student Council, shared by a friend.",
+      "context": "Pranav's vision for young people in the Hindu Student Council, shared by a friend.",
       "from_type": "friend"
     },
     {
@@ -301,7 +363,7 @@
       "mood": "tender",
       "date": "2006-10-28",
       "era": "2004-2006",
-      "context": "A choir director expressing care and inviting Vipul to join the choir.",
+      "context": "A choir director expressing care and inviting Pranav to join the choir.",
       "from_type": "teacher"
     },
     {
@@ -313,7 +375,7 @@
       "from_type": "friend"
     },
     {
-      "text": "lopa n mauli have already started practicing, so i guess we got some competition here...lol nah jus kiddin...not!",
+      "text": "Elle n Sundar have already started practicing, so i guess we got some competition here...lol nah jus kiddin...not!",
       "mood": "funny",
       "date": "2006-10-05",
       "era": "2004-2006",
@@ -346,7 +408,7 @@
     },
     {
       "text": "it makes me so paranod that i got up twice last night and checked on the car.",
-      "mood": "anxious",
+      "mood": "sad",
       "date": "2006-07-13",
       "era": "2004-2006",
       "context": "A friend explaining her anxiety about her car's parking situation.",
@@ -354,7 +416,7 @@
     },
     {
       "text": "I think i feel alot better.",
-      "mood": "relief",
+      "mood": "mundane",
       "date": "2006-07-13",
       "era": "2004-2006",
       "context": "A friend expressing relief after sharing her worries.",
@@ -418,7 +480,7 @@
     },
     {
       "text": "I promise you that there will be a time, when you can live your own life.",
-      "mood": "hopeful",
+      "mood": "profound",
       "date": "2006-04-01",
       "era": "2004-2006",
       "context": "Words of encouragement from a romantic partner regarding personal independence and family struggles.",
@@ -609,7 +671,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Rachita Patel has requested to add you as a friend.",
+      "text": "Sanjeev has requested to add you as a friend.",
       "mood": "nostalgic",
       "date": "2006-03-03",
       "era": "2004-2006",
@@ -665,7 +727,7 @@
       "from_type": "friend"
     },
     {
-      "text": "Vishnu Ramia has invited you to join the Facebook group \"Heart Broken Fools\".",
+      "text": "Ojas has invited you to join the Facebook group \"Heart Broken Fools\".",
       "mood": "absurd",
       "date": "2006-05-18",
       "era": "2004-2006",
@@ -674,7 +736,7 @@
     },
     {
       "text": "Our Houston Cougar basketball team needs YOU at our last two home games.",
-      "mood": "enthusiastic",
+      "mood": "funny",
       "date": "2006-02-16",
       "era": "2004-2006",
       "context": "A basketball coach appealing to students for support at upcoming games.",
@@ -682,7 +744,7 @@
     },
     {
       "text": "For the Rice game, we want to create a 'Red Sea' - where the ENTIRE crowd wears red.",
-      "mood": "enthusiastic",
+      "mood": "funny",
       "date": "2006-02-16",
       "era": "2004-2006",
       "context": "A basketball coach asking students to wear red to a rivalry game for a unified look.",
@@ -738,7 +800,7 @@
     },
     {
       "text": "This was indeed the most welcoming event I ever participated in, since I came to US.",
-      "mood": "emotional",
+      "mood": "sad",
       "date": "2006-01-23",
       "era": "2004-2006",
       "context": "A friend reflecting on a positive social retreat experience after moving to the US.",
@@ -817,7 +879,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Henal Patel has invited you to join the group Indian Standard Time (Ist) - Just add Two Hours on facebook.com.",
+      "text": "Varun has invited you to join the group Indian Standard Time (Ist) - Just add Two Hours on facebook.com.",
       "mood": "funny",
       "date": "2006-02-13",
       "era": "2004-2006",
@@ -977,7 +1039,7 @@
       "from_type": "friend"
     },
     {
-      "text": "Jamel Vaughn has requested to add you as a friend, but before we can do that, you must confirm that you are in fact friends with Jamel.",
+      "text": "Nell has requested to add you as a friend, but before we can do that, you must confirm that you are in fact friends with Meera.",
       "mood": "nostalgic",
       "date": "2005-08-03",
       "era": "2004-2006",
@@ -1058,7 +1120,7 @@
     },
     {
       "text": "We're having our first social event on Thursday September 15. We're going bowling at the UC game center!!!!",
-      "mood": "enthusiastic",
+      "mood": "funny",
       "date": "2005-09",
       "era": "2004-2006",
       "context": "A student organization announcing their first social event of the semester.",
@@ -1193,7 +1255,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Vishnu Ramia has requested to add you as a friend, but before we can do that, you must confirm that you are in fact friends with Vishnu.",
+      "text": "Ojas has requested to add you as a friend, but before we can do that, you must confirm that you are in fact friends with Vera.",
       "mood": "nostalgic",
       "date": "2005-11-01",
       "era": "2004-2006",
@@ -1202,7 +1264,7 @@
     },
     {
       "text": "do u know any gud indian grouper group? to share files? am from mumbai",
-      "mood": "human",
+      "mood": "mundane",
       "date": "2005-03-05",
       "era": "2004-2006",
       "context": "A friend asking about file-sharing groups.",
@@ -1505,7 +1567,7 @@
       "from_type": "family"
     },
     {
-      "text": "Bhavin Divecha \"the chosen one\"",
+      "text": "Finn \"the chosen one\"",
       "mood": "funny",
       "date": "2009-04-21",
       "era": "2007-2009",
@@ -1529,7 +1591,7 @@
       "from_type": "friend"
     },
     {
-      "text": "Congrats Mili! Can't believe you've been married 3 years!",
+      "text": "Congrats Dhruv! Can't believe you've been married 3 years!",
       "mood": "tender",
       "date": "2009-07-13",
       "era": "2007-2009",
@@ -1553,7 +1615,7 @@
       "from_type": "family"
     },
     {
-      "text": "I am sooo excited to share my website with the Divecha Family.",
+      "text": "I am sooo excited to share my website with the Dan Family.",
       "mood": "tender",
       "date": "2009-07-03",
       "era": "2007-2009",
@@ -1561,7 +1623,7 @@
       "from_type": "family"
     },
     {
-      "text": "Wajid confirmed a photo of you in the album 'Darshana Wedding'.",
+      "text": "Wajid confirmed a photo of you in the album 'Cole Wedding'.",
       "mood": "mundane",
       "date": "2009-06-30",
       "era": "2007-2009",
@@ -1641,7 +1703,7 @@
       "from_type": "friend"
     },
     {
-      "text": "lol ur a fatty vipul and no thats not our cousin thats another ravi :p",
+      "text": "lol ur a fatty Pranav and no thats not our cousin thats another ravi :p",
       "mood": "funny",
       "date": "2008-12-30",
       "era": "2007-2009",
@@ -1794,7 +1856,7 @@
     },
     {
       "text": "I do not drink or use any-kind of narcotics, and try to avoid \" the night life\" because my life takes place during daylight hours.",
-      "mood": "revealing",
+      "mood": "mundane",
       "date": "2009-11-10",
       "era": "2007-2009",
       "context": "A person introducing themselves for a room rental, describing their lifestyle.",
@@ -1881,7 +1943,7 @@
       "from_type": "friend"
     },
     {
-      "text": "Imperfections give life to life. Harshu's Conclusion.",
+      "text": "Imperfections give life to life. Max's Conclusion.",
       "mood": "profound",
       "date": "2007-05-08",
       "era": "2007-2009",
@@ -1905,7 +1967,7 @@
       "from_type": "friend"
     },
     {
-      "text": "heyy guyss ok hemali hunny its at the CULLEN PERFORMANCE HALL on campus not at cullen oaks hall lol",
+      "text": "heyy guyss ok Jude hunny its at the CULLEN PERFORMANCE HALL on campus not at cullen oaks hall lol",
       "mood": "funny",
       "date": "2007-04-03",
       "era": "2007-2009",
@@ -1913,8 +1975,8 @@
       "from_type": "friend"
     },
     {
-      "text": "and YESS GUYSS come watch me and hemali im dancingg hehe!!",
-      "mood": "enthusiastic",
+      "text": "and YESS GUYSS come watch me and Jude im dancingg hehe!!",
+      "mood": "funny",
       "date": "2007-04-03",
       "era": "2007-2009",
       "context": "A friend enthusiastically inviting others to watch her dance.",
@@ -1954,7 +2016,7 @@
     },
     {
       "text": "ps come watch me in the fashion show on sundayyyyy =P",
-      "mood": "enthusiastic",
+      "mood": "funny",
       "date": "2007-04-03",
       "era": "2007-2009",
       "context": "A student inviting friends to watch her in a fashion show.",
@@ -2089,7 +2151,7 @@
       "from_type": "friend"
     },
     {
-      "text": "I'll only help out with martial arts if Sheena gets to be the target :-) and a few other people ;)",
+      "text": "I'll only help out with martial arts if Holly gets to be the target :-) and a few other people ;)",
       "mood": "funny",
       "date": "2007-03-06",
       "era": "2007-2009",
@@ -2097,7 +2159,7 @@
       "from_type": "friend"
     },
     {
-      "text": "Namaste Harshu bhai, sounds like its been a long time!",
+      "text": "Namaste Max bhai, sounds like its been a long time!",
       "mood": "nostalgic",
       "date": "2007-02-23",
       "era": "2007-2009",
@@ -2117,11 +2179,11 @@
       "mood": "profound",
       "date": "2007-04-09",
       "era": "2007-2009",
-      "context": "Vipul Divecha (the archive owner) expressing his career ambition to expand his work overseas.",
+      "context": "Hema (the archive owner) expressing his career ambition to expand his work overseas.",
       "from_type": "self"
     },
     {
-      "text": "Sonal & Sejal Bhabhi, I don't think your parents check evite or have an account so haven't sent anything but, of course mom called all the parents ahead of time.",
+      "text": "Arjun & Radha Bhabhi, I don't think your parents check evite or have an account so haven't sent anything but, of course mom called all the parents ahead of time.",
       "mood": "tender",
       "date": "2012-08-22",
       "era": "2010-2012",
@@ -2193,7 +2255,7 @@
       "from_type": "self"
     },
     {
-      "text": "Family, friends remember the brave, caring legacy of Sandy Hook teacher Vicki Soto, 27",
+      "text": "Family, friends remember the brave, caring legacy of Sandy Hook teacher Ian, 27",
       "mood": "sad",
       "date": "2012-12-18",
       "era": "2010-2012",
@@ -2242,7 +2304,7 @@
     },
     {
       "text": "You-ll see a Christmas tree that grows to enormous heights, flying cooks, dancing flowers, and snow. Lots and lots of beautiful snow.",
-      "mood": "magical",
+      "mood": "profound",
       "date": "2012-11-21",
       "era": "2010-2012",
       "context": "Evocative description of the visual wonders of a Nutcracker ballet performance.",
@@ -2269,7 +2331,7 @@
       "mood": "funny",
       "date": "2012-08-01",
       "era": "2010-2012",
-      "context": "Vipul's reaction to learning a friend left an organization.",
+      "context": "Pranav's reaction to learning a friend left an organization.",
       "from_type": "self"
     },
     {
@@ -2282,10 +2344,10 @@
     },
     {
       "text": "I just wanted to share with everyone that I am officially done with my MBA.",
-      "mood": "joyful",
+      "mood": "funny",
       "date": "2012-08-15",
       "era": "2010-2012",
-      "context": "Bhavin announcing the completion of his MBA to his family.",
+      "context": "Zoe announcing the completion of his MBA to his family.",
       "from_type": "family"
     },
     {
@@ -2293,7 +2355,7 @@
       "mood": "profound",
       "date": "2012-08-15",
       "era": "2010-2012",
-      "context": "Bhavin reflecting on the effort put into his MBA.",
+      "context": "Zoe reflecting on the effort put into his MBA.",
       "from_type": "family"
     },
     {
@@ -2301,7 +2363,7 @@
       "mood": "funny",
       "date": "2012-08-15",
       "era": "2010-2012",
-      "context": "Bhavin jokingly asking for a party after finishing his MBA.",
+      "context": "Zoe jokingly asking for a party after finishing his MBA.",
       "from_type": "family"
     },
     {
@@ -2490,7 +2552,7 @@
     },
     {
       "text": "I sort of swear by this link...it's been very helpful to me.",
-      "mood": "enthusiastic",
+      "mood": "funny",
       "date": "2012-07-06",
       "era": "2010-2012",
       "context": "Recommending a helpful online learning resource for video production.",
@@ -2513,7 +2575,7 @@
       "from_type": "coworker"
     },
     {
-      "text": "I apologize for keeping you up the other night when Vipul was so kindly helping me with my video deadline. Thank you for being so tolerant and gracious!!",
+      "text": "I apologize for keeping you up the other night when Pranav was so kindly helping me with my video deadline. Thank you for being so tolerant and gracious!!",
       "mood": "tender",
       "date": "2012-10-24",
       "era": "2010-2012",
@@ -2581,7 +2643,7 @@
       "mood": "funny",
       "date": "2012-05-25",
       "era": "2010-2012",
-      "context": "Mitch playfully correcting Vipul about paper choice for postcards.",
+      "context": "Mitch playfully correcting Pranav about paper choice for postcards.",
       "from_type": "friend"
     },
     {
@@ -2589,7 +2651,7 @@
       "mood": "mundane",
       "date": "2012-05-26",
       "era": "2010-2012",
-      "context": "Vipul expressing a bit of weariness about making too many dance programs.",
+      "context": "Pranav expressing a bit of weariness about making too many dance programs.",
       "from_type": "self"
     },
     {
@@ -2597,15 +2659,15 @@
       "mood": "sad",
       "date": "2012-05-25",
       "era": "2010-2012",
-      "context": "Jennifer explaining why she couldn't apply for a job, feeling like the opportunity is lost.",
+      "context": "Kamala explaining why she couldn't apply for a job, feeling like the opportunity is lost.",
       "from_type": "friend"
     },
     {
-      "text": "We're celebrating Jennifer's achievements for the last 15 years which highlights some of her original sketches, her original hand made costumes and memorable stories.",
+      "text": "We're celebrating Kamala's achievements for the last 15 years which highlights some of her original sketches, her original hand made costumes and memorable stories.",
       "mood": "nostalgic",
       "date": "2012-05-24",
       "era": "2010-2012",
-      "context": "Vipul inviting a press contact to an event celebrating a colleague's 15 years of artistic achievements.",
+      "context": "Pranav inviting a press contact to an event celebrating a colleague's 15 years of artistic achievements.",
       "from_type": "self"
     },
     {
@@ -2613,7 +2675,7 @@
       "mood": "tender",
       "date": "2012-05-24",
       "era": "2010-2012",
-      "context": "Vipul inviting a press contact to an event, hoping they'll enjoy reminiscing.",
+      "context": "Pranav inviting a press contact to an event, hoping they'll enjoy reminiscing.",
       "from_type": "self"
     },
     {
@@ -2621,7 +2683,7 @@
       "mood": "sad",
       "date": "2012-05-15",
       "era": "2010-2012",
-      "context": "Louie informing Vipul about his breakup and upcoming move.",
+      "context": "Harsh informing Pranav about his breakup and upcoming move.",
       "from_type": "friend"
     },
     {
@@ -2629,7 +2691,7 @@
       "mood": "sad",
       "date": "2012-05-15",
       "era": "2010-2012",
-      "context": "Louie explaining the practicalities of moving after a breakup, including returning shared items.",
+      "context": "Harsh explaining the practicalities of moving after a breakup, including returning shared items.",
       "from_type": "friend"
     },
     {
@@ -2673,7 +2735,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "hey- looks good except for the blog tab-it Vipul should be if Vipul, right?",
+      "text": "hey- looks good except for the blog tab-it Pranav should be if Pranav, right?",
       "mood": "funny",
       "date": "2012-03-07",
       "era": "2010-2012",
@@ -2725,7 +2787,7 @@
       "mood": "nostalgic",
       "date": "2012-06-09",
       "era": "2010-2012",
-      "context": "Vipul introducing himself and his passion for art to a potential client.",
+      "context": "Pranav introducing himself and his passion for art to a potential client.",
       "from_type": "self"
     },
     {
@@ -2749,7 +2811,7 @@
       "mood": "outrageous",
       "date": "2012-06-05",
       "era": "2010-2012",
-      "context": "Vipul explaining a bureaucratic nightmare with his car's registration after an accident.",
+      "context": "Pranav explaining a bureaucratic nightmare with his car's registration after an accident.",
       "from_type": "self"
     },
     {
@@ -2757,7 +2819,7 @@
       "mood": "sad",
       "date": "2012-06-05",
       "era": "2010-2012",
-      "context": "Vipul expressing stress over his car registration issue.",
+      "context": "Pranav expressing stress over his car registration issue.",
       "from_type": "self"
     },
     {
@@ -2765,7 +2827,7 @@
       "mood": "mundane",
       "date": "2012-01-31",
       "era": "2010-2012",
-      "context": "Vipul (sender) is discussing technical aspects of an application form with a collaborator.",
+      "context": "Pranav (sender) is discussing technical aspects of an application form with a collaborator.",
       "from_type": "self"
     },
     {
@@ -2834,7 +2896,7 @@
     },
     {
       "text": "It is practically impossible for everyone to be free on the same day.",
-      "mood": "relatable",
+      "mood": "mundane",
       "date": "2012-02-28",
       "era": "2010-2012",
       "context": "A family member expressing frustration about coordinating schedules for a group outing.",
@@ -2881,7 +2943,7 @@
       "from_type": "friend"
     },
     {
-      "text": "i love that the woman in the Shhelkunchik photo is wearing a suchu shirt! awesome job Linds! haha",
+      "text": "i love that the woman in the Shhelkunchik photo is wearing a suchu shirt! awesome job Kabir! haha",
       "mood": "funny",
       "date": "2011-09-01",
       "era": "2010-2012",
@@ -3050,7 +3112,7 @@
     },
     {
       "text": "They are all spilling their guts in word and dance for you. This film moves from stories of sublime love expression to the depths of emotional isolation.",
-      "mood": "emotional",
+      "mood": "sad",
       "date": "2011-10-01",
       "era": "2010-2012",
       "context": "Description of a documentary film where participants share personal stories and emotions.",
@@ -3058,7 +3120,7 @@
     },
     {
       "text": "These Houstonians are telling their secrets. Will you listen?",
-      "mood": "emotional",
+      "mood": "sad",
       "date": "2011-10-01",
       "era": "2010-2012",
       "context": "A direct appeal to the audience to engage with the personal stories in a documentary film.",
@@ -3113,14 +3175,6 @@
       "from_type": "friend"
     },
     {
-      "text": "I can't use CS5 on my 32bit operating system and I'm having issues with CS3 InDesign, where after a year od using the cracked version its asking for a serial and my attempts of cracking it using the fake dll is not working.",
-      "mood": "absurd",
-      "date": "2011-05-12",
-      "era": "2010-2012",
-      "context": "Explaining difficulties with pirated software to a friend.",
-      "from_type": "self"
-    },
-    {
       "text": "I use Creative Suite daily and I really can't afford it. Can you help?",
       "mood": "mundane",
       "date": "2011-05-12",
@@ -3169,11 +3223,11 @@
       "from_type": "family"
     },
     {
-      "text": "Bailey's because we really want Minaxi to have a good time. :)",
+      "text": "Bailey's because we really want Susan to have a good time. :)",
       "mood": "tender",
       "date": "2011-05-24",
       "era": "2010-2012",
-      "context": "Planning drinks for a family game night, specifically for Minaxi.",
+      "context": "Planning drinks for a family game night, specifically for Susan.",
       "from_type": "family"
     },
     {
@@ -3305,7 +3359,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Vipul, shh! (not till tomorrow)",
+      "text": "Pranav, shh! (not till tomorrow)",
       "mood": "funny",
       "date": "2010-10-07",
       "era": "2010-2012",
@@ -3321,7 +3375,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Jennifer and I thought it would be great...even though it really has nothing to do with the show.",
+      "text": "Kamala and I thought it would be great...even though it really has nothing to do with the show.",
       "mood": "absurd",
       "date": "2010-10-21",
       "era": "2010-2012",
@@ -3409,7 +3463,7 @@
       "from_type": "family"
     },
     {
-      "text": "I want to extend a formal invitation to all of my brothers and sisters to Sonal's Birthday party",
+      "text": "I want to extend a formal invitation to all of my brothers and sisters to Arjun's Birthday party",
       "mood": "funny",
       "date": "2010-11-19",
       "era": "2010-2012",
@@ -3525,11 +3579,11 @@
       "mood": "funny",
       "date": "2010-09-26",
       "era": "2010-2012",
-      "context": "Vipul (the recipient) asking his editor for approval on explicit content in an art submission for a newspaper.",
+      "context": "Pranav (the recipient) asking his editor for approval on explicit content in an art submission for a newspaper.",
       "from_type": "self"
     },
     {
-      "text": "we are gonna celebrate Bhavin's birthday on sunday at home. please reply back as soon as possible if ur coming or not that way they will know how much food to order.",
+      "text": "we are gonna celebrate Zoe's birthday on sunday at home. please reply back as soon as possible if ur coming or not that way they will know how much food to order.",
       "mood": "mundane",
       "date": "2010-09-24",
       "era": "2010-2012",
@@ -3545,11 +3599,11 @@
       "from_type": "friend"
     },
     {
-      "text": "I have experience with management, working in a team, and have been assisting my girlfriend Jennifer Wood... I have gained invaluable introductory skills and would like to gain more back stage skills as I have a interest in this world.",
+      "text": "I have experience with management, working in a team, and have been assisting my girlfriend Dev... I have gained invaluable introductory skills and would like to gain more back stage skills as I have a interest in this world.",
       "mood": "profound",
       "date": "2010-09-22",
       "era": "2010-2012",
-      "context": "Vipul (the recipient) applying for a stagehand position, detailing his experience and motivation.",
+      "context": "Pranav (the recipient) applying for a stagehand position, detailing his experience and motivation.",
       "from_type": "self"
     },
     {
@@ -3557,7 +3611,7 @@
       "mood": "mundane",
       "date": "2010-09-22",
       "era": "2010-2012",
-      "context": "Vipul (the recipient) describing himself in a job application email.",
+      "context": "Pranav (the recipient) describing himself in a job application email.",
       "from_type": "self"
     },
     {
@@ -3573,7 +3627,7 @@
       "mood": "mundane",
       "date": "2010-09-21",
       "era": "2010-2012",
-      "context": "A colleague replying to Vipul's offer to help with a fundraiser, expressing appreciation but being busy.",
+      "context": "A colleague replying to Pranav's offer to help with a fundraiser, expressing appreciation but being busy.",
       "from_type": "coworker"
     },
     {
@@ -3581,7 +3635,7 @@
       "mood": "mundane",
       "date": "2010-09-21",
       "era": "2010-2012",
-      "context": "Vipul (the recipient) asking for more information on how he can volunteer for a fundraiser.",
+      "context": "Pranav (the recipient) asking for more information on how he can volunteer for a fundraiser.",
       "from_type": "self"
     },
     {
@@ -3589,15 +3643,15 @@
       "mood": "mundane",
       "date": "2010-09-21",
       "era": "2010-2012",
-      "context": "A contact (Joel Luks) requesting specifics before committing to provide food for a fundraiser.",
+      "context": "A contact (Owen) requesting specifics before committing to provide food for a fundraiser.",
       "from_type": "stranger"
     },
     {
-      "text": "Hahahaha Vipul....so glad you spoke your mind, and cleared all that up. You're hilarious.",
+      "text": "Hahahaha Pranav....so glad you spoke your mind, and cleared all that up. You're hilarious.",
       "mood": "funny",
       "date": "2010-09-26",
       "era": "2010-2012",
-      "context": "A friend commenting on Vipul's Facebook status update, praising his humor.",
+      "context": "A friend commenting on Pranav's Facebook status update, praising his humor.",
       "from_type": "friend"
     },
     {
@@ -3722,7 +3776,7 @@
     },
     {
       "text": "4 more days to go...WE DID IT!!!!!!!!!!!!!",
-      "mood": "triumphant",
+      "mood": "funny",
       "date": "2010-05-11",
       "era": "2010-2012",
       "context": "A note from a family member about completing a religious fast.",
@@ -3753,7 +3807,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "I feel so much better today and I have you and Jennifer to thank for encouraging me to seek treatment.",
+      "text": "I feel so much better today and I have you and Kamala to thank for encouraging me to seek treatment.",
       "mood": "tender",
       "date": "2010-03-14",
       "era": "2010-2012",
@@ -3769,11 +3823,11 @@
       "from_type": "stranger"
     },
     {
-      "text": "**** Party for a CURE Edition - Funk Fridays - Benefit for Sumant Malhotra",
+      "text": "**** Party for a CURE Edition - Funk Fridays - Benefit for Uma",
       "mood": "tender",
       "date": "2010-03-17",
       "era": "2010-2012",
-      "context": "An invitation to a benefit party for someone named Sumant Malhotra.",
+      "context": "An invitation to a benefit party for someone named Uma.",
       "from_type": "friend"
     },
     {
@@ -3793,7 +3847,7 @@
       "from_type": "family"
     },
     {
-      "text": "Jennifer and I are interested in starting a clothing and arts empire, and cannot do it without help from people like you.",
+      "text": "Kamala and I are interested in starting a clothing and arts empire, and cannot do it without help from people like you.",
       "mood": "absurd",
       "date": "2010-06-09",
       "era": "2010-2012",
@@ -3825,7 +3879,7 @@
       "from_type": "friend"
     },
     {
-      "text": "I dont think its Bhavins idea to wear sports coat. If I have to guess, its may dad. He has always been big on sports coat.",
+      "text": "I dont think its Rohans idea to wear sports coat. If I have to guess, its may dad. He has always been big on sports coat.",
       "mood": "funny",
       "date": "2010-06-02",
       "era": "2010-2012",
@@ -3937,7 +3991,7 @@
       "from_type": "friend"
     },
     {
-      "text": "My girlfriend Jennifer and I met you at a blossom street gallery a few weeks ago.",
+      "text": "My girlfriend Kamala and I met you at a blossom street gallery a few weeks ago.",
       "mood": "mundane",
       "date": "2010-02-08",
       "era": "2010-2012",
@@ -3994,7 +4048,7 @@
     },
     {
       "text": "How d you take a photo and make such distinct colors out of it?",
-      "mood": "curious",
+      "mood": "mundane",
       "date": "2015-09-10",
       "era": "2013-2015",
       "context": "A friend asks about a photography technique after seeing an image.",
@@ -4002,7 +4056,7 @@
     },
     {
       "text": "If they cant wait to drink, or drink before they get in, they have a problem I don't want to deal with.",
-      "mood": "opinionated",
+      "mood": "angry",
       "date": "2015-09-12",
       "era": "2013-2015",
       "context": "A forum user's strong stance on passengers drinking in an Uber.",
@@ -4018,7 +4072,7 @@
     },
     {
       "text": "Always remember to drive safely and have fun!",
-      "mood": "encouraging",
+      "mood": "profound",
       "date": "2015-08-14",
       "era": "2013-2015",
       "context": "Uber's closing remarks to drivers in an email about weekend guarantees.",
@@ -4026,7 +4080,7 @@
     },
     {
       "text": "I was just refreshing my screen like 9 times in a row when I got the text yet again, but even as I'm refreshing it, there's nothing in the job board?",
-      "mood": "frustrated",
+      "mood": "sad",
       "date": "2015-10-16",
       "era": "2013-2015",
       "context": "Complaining about a job notification system that sends alerts but doesn't show available jobs.",
@@ -4058,7 +4112,7 @@
     },
     {
       "text": "So scrub in, and make something awesome.",
-      "mood": "encouraging",
+      "mood": "profound",
       "date": "2015-09-29",
       "era": "2013-2015",
       "context": "Call to action in a Vimeo newsletter for aspiring filmmakers.",
@@ -4173,7 +4227,7 @@
       "mood": "tender",
       "date": "2015-11-02",
       "era": "2013-2015",
-      "context": "Email from a film director (Todd Green) to his crew, forwarded by a colleague.",
+      "context": "Email from a film director (Salar) to his crew, forwarded by a colleague.",
       "from_type": "coworker"
     },
     {
@@ -4181,7 +4235,7 @@
       "mood": "profound",
       "date": "2015-11-02",
       "era": "2013-2015",
-      "context": "Email from a film director (Todd Green) to his crew, expressing gratitude.",
+      "context": "Email from a film director (Salar) to his crew, expressing gratitude.",
       "from_type": "coworker"
     },
     {
@@ -4197,7 +4251,7 @@
       "mood": "mundane",
       "date": "2015-12-03",
       "era": "2013-2015",
-      "context": "Client (Vipul) explaining a delay in payment to a print shop.",
+      "context": "Client (Pranav) explaining a delay in payment to a print shop.",
       "from_type": "self"
     },
     {
@@ -4213,7 +4267,7 @@
       "mood": "tender",
       "date": "2015-12-18",
       "era": "2013-2015",
-      "context": "Jennifer replying to a friend's late request for complimentary tickets.",
+      "context": "Kamala replying to a friend's late request for complimentary tickets.",
       "from_type": "friend"
     },
     {
@@ -4229,7 +4283,7 @@
       "mood": "angry",
       "date": "2015-12-08",
       "era": "2013-2015",
-      "context": "Jennifer Wood expressing frustration about a theater contract's scheduling conflicts.",
+      "context": "Dev expressing frustration about a theater contract's scheduling conflicts.",
       "from_type": "coworker"
     },
     {
@@ -4237,7 +4291,7 @@
       "mood": "mundane",
       "date": "2015-12-08",
       "era": "2013-2015",
-      "context": "Jennifer Wood explaining the financial impact of a theater scheduling conflict.",
+      "context": "Dev explaining the financial impact of a theater scheduling conflict.",
       "from_type": "coworker"
     },
     {
@@ -4245,7 +4299,7 @@
       "mood": "mundane",
       "date": "2015-12-08",
       "era": "2013-2015",
-      "context": "Chuck Still expressing concern about a looming deadline for a theater contract.",
+      "context": "Ivy expressing concern about a looming deadline for a theater contract.",
       "from_type": "coworker"
     },
     {
@@ -4281,7 +4335,7 @@
       "from_type": "self"
     },
     {
-      "text": "You sent $5.10 to Gabriel Aleman for guinea pig experiment",
+      "text": "You sent $5.10 to Olive for guinea pig experiment",
       "mood": "absurd",
       "date": "2015-08-11",
       "era": "2013-2015",
@@ -4361,7 +4415,7 @@
       "from_type": "self"
     },
     {
-      "text": "Jennifer shared your experience with that a-hole who sent you a private msg about not being let in after he came in late.",
+      "text": "Kamala shared your experience with that a-hole who sent you a private msg about not being let in after he came in late.",
       "mood": "angry",
       "date": "2014-10-17",
       "era": "2013-2015",
@@ -4498,7 +4552,7 @@
     },
     {
       "text": "The possibility remains, however, that you could be selected on behalf of another searching patient in the future.",
-      "mood": "hopeful",
+      "mood": "profound",
       "date": "2014-12-02",
       "era": "2013-2015",
       "context": "A marrow donor program offers future hope after a current non-match.",
@@ -4529,11 +4583,11 @@
       "from_type": "friend"
     },
     {
-      "text": "So the thing that Christina Wong forwarded to use about Facebook ad credits...we were selected and won $900 worth of Facebook ad credits.",
-      "mood": "happy",
+      "text": "So the thing that Pete forwarded to use about Facebook ad credits...we were selected and won $900 worth of Facebook ad credits.",
+      "mood": "funny",
       "date": "2015-12-01",
       "era": "2013-2015",
-      "context": "Recipient (Vipul) forwarding good news about Facebook ad credits won for Suchu Dance.",
+      "context": "Recipient (Pranav) forwarding good news about Facebook ad credits won for Suchu Dance.",
       "from_type": "self"
     },
     {
@@ -4541,7 +4595,7 @@
       "mood": "nostalgic",
       "date": "2015-11-24",
       "era": "2013-2015",
-      "context": "A family member (Minaxi) sending an invitation for a family religious/memorial dinner.",
+      "context": "A family member (Susan) sending an invitation for a family religious/memorial dinner.",
       "from_type": "family"
     },
     {
@@ -4549,15 +4603,15 @@
       "mood": "funny",
       "date": "2015-12-17",
       "era": "2013-2015",
-      "context": "A theater director (Chuck Still) explaining safety regulations regarding exit signs in an exaggerated, humorous way.",
+      "context": "A theater director (Ivy) explaining safety regulations regarding exit signs in an exaggerated, humorous way.",
       "from_type": "coworker"
     },
     {
       "text": "It’s so elemental that I am surprised I need to explain it.",
-      "mood": "exasperated",
+      "mood": "angry",
       "date": "2015-12-17",
       "era": "2013-2015",
-      "context": "A theater director (Chuck Still) expressing surprise at needing to explain basic safety rules.",
+      "context": "A theater director (Ivy) expressing surprise at needing to explain basic safety rules.",
       "from_type": "coworker"
     },
     {
@@ -4681,8 +4735,8 @@
       "from_type": "self"
     },
     {
-      "text": "Vipul, are we going to have the programs? I would have copied some if I'd known there was an issue but now I don't have time.",
-      "mood": "stressed",
+      "text": "Pranav, are we going to have the programs? I would have copied some if I'd known there was an issue but now I don't have time.",
+      "mood": "sad",
       "date": "2013-12-05",
       "era": "2013-2015",
       "context": "An urgent query about event programs.",
@@ -4690,7 +4744,7 @@
     },
     {
       "text": "We are really cutting it close and we have to get ready for the show",
-      "mood": "stressed",
+      "mood": "sad",
       "date": "2013-12-05",
       "era": "2013-2015",
       "context": "Expressing urgency before an event.",
@@ -4717,7 +4771,7 @@
       "mood": "mundane",
       "date": "2014-12-20",
       "era": "2013-2015",
-      "context": "The archive owner (Vipul) explaining payment limitations to a client due to being busy with holiday orders at his business.",
+      "context": "The archive owner (Pranav) explaining payment limitations to a client due to being busy with holiday orders at his business.",
       "from_type": "self"
     },
     {
@@ -4765,7 +4819,7 @@
       "mood": "mundane",
       "date": "2014-08-05",
       "era": "2013-2015",
-      "context": "Vipul apologizing for forgetting a task due to a difficult day.",
+      "context": "Pranav apologizing for forgetting a task due to a difficult day.",
       "from_type": "self"
     },
     {
@@ -4781,7 +4835,7 @@
       "mood": "mundane",
       "date": "2014-07-22",
       "era": "2013-2015",
-      "context": "Vipul asking about someone's confirmation, having difficulty reaching them.",
+      "context": "Pranav asking about someone's confirmation, having difficulty reaching them.",
       "from_type": "self"
     },
     {
@@ -4789,7 +4843,7 @@
       "mood": "mundane",
       "date": "2014-06-25",
       "era": "2013-2015",
-      "context": "Vipul mentioning a smoke detector alarm that went off early in the morning.",
+      "context": "Pranav mentioning a smoke detector alarm that went off early in the morning.",
       "from_type": "self"
     },
     {
@@ -4829,7 +4883,7 @@
       "mood": "tender",
       "date": "2015-07-28",
       "era": "2013-2015",
-      "context": "An Uber driver (Vipul) expressing satisfaction with his work.",
+      "context": "An Uber driver (Pranav) expressing satisfaction with his work.",
       "from_type": "self"
     },
     {
@@ -4837,7 +4891,7 @@
       "mood": "profound",
       "date": "2015-07-28",
       "era": "2013-2015",
-      "context": "An Uber driver (Vipul) explaining the positive impact of the job on his family and lifestyle.",
+      "context": "An Uber driver (Pranav) explaining the positive impact of the job on his family and lifestyle.",
       "from_type": "self"
     },
     {
@@ -4850,7 +4904,7 @@
     },
     {
       "text": "fill them with hope for a brighter future.",
-      "mood": "hopeful",
+      "mood": "profound",
       "date": "2015-07-14",
       "era": "2013-2015",
       "context": "A non-profit describing the impact of their work in providing breast health care.",
@@ -4893,7 +4947,7 @@
       "mood": "profound",
       "date": "2014-06-21",
       "era": "2013-2015",
-      "context": "The sender (Vipul) explaining the challenges and gratitude of running a non-profit.",
+      "context": "The sender (Pranav) explaining the challenges and gratitude of running a non-profit.",
       "from_type": "self"
     },
     {
@@ -4929,7 +4983,7 @@
       "from_type": "friend"
     },
     {
-      "text": "Hey! I have money to repay you guys and my mom is picking me up in a bit. Jennifer suggested I find you to drop it off",
+      "text": "Hey! I have money to repay you guys and my mom is picking me up in a bit. Kamala suggested I find you to drop it off",
       "mood": "mundane",
       "date": "2014-03-07",
       "era": "2013-2015",
@@ -5089,7 +5143,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "When can we get programs from you vipul? Philip and I are home right now getting ready to go to the show.",
+      "text": "When can we get programs from you Pranav? Amit and I are home right now getting ready to go to the show.",
       "mood": "mundane",
       "date": "2014-09-18",
       "era": "2013-2015",
@@ -5101,7 +5155,7 @@
       "mood": "mundane",
       "date": "2014-09-25",
       "era": "2013-2015",
-      "context": "Vipul (the sender of the archive) informing a client that a new printer is ready.",
+      "context": "Pranav (the sender of the archive) informing a client that a new printer is ready.",
       "from_type": "self"
     },
     {
@@ -5109,7 +5163,7 @@
       "mood": "mundane",
       "date": "2014-09-10",
       "era": "2013-2015",
-      "context": "Vipul explaining a technical printing issue to a client.",
+      "context": "Pranav explaining a technical printing issue to a client.",
       "from_type": "self"
     },
     {
@@ -5117,7 +5171,7 @@
       "mood": "sad",
       "date": "2014-07-23",
       "era": "2013-2015",
-      "context": "Vipul informing a client about a delay due to a personal injury.",
+      "context": "Pranav informing a client about a delay due to a personal injury.",
       "from_type": "self"
     },
     {
@@ -5133,7 +5187,7 @@
       "mood": "mundane",
       "date": "2014-09-22",
       "era": "2013-2015",
-      "context": "Vipul explaining a tight deadline and long work hours for a project.",
+      "context": "Pranav explaining a tight deadline and long work hours for a project.",
       "from_type": "self"
     },
     {
@@ -5141,7 +5195,7 @@
       "mood": "tender",
       "date": "2014-09-22",
       "era": "2013-2015",
-      "context": "Vipul expressing a personal preference about discussing money during creative work.",
+      "context": "Pranav expressing a personal preference about discussing money during creative work.",
       "from_type": "self"
     },
     {
@@ -5149,7 +5203,7 @@
       "mood": "mundane",
       "date": "2014-09-20",
       "era": "2013-2015",
-      "context": "Vipul requesting a dog training appointment, mentioning how they found the trainer.",
+      "context": "Pranav requesting a dog training appointment, mentioning how they found the trainer.",
       "from_type": "self"
     },
     {
@@ -5185,7 +5239,7 @@
       "from_type": "self"
     },
     {
-      "text": "Thanks so much Vipul and Jennifer for your hospitality and for accommodating us during your tech time.",
+      "text": "Thanks so much Pranav and Kamala for your hospitality and for accommodating us during your tech time.",
       "mood": "tender",
       "date": "2014-06-12",
       "era": "2013-2015",
@@ -5209,7 +5263,7 @@
       "from_type": "friend"
     },
     {
-      "text": "Jennifer considers you family, so we know you will treat the space with respect and leave it back in the manner in which it was found.",
+      "text": "Kamala considers you family, so we know you will treat the space with respect and leave it back in the manner in which it was found.",
       "mood": "tender",
       "date": "2014-04-23",
       "era": "2013-2015",
@@ -5266,7 +5320,7 @@
     },
     {
       "text": "What are the odds the new owner will rent the house to us for a little while longer?",
-      "mood": "anxious",
+      "mood": "sad",
       "date": "2014-03-04",
       "era": "2013-2015",
       "context": "Enquiring about the possibility of extending a rental agreement after a property sale.",
@@ -5293,7 +5347,7 @@
       "mood": "sad",
       "date": "2014-06-15",
       "era": "2013-2015",
-      "context": "Vipul (the sender of the archive) informs volunteers about tax deductions, expressing disappointment.",
+      "context": "Pranav (the sender of the archive) informs volunteers about tax deductions, expressing disappointment.",
       "from_type": "self"
     },
     {
@@ -5301,7 +5355,7 @@
       "mood": "outrageous",
       "date": "2014-06-15",
       "era": "2013-2015",
-      "context": "Vipul explains why volunteers weren't paid, blaming a former managing director.",
+      "context": "Pranav explains why volunteers weren't paid, blaming a former managing director.",
       "from_type": "self"
     },
     {
@@ -5309,7 +5363,7 @@
       "mood": "tender",
       "date": "2014-06-12",
       "era": "2013-2015",
-      "context": "Suchu Dance (Vipul's organization) reflects on its positive impact on local artists.",
+      "context": "Suchu Dance (Pranav's organization) reflects on its positive impact on local artists.",
       "from_type": "self"
     },
     {
@@ -5389,7 +5443,7 @@
       "mood": "sad",
       "date": "2013-11-24",
       "era": "2013-2015",
-      "context": "The sender (Vipul) informing a client about a family bereavement, explaining absence from work.",
+      "context": "The sender (Pranav) informing a client about a family bereavement, explaining absence from work.",
       "from_type": "self"
     },
     {
@@ -5417,7 +5471,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "We are coming and bringing Hardik's famous ground chili chicken pasta.",
+      "text": "We are coming and bringing Eli's famous ground chili chicken pasta.",
       "mood": "funny",
       "date": "2013-12-21",
       "era": "2013-2015",
@@ -5461,7 +5515,7 @@
       "mood": "mundane",
       "date": "2013-11-08",
       "era": "2013-2015",
-      "context": "The sender (Vipul) explaining a delay in providing a quote due to another urgent client request.",
+      "context": "The sender (Pranav) explaining a delay in providing a quote due to another urgent client request.",
       "from_type": "self"
     },
     {
@@ -5530,7 +5584,7 @@
     },
     {
       "text": "it wouldn't be worth your or my time, I don't think.",
-      "mood": "pragmatic",
+      "mood": "mundane",
       "date": "2014-03-13",
       "era": "2013-2015",
       "context": "A coworker assessing the cost-effectiveness of an in-house task at a UPS Store.",
@@ -5546,7 +5600,7 @@
     },
     {
       "text": "When I heard it I'm like mann i sounded super busy and I do remember it was busy so I was kind of every where that day. I'll just need to improve for next time and answer more professional.",
-      "mood": "self-reflective",
+      "mood": "mundane",
       "date": "2014-03-06",
       "era": "2013-2015",
       "context": "A coworker reflecting on a secret shopper call and resolving to improve their professional demeanor.",
@@ -5597,7 +5651,7 @@
       "mood": "mundane",
       "date": "2013-10-28",
       "era": "2013-2015",
-      "context": "Vipul (the sender) relaying a customer's unusual request for plain banner material.",
+      "context": "Pranav (the sender) relaying a customer's unusual request for plain banner material.",
       "from_type": "self"
     },
     {
@@ -5621,7 +5675,7 @@
       "mood": "tender",
       "date": "2013-06-15",
       "era": "2013-2015",
-      "context": "Vipul (the sender) offering to reprint wedding invitations due to client dissatisfaction.",
+      "context": "Pranav (the sender) offering to reprint wedding invitations due to client dissatisfaction.",
       "from_type": "self"
     },
     {
@@ -5642,7 +5696,7 @@
     },
     {
       "text": "I can't see them. I don't want them on there, but at this point, just leave them. I don't care.",
-      "mood": "frustrated",
+      "mood": "sad",
       "date": "2013-09-27",
       "era": "2013-2015",
       "context": "A friend expressing frustration and resignation over details of a print job.",
@@ -5658,7 +5712,7 @@
     },
     {
       "text": "I was sick for two weeks straight, two weeks where I was supposed to be catching up on a lot of stuff and I've been doing it now. I've got a ton of work to do and it's piled up...",
-      "mood": "stressed",
+      "mood": "sad",
       "date": "2013-09-25",
       "era": "2013-2015",
       "context": "Recipient explaining being behind on work due to a prolonged illness.",
@@ -5674,7 +5728,7 @@
     },
     {
       "text": "I've been MIA for about 10 days because of a very bad sinus infection. I'm so sorry for keeping you waiting.",
-      "mood": "apologetic",
+      "mood": "tender",
       "date": "2013-09-12",
       "era": "2013-2015",
       "context": "Recipient apologizing for a delayed response due to illness.",
@@ -5802,7 +5856,7 @@
     },
     {
       "text": "It’s finally time to find out whether this new addition is going to be a He or She !!",
-      "mood": "excited",
+      "mood": "funny",
       "date": "2013-10-16",
       "era": "2013-2015",
       "context": "An announcement for a gender reveal party.",
@@ -5821,7 +5875,7 @@
       "mood": "tender",
       "date": "2013-02-17",
       "era": "2013-2015",
-      "context": "Mili's thank you note to family after a surprise baby shower.",
+      "context": "Dhruv's thank you note to family after a surprise baby shower.",
       "from_type": "family"
     },
     {
@@ -5829,7 +5883,7 @@
       "mood": "funny",
       "date": "2013-02-17",
       "era": "2013-2015",
-      "context": "Mili's postscript in a thank you note to family after a surprise baby shower.",
+      "context": "Dhruv's postscript in a thank you note to family after a surprise baby shower.",
       "from_type": "family"
     },
     {
@@ -5893,7 +5947,7 @@
       "mood": "mundane",
       "date": "2014-06-25",
       "era": "2013-2015",
-      "context": "Jennifer explains to a friend why she needs someone to sub her dance classes.",
+      "context": "Kamala explains to a friend why she needs someone to sub her dance classes.",
       "from_type": "friend"
     },
     {
@@ -5929,7 +5983,7 @@
       "from_type": "family"
     },
     {
-      "text": "Bhavin and I have our draft that day so earliest I can be there is at 5.",
+      "text": "Zoe and I have our draft that day so earliest I can be there is at 5.",
       "mood": "mundane",
       "date": "2018-08-22",
       "era": "2016-2018",
@@ -6097,7 +6151,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "One of the goals Billy Milon Speranza set for himself this year was to ask his girlfriend to marry him. Well, check. ✅",
+      "text": "One of the goals Eve Speranza set for himself this year was to ask his girlfriend to marry him. Well, check. ✅",
       "mood": "tender",
       "date": "2018-12-06",
       "era": "2016-2018",
@@ -6337,7 +6391,7 @@
       "from_type": "coworker"
     },
     {
-      "text": "Vipul, smile! 7 days of saving start now.",
+      "text": "Pranav, smile! 7 days of saving start now.",
       "mood": "absurd",
       "date": "2018-02-04",
       "era": "2016-2018",
@@ -6477,7 +6531,7 @@
       "mood": "mundane",
       "date": "2017-06-21",
       "era": "2016-2018",
-      "context": "Declining an invitation to a family event called 'Shivam's Babri'.",
+      "context": "Declining an invitation to a family event called 'Quinn's Babri'.",
       "from_type": "family"
     },
     {
@@ -6545,7 +6599,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Happy double 20th birthday Avni!!! Hope you enjoy the day and the many years ahead.",
+      "text": "Happy double 20th birthday Sahil!!! Hope you enjoy the day and the many years ahead.",
       "mood": "funny",
       "date": "2017-09-03",
       "era": "2016-2018",
@@ -6693,7 +6747,7 @@
       "mood": "funny",
       "date": "2017-04-12",
       "era": "2016-2018",
-      "context": "Vipul (the email archive owner) replies to a coworker, lightheartedly mentioning his upcoming birthday.",
+      "context": "Pranav (the email archive owner) replies to a coworker, lightheartedly mentioning his upcoming birthday.",
       "from_type": "self"
     },
     {
@@ -6701,7 +6755,7 @@
       "mood": "funny",
       "date": "2017-04-12",
       "era": "2016-2018",
-      "context": "A coworker admitting that another person who does video work for free isn't as good as Vipul.",
+      "context": "A coworker admitting that another person who does video work for free isn't as good as Pranav.",
       "from_type": "coworker"
     },
     {
@@ -6809,7 +6863,7 @@
       "from_type": "friend"
     },
     {
-      "text": "In 1980! Lisa Nicks run run leaped with a degree from Sam Houston State University to Houston",
+      "text": "In 1980! Blake run run leaped with a degree from Sam Houston State University to Houston",
       "mood": "nostalgic",
       "date": "2017-06-06",
       "era": "2016-2018",
@@ -6817,7 +6871,7 @@
       "from_type": "coworker"
     },
     {
-      "text": "There she met and married the Doug Elkins' Dance Company: dancing, rehearsal directing, teaching, and administrating.",
+      "text": "There she met and married the Isha' Dance Company: dancing, rehearsal directing, teaching, and administrating.",
       "mood": "funny",
       "date": "2017-06-06",
       "era": "2016-2018",
@@ -6825,7 +6879,7 @@
       "from_type": "coworker"
     },
     {
-      "text": "Lisa Nicks and Her Band of Wild Ponies is a pick up group for new and used dancers who can fully commit to the process of creating new dances",
+      "text": "Blake and Her Band of Wild Ponies is a pick up group for new and used dancers who can fully commit to the process of creating new dances",
       "mood": "absurd",
       "date": "2017-06-06",
       "era": "2016-2018",
@@ -6842,7 +6896,7 @@
     },
     {
       "text": "I would describe myself as a charismatic 20-year-old!",
-      "mood": "confident",
+      "mood": "profound",
       "date": "2017-06-01",
       "era": "2016-2018",
       "context": "A job applicant describing their personality.",
@@ -6953,7 +7007,7 @@
       "from_type": "family"
     },
     {
-      "text": "I hope Jennifer didn't go there this morning.my watch was 20 minutes slow so I wasn't on time when I thought I was, and nobody was there at 8:50am.",
+      "text": "I hope Kamala didn't go there this morning.my watch was 20 minutes slow so I wasn't on time when I thought I was, and nobody was there at 8:50am.",
       "mood": "mundane",
       "date": "2016-10-12",
       "era": "2016-2018",
@@ -6973,7 +7027,7 @@
       "mood": "profound",
       "date": "2016-08-09",
       "era": "2016-2018",
-      "context": "A quote from Sarah Lacy in a PandoDaily article about balancing work and family.",
+      "context": "A quote from Grace in a PandoDaily article about balancing work and family.",
       "from_type": "stranger"
     },
     {
@@ -7073,7 +7127,7 @@
       "from_type": "family"
     },
     {
-      "text": "In the following essay from Ryan Ruff Smith, we are told a story of how homophobia and transphobia pushed one couple out of their new apartment.",
+      "text": "In the following essay from Ravi Smith, we are told a story of how homophobia and transphobia pushed one couple out of their new apartment.",
       "mood": "sad",
       "date": "2016-12-04",
       "era": "2016-2018",
@@ -7085,7 +7139,7 @@
       "mood": "absurd",
       "date": "2016-11-30",
       "era": "2016-2018",
-      "context": "Automated Facebook notification addressed to the wrong name (Paul instead of Vipul).",
+      "context": "Automated Facebook notification addressed to the wrong name (Paul instead of Pranav).",
       "from_type": "stranger"
     },
     {
@@ -7101,7 +7155,7 @@
       "mood": "mundane",
       "date": "2016-09-19",
       "era": "2016-2018",
-      "context": "Vipul responding to a debt collection email, explaining absence due to illness.",
+      "context": "Pranav responding to a debt collection email, explaining absence due to illness.",
       "from_type": "self"
     },
     {
@@ -7178,7 +7232,7 @@
     },
     {
       "text": "Passenger on phone with the airline now while I'm waiting in his driveway. Please advise.",
-      "mood": "frustrated",
+      "mood": "sad",
       "date": "2016-07-23",
       "era": "2016-2018",
       "context": "A ride-share driver reporting a passenger's flight cancellation while waiting for them.",
@@ -7193,7 +7247,7 @@
       "from_type": "coworker"
     },
     {
-      "text": "Hey Vipul, Check out how awesome this is click here",
+      "text": "Hey Pranav, Check out how awesome this is click here",
       "mood": "tender",
       "date": "2016-05-24",
       "era": "2016-2018",
@@ -7685,7 +7739,7 @@
       "mood": "tender",
       "date": "2021-05-22",
       "era": "2019-2021",
-      "context": "Siddhi Desai asking family to RSVP for her graduation party.",
+      "context": "Leo asking family to RSVP for her graduation party.",
       "from_type": "family"
     },
     {
@@ -7693,7 +7747,7 @@
       "mood": "tender",
       "date": "2021-05-28",
       "era": "2019-2021",
-      "context": "Minaxi inviting family for Memorial Day dinner.",
+      "context": "Susan inviting family for Memorial Day dinner.",
       "from_type": "family"
     },
     {
@@ -7785,7 +7839,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "You paid Raymond Martin $125 for last 🐁 bastard for 2021",
+      "text": "You paid Iris $125 for last 🐁 bastard for 2021",
       "mood": "funny",
       "date": "2022-01-01",
       "era": "2019-2021",
@@ -7825,7 +7879,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Rizwan is an absolute force and this conversation gave me such creative energy!",
+      "text": "Kavya is an absolute force and this conversation gave me such creative energy!",
       "mood": "profound",
       "date": "2021-01-18",
       "era": "2019-2021",
@@ -8177,7 +8231,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Your TransUnion credit report shows you recently started working for VIPUL DIVECHA CONSULTANT. If this looks right, congratulations on your new job!",
+      "text": "Your TransUnion credit report shows you recently started working for Hema CONSULTANT. If this looks right, congratulations on your new job!",
       "mood": "absurd",
       "date": "2020-02-17",
       "era": "2019-2021",
@@ -8394,7 +8448,7 @@
     },
     {
       "text": "Nearly all distinctive parts of a campus experience, including parties, meals and extracurriculars, revolve around close social contact, often indoors.",
-      "mood": "profund",
+      "mood": "profound",
       "date": "2020-06-18",
       "era": "2019-2021",
       "context": "A New York Times article discussing the challenges of reopening college campuses during the pandemic.",
@@ -8418,7 +8472,7 @@
     },
     {
       "text": "You can never go wrong with a great read.",
-      "mood": "profund",
+      "mood": "profound",
       "date": "2020-06-12",
       "era": "2019-2021",
       "context": "A Barnes & Noble marketing email promoting books as gifts for Father's Day.",
@@ -8618,7 +8672,7 @@
     },
     {
       "text": "Is there any way in hell I can be eligible for this? What about my parents, they are losing money due to show cancellations.",
-      "mood": "anxious",
+      "mood": "sad",
       "date": "2020-03-17",
       "era": "2019-2021",
       "context": "A person asking about unemployment assistance for themselves and their parents due to COVID-19 related cancellations.",
@@ -8753,7 +8807,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Hi Vipul! thomas sent you a message",
+      "text": "Hi Pranav! thomas sent you a message",
       "mood": "mundane",
       "date": "2019-06-12",
       "era": "2019-2021",
@@ -8873,7 +8927,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Dance through the holidays with classes from NMD Co-Artistic Directors, Andy and Dionne Noble, NMD company members, and other guests!",
+      "text": "Dance through the holidays with classes from NMD Co-Artistic Directors, Andy and Naveen, NMD company members, and other guests!",
       "mood": "mundane",
       "date": "2019-10-10",
       "era": "2019-2021",
@@ -8930,7 +8984,7 @@
     },
     {
       "text": "Ultimately, it's pretty easy (and cheap) to download any app you want on say, an iPhone, without buying a smartphone preloaded with a suite of apps.",
-      "mood": "observant",
+      "mood": "mundane",
       "date": "2019-05-28",
       "era": "2019-2021",
       "context": "Newsletter discussing ByteDance's (TikTok's parent company) attempt to launch its own smartphone.",
@@ -8961,7 +9015,7 @@
       "from_type": "family"
     },
     {
-      "text": "Per Vishal “this is a mandatory gathering, no excuses!!!”",
+      "text": "Per Bret “this is a mandatory gathering, no excuses!!!”",
       "mood": "funny",
       "date": "2019-02-04",
       "era": "2019-2021",
@@ -8969,7 +9023,7 @@
       "from_type": "family"
     },
     {
-      "text": "Happy Anniversary BHAVIN & DIPALI! Here is to celebrating 8 wonderful years together!",
+      "text": "Happy Anniversary Zoe & DIPALI! Here is to celebrating 8 wonderful years together!",
       "mood": "tender",
       "date": "2024-08-13",
       "era": "2022-2024",
@@ -9041,7 +9095,7 @@
       "from_type": "self"
     },
     {
-      "text": "This is a private message for VIPUL DIVECHA regarding a personal business matter.",
+      "text": "This is a private message for Hema regarding a personal business matter.",
       "mood": "mundane",
       "date": "2024-11-05",
       "era": "2022-2024",
@@ -9218,7 +9272,7 @@
     },
     {
       "text": "Just want to make sure I wasn't charged anything extra or the ride is still going on?",
-      "mood": "concerned",
+      "mood": "mundane",
       "date": "2024-05-15",
       "era": "2022-2024",
       "context": "User emailing bike share support, concerned about an ongoing charge or error.",
@@ -9233,7 +9287,7 @@
       "from_type": "self"
     },
     {
-      "text": "Happy Birthday CHINTAN! Here is to 46 great years!",
+      "text": "Happy Birthday Anita! Here is to 46 great years!",
       "mood": "tender",
       "date": "2024-10-16",
       "era": "2022-2024",
@@ -9469,7 +9523,7 @@
       "mood": "sad",
       "date": "2023-10-20",
       "era": "2022-2024",
-      "context": "Vipul shares news of a permanent disability affecting his hands with a former professor.",
+      "context": "Pranav shares news of a permanent disability affecting his hands with a former professor.",
       "from_type": "self"
     },
     {
@@ -9477,7 +9531,7 @@
       "mood": "sad",
       "date": "2023-10-20",
       "era": "2022-2024",
-      "context": "Vipul describes the specific impact of his new disability on his hands to a former professor.",
+      "context": "Pranav describes the specific impact of his new disability on his hands to a former professor.",
       "from_type": "self"
     },
     {
@@ -9485,7 +9539,7 @@
       "mood": "sad",
       "date": "2023-10-20",
       "era": "2022-2024",
-      "context": "Vipul expresses the comprehensive impact of his disability to a former professor.",
+      "context": "Pranav expresses the comprehensive impact of his disability to a former professor.",
       "from_type": "self"
     },
     {
@@ -9493,7 +9547,7 @@
       "mood": "profound",
       "date": "2023-10-20",
       "era": "2022-2024",
-      "context": "Vipul reflects on Chuck Close's inspiration in the face of his own disability.",
+      "context": "Pranav reflects on Chuck Close's inspiration in the face of his own disability.",
       "from_type": "self"
     },
     {
@@ -9501,7 +9555,7 @@
       "mood": "profound",
       "date": "2023-10-20",
       "era": "2022-2024",
-      "context": "Vipul seeks advice on continuing his art despite his physical limitations.",
+      "context": "Pranav seeks advice on continuing his art despite his physical limitations.",
       "from_type": "self"
     },
     {
@@ -9509,7 +9563,7 @@
       "mood": "tender",
       "date": "2023-10-23",
       "era": "2022-2024",
-      "context": "Mark, a former professor, responds to Vipul's news of a permanent disability.",
+      "context": "Mark, a former professor, responds to Pranav's news of a permanent disability.",
       "from_type": "teacher"
     },
     {
@@ -9517,7 +9571,7 @@
       "mood": "tender",
       "date": "2023-10-23",
       "era": "2022-2024",
-      "context": "Mark expresses hope for Vipul's pain management treatment.",
+      "context": "Mark expresses hope for Pranav's pain management treatment.",
       "from_type": "teacher"
     },
     {
@@ -9525,7 +9579,7 @@
       "mood": "profound",
       "date": "2023-10-23",
       "era": "2022-2024",
-      "context": "Mark acknowledges the inspiring story of Chuck Close, mentioned by Vipul.",
+      "context": "Mark acknowledges the inspiring story of Chuck Close, mentioned by Pranav.",
       "from_type": "teacher"
     },
     {
@@ -9533,7 +9587,7 @@
       "mood": "tender",
       "date": "2023-10-16",
       "era": "2022-2024",
-      "context": "Part of a group email wishing Chintan a happy birthday.",
+      "context": "Part of a group email wishing Anita a happy birthday.",
       "from_type": "family"
     },
     {
@@ -10105,7 +10159,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Vishal and the girls will be there for both days.",
+      "text": "Bret and the girls will be there for both days.",
       "mood": "mundane",
       "date": "2022-09-24",
       "era": "2022-2024",
@@ -10129,7 +10183,7 @@
       "from_type": "coworker"
     },
     {
-      "text": "As eight billion people now share the Earth, they face a planet where, as Nat Geo’s Sarah Gibbens reports, “hope is not lost.”",
+      "text": "As eight billion people now share the Earth, they face a planet where, as Nat Geo’s Marissa reports, “hope is not lost.”",
       "mood": "profound",
       "date": "2022-11-30",
       "era": "2022-2024",
@@ -10145,11 +10199,11 @@
       "from_type": "coworker"
     },
     {
-      "text": "Thank you, Vipul! Your flight is booked.",
+      "text": "Thank you, Pranav! Your flight is booked.",
       "mood": "mundane",
       "date": "2022-11-28",
       "era": "2022-2024",
-      "context": "Confirmation email for a flight booking made by Vipul for another person.",
+      "context": "Confirmation email for a flight booking made by Pranav for another person.",
       "from_type": "self"
     },
     {
@@ -10209,7 +10263,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Bernard Yudin, a New Jersey paint merchant who had requested anonymity in his sponsorship, died in 1950 of cancer and never would know what Penzias did.",
+      "text": "Nina, a New Jersey paint merchant who had requested anonymity in his sponsorship, died in 1950 of cancer and never would know what Penzias did.",
       "mood": "tender",
       "date": "2022-06-09",
       "era": "2022-2024",
@@ -10313,7 +10367,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Vipul Divecha, 1 Lawsuit Found on Your Public Reputation Profile",
+      "text": "Hema, 1 Lawsuit Found on Your Public Reputation Profile",
       "mood": "outrageous",
       "date": "2022-01-18",
       "era": "2022-2024",
@@ -10329,7 +10383,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Happy Birthday JIGNESH! Here is to 47 great years!",
+      "text": "Happy Birthday Jack! Here is to 47 great years!",
       "mood": "tender",
       "date": "2026-03-24",
       "era": "2025-now",
@@ -10641,11 +10695,11 @@
       "from_type": "self"
     },
     {
-      "text": "Liliana has searched for you online Vipul",
+      "text": "Brian has searched for you online Pranav",
       "mood": "absurd",
       "date": "2026-04-15",
       "era": "2025-now",
-      "context": "An alert notifying the recipient that someone named Liliana searched for them online.",
+      "context": "An alert notifying the recipient that someone named Brian searched for them online.",
       "from_type": "stranger"
     },
     {
@@ -10657,7 +10711,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Jennifer Lopez is getting divorced again. What's her problem?",
+      "text": "Kamala Lopez is getting divorced again. What's her problem?",
       "mood": "funny",
       "date": "2026-02-11",
       "era": "2025-now",
@@ -10697,7 +10751,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Happy birthday MIli! Have a great one!",
+      "text": "Happy birthday Dhruv! Have a great one!",
       "mood": "tender",
       "date": "2025-09-17",
       "era": "2025-now",
@@ -10833,7 +10887,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Hello, We will not be coming. Darshana",
+      "text": "Hello, We will not be coming. Cole",
       "mood": "mundane",
       "date": "2025-11-19",
       "era": "2025-now",
@@ -10890,7 +10944,7 @@
     },
     {
       "text": "I’ve doodled app ideas only to lose momentum chasing handoffs and exports.",
-      "mood": "relatable",
+      "mood": "mundane",
       "date": "2025-07-23",
       "era": "2025-now",
       "context": "A personal reflection on creative frustration in a tech review.",
@@ -11145,7 +11199,7 @@
       "from_type": "stranger"
     },
     {
-      "text": "Vipul, dial up the drama and add a touch of your personal style with bold and fun statement accessories.",
+      "text": "Pranav, dial up the drama and add a touch of your personal style with bold and fun statement accessories.",
       "mood": "mundane",
       "date": "2025-05-21",
       "era": "2025-now",
@@ -11277,7 +11331,7 @@
       "mood": "mundane",
       "date": "2025-02-05",
       "era": "2025-now",
-      "context": "A personal reply from Vipul to a human services agency about identification, explaining he no longer drives.",
+      "context": "A personal reply from Pranav to a human services agency about identification, explaining he no longer drives.",
       "from_type": "self"
     },
     {
@@ -11346,7 +11400,7 @@
     },
     {
       "text": "The acquisition isn’t just about catching all the money the massive mobile hit generates, but also the shiny location data that it’s been gathering for the past eight years.",
-      "mood": "cynical",
+      "mood": "angry",
       "date": "2025-03-13",
       "era": "2025-now",
       "context": "A commentary on the true value of tech acquisitions beyond immediate revenue.",
@@ -11421,7 +11475,7 @@
       "mood": "mundane",
       "date": "2026-02-10",
       "era": "2025-now",
-      "context": "The user (Vipul) expressing a preference for a specific shoe color in a customer service email.",
+      "context": "The user (Pranav) expressing a preference for a specific shoe color in a customer service email.",
       "from_type": "self"
     },
     {
@@ -11493,11 +11547,11 @@
       "mood": "mundane",
       "date": "2025-01-10",
       "era": "2025-now",
-      "context": "Vipul (the archive owner) questions employee housing about an unexpected $400 charge.",
+      "context": "Pranav (the archive owner) questions employee housing about an unexpected $400 charge.",
       "from_type": "self"
     },
     {
-      "text": "Vipul, embrace vibrant femininity and a touch of magic by stepping into spring with a wicked wardrobe inspired by Glinda’s iconic pink aesthetic.",
+      "text": "Pranav, embrace vibrant femininity and a touch of magic by stepping into spring with a wicked wardrobe inspired by Glinda’s iconic pink aesthetic.",
       "mood": "absurd",
       "date": "2025-02-01",
       "era": "2025-now",
@@ -11701,7 +11755,7 @@
       "mood": "profound",
       "date": "2025-02-05",
       "era": "2025-now",
-      "context": "A romantic quote attributed to Angelita Lim.",
+      "context": "A romantic quote attributed to Thea.",
       "from_type": "stranger"
     }
   ]

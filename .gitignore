@@ -13,3 +13,5 @@ data/email_stats.json
 # Keep quotes.json (curated output) but not raw data
 # Uncomment this if you want to commit your curated quotes:
 !data/quotes.json
+
+data/name_mapping.json
