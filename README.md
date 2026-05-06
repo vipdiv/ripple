@@ -331,3 +331,7 @@ npm run dev
 - Text layout by [chenglou/pretext](https://github.com/chenglou/pretext)
 - Pseudonyms from [Gmail's founding team](https://en.wikipedia.org/wiki/History_of_Gmail)
 - Built with [Claude](https://claude.ai)
+
+## License
+
+This work is licensed under [CC BY-NC-SA 4.0](LICENSE) — Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International. You may share and adapt this project with attribution, but not for commercial purposes. Derivatives must be shared under the same license. For commercial inquiries, please contact me directly.
