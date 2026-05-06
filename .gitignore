@@ -4,6 +4,7 @@ dist/
 
 # Credentials (never commit)
 scripts/credentials/
+.env
 
 # Data files (large, generated)
 data/email_metadata.jsonl
@@ -13,5 +14,21 @@ data/email_stats.json
 # Keep quotes.json (curated output) but not raw data
 # Uncomment this if you want to commit your curated quotes:
 !data/quotes.json
-
 data/name_mapping.json
+
+# Email research outputs — contain real names, email addresses, and message bodies
+data/arts_emails_expanded.json
+data/arts_emails_v3.json
+data/arts_search_results.json
+data/failed_entries.json
+archive_failed.json
+duplicates_to_archive.json
+failed_entries.json
+kept_no_twin_run2.json
+
+# Catch-all for future search/research outputs
+data/arts_*.json
+data/*_search_*.json
+data/*_failed*.json
+*_failed.json
+*_to_archive.json
