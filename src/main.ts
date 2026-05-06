@@ -489,7 +489,7 @@ function refreshSoundButton() {
   soundToggleEl.classList.toggle('muted', !on)
   soundToggleEl.title = on ? 'Mute sound' : 'Turn on sound'
   const labelEl = soundToggleEl.querySelector('.sound-label')
-  if (labelEl) labelEl.textContent = on ? 'sound on' : 'sound off'
+  if (labelEl) labelEl.textContent = on ? 'on' : 'off'
 }
 soundToggleEl.addEventListener('click', () => {
   sound.toggle()
