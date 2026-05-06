@@ -474,6 +474,19 @@ body[data-mode="invert"] #mobile-bar {
   outline: none;
 }
 
+/* All icon-only top-right buttons share the same flex centering so SVG
+   children and text glyphs land on the same visual midline regardless of
+   line-height or block/inline rendering. */
+#info-button,
+#fullscreen-toggle,
+#timelapse-toggle,
+#mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
 #info-button {
   width: 28px;
   padding: 6px 0;
@@ -486,14 +499,12 @@ body[data-mode="invert"] #mobile-bar {
   padding: 6px 0;
   font-size: 12px;
   letter-spacing: 0;
-  line-height: 1;
 }
 
 #fullscreen-toggle svg {
   width: 14px;
   height: 14px;
   display: block;
-  margin: 0 auto;
 }
 
 #fullscreen-toggle .fs-exit { display: none; }
@@ -916,11 +927,11 @@ body[data-mood="existential"] { --mood-hue: 250; --mood-sat: 30%; }
   padding: 6px 0;
   font-size: 14px;
   letter-spacing: 0;
-  line-height: 1;
 }
 #mode-toggle .mode-icon {
-  display: block;
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 @media (hover: none) and (pointer: coarse), (max-width: 720px) {
   #mode-toggle, #timelapse-toggle { display: none !important; }
@@ -934,7 +945,6 @@ body[data-mood="existential"] { --mood-hue: 250; --mood-sat: 30%; }
   padding: 6px 0;
   font-size: 12px;
   letter-spacing: 0;
-  line-height: 1;
 }
 
 #timelapse-toggle[aria-pressed="true"] {
@@ -947,7 +957,6 @@ body[data-mood="existential"] { --mood-hue: 250; --mood-sat: 30%; }
   width: 13px;
   height: 17px;
   display: block;
-  margin: 0 auto;
 }
 
 .hg-sand-top,
