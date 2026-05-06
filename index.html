@@ -64,6 +64,39 @@
     <span class="sep">·</span>
     <span>F fullscreen</span>
   </div>
+  <button id="timelapse-toggle" type="button" aria-label="Time-lapse mode" aria-pressed="false" title="Time-lapse mode">
+    <svg class="hourglass-icon" viewBox="0 0 24 32" aria-hidden="true" focusable="false">
+      <!-- frame -->
+      <path class="hg-frame" d="M5 3 H19 M5 29 H19 M6 3 V8 L12 16 L6 26 V29 M18 3 V8 L12 16 L18 26 V29" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- top sand: clipped from below by progress -->
+      <clipPath id="hg-top-clip">
+        <rect class="hg-top-rect" x="6" y="3" width="12" height="13"/>
+      </clipPath>
+      <path class="hg-sand-top" d="M6.6 4 H17.4 L12 14.5 Z" fill="currentColor" clip-path="url(#hg-top-clip)"/>
+      <!-- bottom sand: grows from bottom up -->
+      <clipPath id="hg-bot-clip">
+        <rect class="hg-bot-rect" x="6" y="29" width="12" height="0"/>
+      </clipPath>
+      <path class="hg-sand-bot" d="M6.6 28 L12 17.5 L17.4 28 Z" fill="currentColor" clip-path="url(#hg-bot-clip)"/>
+    </svg>
+  </button>
+
+  <section id="timelapse-panel" hidden role="region" aria-label="Time-lapse playback controls">
+    <button id="tl-playpause" type="button" aria-label="Play">
+      <svg class="tl-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+      <svg class="tl-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+    </button>
+    <button id="tl-speed" type="button" aria-label="Playback speed">1x</button>
+    <div id="tl-track-wrap">
+      <div id="tl-track">
+        <div id="tl-fill"></div>
+        <div id="tl-ticks" aria-hidden="true"></div>
+        <div id="tl-playhead" aria-hidden="true"></div>
+      </div>
+    </div>
+    <div id="tl-date" aria-live="polite">8 / 2004</div>
+  </section>
+
   <nav id="mobile-bar" aria-label="Mobile controls">
     <button id="m-mood-prev" type="button" class="m-icon" aria-label="Previous mood">◀</button>
     <button id="m-mood" type="button" class="m-pill" aria-label="Current mood (tap to cycle)">mood</button>

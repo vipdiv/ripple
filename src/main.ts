@@ -11,6 +11,7 @@ import { layoutText, updateParticles, type WordParticle } from './word-layout'
 import { QuoteManager, MOOD_COLORS, TIMELINE_NARRATIVE, THEMES, ALL_THEMES } from './quotes'
 import { SoundEngine } from './sound'
 import { showOneTimeTooltip } from './tooltip'
+import { TimelapseController } from './timelapse'
 
 // --- Canvas setup ---
 const canvas = document.getElementById('c') as HTMLCanvasElement
@@ -44,6 +45,8 @@ const themeLabelEl = document.getElementById('theme-label')!
 const themeDropdownEl = document.getElementById('theme-dropdown') as HTMLElement
 const soundToggleEl = document.getElementById('sound-toggle') as HTMLButtonElement
 const fullscreenToggleEl = document.getElementById('fullscreen-toggle') as HTMLButtonElement
+const timelapseToggleEl = document.getElementById('timelapse-toggle') as HTMLButtonElement
+const timelapsePanelEl = document.getElementById('timelapse-panel') as HTMLElement
 const tagRowEl = document.getElementById('tag-row') as HTMLElement
 const tagToggleEl = document.getElementById('tag-toggle') as HTMLButtonElement
 const tagLabelEl = document.getElementById('tag-label')!
@@ -498,6 +501,11 @@ function toggleFullscreen() {
     document.documentElement.requestFullscreen().catch(() => {})
   }
 }
+// Time-lapse mode (step 1: UI shell only — controller wires into ripple/audio in later steps)
+const timelapse = new TimelapseController(timelapseToggleEl, timelapsePanelEl)
+// Suppress unused warning until later steps reference it
+void timelapse
+
 if (supportsFullscreen) {
   fullscreenToggleEl.hidden = false
   fullscreenToggleEl.addEventListener('click', toggleFullscreen)
