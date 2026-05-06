@@ -486,6 +486,35 @@ body[data-mode="invert"] #mobile-bar {
   font-size: 14px;
   letter-spacing: 0;
   line-height: 1;
+  /* Smooth the snap when the .muted animation is removed */
+  transition: opacity 0.6s ease, box-shadow 0.6s ease, color 0.3s ease,
+              background 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 0 0 0 rgba(201, 168, 106, 0);
+}
+
+#sound-toggle.muted {
+  color: #c9a86a;
+  border-color: rgba(201, 168, 106, 0.45);
+  animation: speaker-pulse-opacity 2.4s ease-in-out infinite,
+             speaker-pulse-glow 2.4s ease-in-out infinite;
+}
+
+@keyframes speaker-pulse-opacity {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 0.9; }
+}
+
+@keyframes speaker-pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 168, 106, 0); }
+  50%      { box-shadow: 0 0 14px 2px rgba(201, 168, 106, 0.22); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #sound-toggle.muted {
+    animation: none;
+    color: #c9a86a;
+    box-shadow: 0 0 8px 1px rgba(201, 168, 106, 0.18);
+  }
 }
 
 #sound-toggle[aria-pressed="true"] {
@@ -579,7 +608,8 @@ body[data-mode="invert"] #mobile-bar {
     padding: 4px 8px;
   }
   #info-button { width: 24px; padding: 4px 0; font-size: 11px; }
-  #sound-toggle { width: 28px; padding: 3px 0; font-size: 13px; }
+  /* 44px minimum tap target for the muted-pulse speaker on phones */
+  #sound-toggle { width: 44px; min-height: 44px; padding: 4px 0; font-size: 16px; }
 
   #quote-info {
     bottom: 70px;

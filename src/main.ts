@@ -455,6 +455,7 @@ function refreshSoundButton() {
   const icon = on ? '🔊' : '🔇'
   soundToggleEl.textContent = icon
   soundToggleEl.setAttribute('aria-pressed', on ? 'true' : 'false')
+  soundToggleEl.classList.toggle('muted', !on)
   soundToggleEl.title = on ? 'Mute sound' : 'Turn on sound'
 }
 soundToggleEl.addEventListener('click', () => {
