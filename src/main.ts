@@ -63,7 +63,6 @@ const mobileMoodPrevEl = document.getElementById('m-mood-prev') as HTMLButtonEle
 const mobileMoodEl = document.getElementById('m-mood') as HTMLButtonElement
 const mobileMoodNextEl = document.getElementById('m-mood-next') as HTMLButtonElement
 const mobileNextEl = document.getElementById('m-next') as HTMLButtonElement
-const mobileThemeEl = document.getElementById('m-theme') as HTMLButtonElement
 const mobileTimelapseEl = document.getElementById('m-timelapse') as HTMLButtonElement
 const mobileModeEl = document.getElementById('m-mode') as HTMLButtonElement
 
@@ -136,9 +135,6 @@ const mobileMq = window.matchMedia('(hover: none) and (pointer: coarse), (max-wi
 function refreshThemeSelection() {
   const useStatic = mobileMq.matches
   themeLabelEl.textContent = useStatic ? 'themes' : quotes.themeLabel
-  if (mobileThemeEl) {
-    mobileThemeEl.textContent = useStatic ? 'themes' : quotes.themeLabel
-  }
   for (const btn of themeDropdownEl.querySelectorAll<HTMLButtonElement>('button')) {
     btn.setAttribute('aria-selected', btn.dataset.value === quotes.currentTheme ? 'true' : 'false')
   }
@@ -702,11 +698,6 @@ mobileMoodPrevEl.addEventListener('click', () => { quotes.nextMood(-1); relayout
 mobileMoodNextEl.addEventListener('click', () => { quotes.nextMood(1); relayout(); bumpRipple() })
 mobileMoodEl.addEventListener('click', () => { quotes.nextMood(1); relayout(); bumpRipple() })
 mobileNextEl.addEventListener('click', () => transitionToNext())
-mobileThemeEl.addEventListener('click', e => {
-  e.stopPropagation()
-  closeTagCloud()
-  toggleThemeDropdown()
-})
 mobileTimelapseEl.addEventListener('click', () => timelapse.toggle())
 mobileModeEl.addEventListener('click', cycleDisplayMode)
 // Mouse wheel — advance to next quote (acts like Spacebar)
