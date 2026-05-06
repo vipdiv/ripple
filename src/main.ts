@@ -55,7 +55,6 @@ const tlFillEl = document.getElementById('tl-fill') as HTMLElement
 const tlPlayheadEl = document.getElementById('tl-playhead') as HTMLElement
 const tlDateEl = document.getElementById('tl-date') as HTMLElement
 const tlTicksEl = document.getElementById('tl-ticks') as HTMLElement
-const tlDebugEl = document.getElementById('tl-debug') as HTMLElement | null
 const tagRowEl = document.getElementById('tag-row') as HTMLElement
 const tagToggleEl = document.getElementById('tag-toggle') as HTMLButtonElement
 const tagLabelEl = document.getElementById('tag-label')!
@@ -592,7 +591,6 @@ const timelapse = new TimelapseController({
   playheadEl: tlPlayheadEl,
   dateEl: tlDateEl,
   ticksEl: tlTicksEl,
-  debugEl: tlDebugEl,
   chrono: quotes.chronological(),
   hooks: {
     onEnter: () => {
