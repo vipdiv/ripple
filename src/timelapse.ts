@@ -18,8 +18,15 @@ import { quoteAtDate } from './quotes'
 
 export type Speed = 1 | 2 | 4 | 8
 const SPEED_CYCLE: Speed[] = [1, 2, 4, 8]
-/** 1x covers 0..1 in BASE_DURATION_S seconds; faster speeds divide that. */
-const BASE_DURATION_S = 60
+/** 1x covers 0..1 in BASE_TRAVERSAL_SECONDS seconds; faster speeds divide that. */
+const BASE_TRAVERSAL_SECONDS = 60
+/**
+ * Cap the per-frame delta so a stalled rAF (tab inactive, iOS Safari touch
+ * throttling, GC pause, etc.) can't advance the timeline by an entire second
+ * in one frame. 100 ms ≈ 10 FPS — enough headroom for normal jitter,
+ * tight enough that the worst frame moves <1 second of timeline at 1x.
+ */
+const MAX_FRAME_DT_SECONDS = 0.1
 
 export interface TimelapseHooks {
   /** Fires before the scrubber slides up. Use to lock font, settle wobble, damp ripple. */
@@ -198,10 +205,13 @@ export class TimelapseController {
   private tickFrame = (): void => {
     if (!this.playing) return
     const now = performance.now()
-    const dt = (now - this.lastTickMs) / 1000  // seconds elapsed since last frame
+    // Clamp dt so a stalled frame can't blow through the timeline in one shot.
+    const rawDt = (now - this.lastTickMs) / 1000
+    const dt = rawDt > MAX_FRAME_DT_SECONDS ? MAX_FRAME_DT_SECONDS : rawDt
     this.lastTickMs = now
-    const dp = (dt * this.speed) / BASE_DURATION_S
-    let next = this.position + dp
+    // 1x advances 1/60 per second; faster speeds scale linearly.
+    const delta = (dt / BASE_TRAVERSAL_SECONDS) * this.speed
+    let next = this.position + delta
     const reachedEnd = next >= 1
     if (reachedEnd) next = 1
     this.applyPosition(next, true)
