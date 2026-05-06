@@ -136,11 +136,17 @@ export class TimelapseController {
     this.hooks.onEnter?.()
     this.toggleEl.setAttribute('aria-pressed', 'true')
     this.toggleEl.title = 'Exit time-lapse'
-    document.body.classList.add('timelapse-active')
-    this.panelEl.hidden = false
-    // Force a position re-emit so the floating quote and date refresh
-    // immediately on entry without requiring user interaction.
-    this.applyPosition(this.position, /*emit*/ true)
+    // Settle window — let the surface decay naturally before the dim filter
+    // and scrubber slide-up commit. Spec: 'transition into time-lapse should
+    // feel like the surface gently calming, not like someone hit pause.'
+    window.setTimeout(() => {
+      if (!this.active) return  // user already exited mid-settle
+      document.body.classList.add('timelapse-active')
+      this.panelEl.hidden = false
+      // Force a position re-emit so the floating quote and date refresh
+      // immediately on full entry without requiring user interaction.
+      this.applyPosition(this.position, /*emit*/ true)
+    }, 300)
   }
 
   exit(): void {

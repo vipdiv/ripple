@@ -526,6 +526,14 @@ let lockedFont: EraFont | null = null
 let tlAlpha = 1
 let tlFadeRafId: number | null = null
 let lastTimelapseQuote: { text: string; date: string; context: string; from_type: string } | null = null
+/**
+ * While time-lapse is active, particle physics is normally gated off so the
+ * floating words sit still. On entry though, we let them keep updating for
+ * a brief settle window so the existing wobble decays naturally instead of
+ * snapping. performance.now() less than this value -> physics still runs.
+ */
+let tlPhysicsUntilMs = 0
+const TL_ENTRY_SETTLE_MS = 700
 
 function fadeInTimelapseQuote() {
   // 120ms ease-in fade — only used during autoplay quote transitions.
@@ -573,11 +581,10 @@ const timelapse = new TimelapseController({
       // Lock the font that's currently active so it doesn't swap mid-scrub.
       lockedFont = currentFont
       tlAlpha = 1
-      // Damp any in-flight ripple so the surface settles before we go quiet.
-      ripple.field.fill(0)
-      ripple.velocity.fill(0)
-      // Reset all word particles to their layout origin so they stop wobbling.
-      for (const w of words) { w.x = w.ox; w.y = w.oy; w.vx = 0; w.vy = 0 }
+      // Let the existing ripple field and word particles decay naturally.
+      // updateParticles() keeps running until the settle window ends; the
+      // ripple field's built-in damping (0.985 per step) carries it to flat.
+      tlPhysicsUntilMs = performance.now() + TL_ENTRY_SETTLE_MS
       // Crossfade audio: regular bed fades down, time-lapse bed fades up.
       sound.enableTimelapse()
       // First-time-this-session tooltip explaining the lockout.
@@ -765,7 +772,9 @@ function initialSplash() {
 // --- Main loop ---
 function loop() {
   ripple.step()
-  if (!timelapse.isActive) {
+  // Particles update normally outside time-lapse, and during the entry
+  // settle window so the wobble can decay smoothly into the dim state.
+  if (!timelapse.isActive || performance.now() < tlPhysicsUntilMs) {
     updateParticles(
       words,
       (x, y) => ripple.gradient(x, y),
