@@ -43,6 +43,7 @@ const themeToggleEl = document.getElementById('theme-toggle') as HTMLButtonEleme
 const themeLabelEl = document.getElementById('theme-label')!
 const themeDropdownEl = document.getElementById('theme-dropdown') as HTMLElement
 const soundToggleEl = document.getElementById('sound-toggle') as HTMLButtonElement
+const fullscreenToggleEl = document.getElementById('fullscreen-toggle') as HTMLButtonElement
 const tagRowEl = document.getElementById('tag-row') as HTMLElement
 const tagToggleEl = document.getElementById('tag-toggle') as HTMLButtonElement
 const tagLabelEl = document.getElementById('tag-label')!
@@ -442,6 +443,9 @@ window.addEventListener('keydown', e => {
     ripple.disturb(W / 2, H / 2, 8, 10)
   } else if (e.code === 'KeyR') {
     cycleDisplayMode()
+  } else if (e.code === 'KeyF' && supportsFullscreen) {
+    e.preventDefault()
+    toggleFullscreen()
   }
 })
 
@@ -478,6 +482,33 @@ showOneTimeTooltip({
   delayMs: 500,
   durationMs: 4000,
 })
+
+// Fullscreen toggle (desktop only — touch devices handle fullscreen via OS UI)
+const supportsFullscreen = typeof document.documentElement.requestFullscreen === 'function'
+function refreshFullscreenButton() {
+  const on = !!document.fullscreenElement
+  fullscreenToggleEl.setAttribute('aria-pressed', on ? 'true' : 'false')
+  fullscreenToggleEl.title = on ? 'Exit fullscreen (F)' : 'Fullscreen (F)'
+}
+function toggleFullscreen() {
+  if (!supportsFullscreen) return
+  if (document.fullscreenElement) {
+    document.exitFullscreen().catch(() => {})
+  } else {
+    document.documentElement.requestFullscreen().catch(() => {})
+  }
+}
+if (supportsFullscreen) {
+  fullscreenToggleEl.hidden = false
+  fullscreenToggleEl.addEventListener('click', toggleFullscreen)
+  document.addEventListener('fullscreenchange', () => {
+    refreshFullscreenButton()
+    // Fullscreen transitions also fire a window resize, but call ours
+    // directly so the ripple field is guaranteed to know about the new
+    // dimensions.
+    resize()
+  })
+}
 
 // Theme dropdown
 themeToggleEl.addEventListener('click', e => {

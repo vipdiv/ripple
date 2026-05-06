@@ -37,6 +37,14 @@
       </svg>
       <span class="sound-label">sound off</span>
     </button>
+    <button id="fullscreen-toggle" type="button" title="Fullscreen (F)" aria-label="Toggle fullscreen" aria-pressed="false" hidden>
+      <svg class="fs-enter" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+        <path d="M5 5h6v2H7v4H5V5zm14 0v6h-2V7h-4V5h6zM5 19v-6h2v4h4v2H5zm14 0h-6v-2h4v-4h2v6z"/>
+      </svg>
+      <svg class="fs-exit" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+        <path d="M5 13h6v6H9v-4H5v-2zm6-8v6H5V9h4V5h2zm8 8v2h-4v4h-2v-6h6zm-6-8h2v4h4v2h-6V5z"/>
+      </svg>
+    </button>
     <button id="info-button" type="button" title="About this project" aria-label="About">?</button>
   </div>
   <div id="quote-info">
@@ -53,6 +61,8 @@
     <span>← → change mood</span>
     <span class="sep">·</span>
     <span>R cycles mode</span>
+    <span class="sep">·</span>
+    <span>F fullscreen</span>
   </div>
   <nav id="mobile-bar" aria-label="Mobile controls">
     <button id="m-mood-prev" type="button" class="m-icon" aria-label="Previous mood">◀</button>
@@ -72,7 +82,7 @@
       <p>Quotes are rendered in the Gmail default font from their era — Arial for 2004–2017, Roboto from 2018 onward — so each message looks the way it would have when it first arrived in the inbox.</p>
       <p><strong>♪ sound off / sound on</strong> — toggle ambient generative audio. The whole experience works perfectly without sound, but turning it on adds drone, pings, and mood-tonal-color that respond to your interaction.</p>
       <p class="info-mobile-note">Tap and drag to create ripples and trigger sounds. Use the bottom bar to change moods, advance quotes, switch themes, toggle display modes, and control sound.</p>
-      <p class="controls">Click and drag to ripple · Spacebar or scroll for next quote · Arrow keys filter by mood · R cycles display mode</p>
+      <p class="controls">Click and drag to ripple · Spacebar or scroll for next quote · Arrow keys filter by mood · R cycles display mode · F toggles fullscreen</p>
     </div>
   </div>
   <script type="module" src="/src/main.ts"></script>

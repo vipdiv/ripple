@@ -480,6 +480,30 @@ body[data-mode="invert"] #mobile-bar {
   letter-spacing: 0;
 }
 
+#fullscreen-toggle {
+  width: 28px;
+  padding: 6px 0;
+  font-size: 12px;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+#fullscreen-toggle svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+  margin: 0 auto;
+}
+
+#fullscreen-toggle .fs-exit { display: none; }
+#fullscreen-toggle[aria-pressed="true"] .fs-enter { display: none; }
+#fullscreen-toggle[aria-pressed="true"] .fs-exit  { display: block; margin: 0 auto; }
+
+/* Touch devices already handle fullscreen via the OS UI */
+@media (hover: none) and (pointer: coarse) {
+  #fullscreen-toggle { display: none !important; }
+}
+
 /* Inherits #top-right button styling — same border, padding, font-size, hover */
 #sound-toggle {
   display: inline-flex;

@@ -252,6 +252,7 @@ npm run deploy       # deploy to GitHub Pages
 - **Theme dropdown** — filter by life theme (Arts, Career, Family, etc.)
 - **Tag cloud** — when a theme is selected, drill down into subtopics
 - **R** or click the toggle — cycle Art / Read / Invert display modes
+- **F** or click the fullscreen toggle — enter or exit fullscreen (desktop only; mobile already handles this through the OS UI)
 - **♪ sound off / sound on** — toggle ambient sound (off by default; the muted button gently pulses with a faint amber glow so it's easy to spot)
 - **?** or click the info button — about this project
 - Quotes auto-advance every 10 seconds
