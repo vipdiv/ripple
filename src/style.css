@@ -1134,6 +1134,27 @@ body.timelapse-playing #tl-playpause .tl-pause { display: block; }
   color: rgba(var(--chrome), 0.7);
 }
 
+/* Debug overlay — only visible when time-lapse is active AND the
+   TIMELAPSE_DEBUG flag is on. Bottom-left so it doesn't compete with
+   the canvas metadata column on the right. */
+#tl-debug[hidden] { display: none; }
+#tl-debug {
+  position: fixed;
+  left: 14px;
+  bottom: 14px;
+  z-index: 26;
+  pointer-events: none;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: rgba(var(--chrome), 0.45);
+  white-space: nowrap;
+}
+@media (hover: none) and (pointer: coarse), (max-width: 720px) {
+  #tl-debug { bottom: calc(126px + env(safe-area-inset-bottom, 0px)); }
+}
+
 /* Stage dim while time-lapse is active. The chrome (hourglass, scrubber, buttons) stays bright. */
 body.timelapse-active #c {
   filter: brightness(0.78) saturate(0.85);

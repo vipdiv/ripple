@@ -28,6 +28,13 @@ const BASE_TRAVERSAL_SECONDS = 60
  */
 const MAX_FRAME_DT_SECONDS = 0.1
 
+/**
+ * When true, the controller writes a small live readout
+ * (`1x · 14.3s · pos 0.234`) to the #tl-debug element while time-lapse is
+ * active. Flip to false to ship without the overlay.
+ */
+export const TIMELAPSE_DEBUG = true
+
 export interface TimelapseHooks {
   /** Fires before the scrubber slides up. Use to lock font, settle wobble, damp ripple. */
   onEnter?: () => void
@@ -65,7 +72,13 @@ export class TimelapseController {
   private playheadEl: HTMLElement
   private dateEl: HTMLElement
   private ticksEl: HTMLElement
+  private debugEl: HTMLElement | null
   private hooks: TimelapseHooks
+  /** Cumulative ms spent in the playing state during this time-lapse session. */
+  private playElapsedMs = 0
+  /** performance.now() when the current play session started; 0 if paused. */
+  private playStartMs = 0
+  private debugIntervalId: number | null = null
 
   private chrono: Quote[] = []
   private minMs = 0
@@ -87,6 +100,7 @@ export class TimelapseController {
     playheadEl: HTMLElement
     dateEl: HTMLElement
     ticksEl: HTMLElement
+    debugEl?: HTMLElement | null
     chrono: Quote[]
     hooks?: TimelapseHooks
   }) {
@@ -100,6 +114,7 @@ export class TimelapseController {
     this.playheadEl = opts.playheadEl
     this.dateEl = opts.dateEl
     this.ticksEl = opts.ticksEl
+    this.debugEl = opts.debugEl ?? null
     this.hooks = opts.hooks ?? {}
     this.setChronological(opts.chrono)
     this.speedEl.textContent = `${this.speed}x`
@@ -133,9 +148,12 @@ export class TimelapseController {
   enter(): void {
     if (this.active) return
     this.active = true
+    this.playElapsedMs = 0
+    this.playStartMs = 0
     this.hooks.onEnter?.()
     this.toggleEl.setAttribute('aria-pressed', 'true')
     this.toggleEl.title = 'Exit time-lapse'
+    this.startDebugRender()
     // Settle window — let the surface decay naturally before the dim filter
     // and scrubber slide-up commit. Spec: 'transition into time-lapse should
     // feel like the surface gently calming, not like someone hit pause.'
@@ -157,6 +175,7 @@ export class TimelapseController {
     this.toggleEl.setAttribute('aria-pressed', 'false')
     this.toggleEl.title = 'Time-lapse mode'
     document.body.classList.remove('timelapse-active', 'timelapse-playing')
+    this.stopDebugRender()
     window.setTimeout(() => {
       if (!this.active) this.panelEl.hidden = true
     }, 500)
@@ -184,7 +203,9 @@ export class TimelapseController {
     this.playing = true
     document.body.classList.add('timelapse-playing')
     this.playPauseEl.setAttribute('aria-label', 'Pause')
-    this.lastTickMs = performance.now()
+    const now = performance.now()
+    this.lastTickMs = now
+    this.playStartMs = now
     this.rafId = requestAnimationFrame(this.tickFrame)
     this.hooks.onPlayingChange?.(true)
   }
@@ -192,6 +213,12 @@ export class TimelapseController {
   pause(): void {
     if (!this.playing) return
     this.playing = false
+    // Bank the time spent in this play session so the debug counter
+    // resumes from where it left off when the user presses play again.
+    if (this.playStartMs > 0) {
+      this.playElapsedMs += performance.now() - this.playStartMs
+      this.playStartMs = 0
+    }
     document.body.classList.remove('timelapse-playing')
     this.playPauseEl.setAttribute('aria-label', 'Play')
     if (this.rafId !== null) cancelAnimationFrame(this.rafId)
@@ -323,6 +350,35 @@ export class TimelapseController {
         this.hooks.onQuoteChange?.(quote, this.playing)
       }
     }
+  }
+
+  // ── debug overlay ──────────────────────────────────────────────
+
+  private startDebugRender(): void {
+    if (!TIMELAPSE_DEBUG || !this.debugEl) return
+    this.debugEl.hidden = false
+    this.renderDebug()
+    this.debugIntervalId = window.setInterval(() => this.renderDebug(), 100)
+  }
+
+  private stopDebugRender(): void {
+    if (this.debugIntervalId !== null) {
+      clearInterval(this.debugIntervalId)
+      this.debugIntervalId = null
+    }
+    if (this.debugEl) this.debugEl.hidden = true
+  }
+
+  private renderDebug(): void {
+    if (!this.debugEl) return
+    // Live elapsed = banked + (currently-playing session, if any).
+    const liveSessionMs = this.playing && this.playStartMs > 0
+      ? performance.now() - this.playStartMs
+      : 0
+    const elapsedMs = this.playElapsedMs + liveSessionMs
+    const elapsedS = (elapsedMs / 1000).toFixed(1)
+    const pos = this.position.toFixed(3)
+    this.debugEl.textContent = `${this.speed}x · ${elapsedS}s · pos ${pos}`
   }
 
   /**
