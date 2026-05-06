@@ -896,10 +896,15 @@ body[data-mood="existential"] { --mood-hue: 250; --mood-sat: 30%; }
   }
 }
 
-/* Very narrow viewports — mobile bar already showing; hide sound label, keep icon + pulse */
+/* Very narrow viewports — mobile bar already showing; tighten the sound button proportionally but keep the label */
 @media (max-width: 600px) {
   #top-right { gap: 4px; right: 12px; top: 12px; }
-  #sound-toggle { padding: 4px 6px; }
-  #sound-toggle .sound-label { display: none; }
+  #sound-toggle {
+    padding: 3px 6px;
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    gap: 4px;
+  }
+  #sound-toggle svg { width: 10px; height: 10px; }
   #header { max-width: calc(100vw - 170px); }
 }
