@@ -114,9 +114,10 @@ function buildThemeDropdown() {
 const mobileMq = window.matchMedia('(hover: none) and (pointer: coarse), (max-width: 720px)')
 
 function refreshThemeSelection() {
-  themeLabelEl.textContent = quotes.themeLabel
+  const useStatic = mobileMq.matches
+  themeLabelEl.textContent = useStatic ? 'themes' : quotes.themeLabel
   if (mobileThemeEl) {
-    mobileThemeEl.textContent = mobileMq.matches ? 'themes' : quotes.themeLabel
+    mobileThemeEl.textContent = useStatic ? 'themes' : quotes.themeLabel
   }
   for (const btn of themeDropdownEl.querySelectorAll<HTMLButtonElement>('button')) {
     btn.setAttribute('aria-selected', btn.dataset.value === quotes.currentTheme ? 'true' : 'false')
