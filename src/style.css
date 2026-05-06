@@ -417,7 +417,8 @@ body[data-mode="invert"] #mobile-bar {
   white-space: nowrap;
 }
 
-#mobile-bar #m-sound[aria-pressed="true"] {
+#mobile-bar #m-sound[aria-pressed="true"],
+#mobile-bar #m-timelapse[aria-pressed="true"] {
   color: rgba(var(--accent), 0.95);
 }
 
@@ -907,18 +908,12 @@ body[data-mood="existential"] { --mood-hue: 250; --mood-sat: 30%; }
    Time-lapse mode — hourglass toggle + scrubber panel
    ──────────────────────────────────────────────────────────── */
 
-/* Display-mode button: ART/READ/INVERT text on desktop, half-moon icon on mobile. */
+/* Display-mode button: ART/READ/INVERT text on desktop, half-moon icon on mobile.
+   On mobile/touch, the desktop top-right copy is hidden in favor of the
+   #m-mode button in the bottom bar. */
 #mode-toggle .mode-icon { display: none; }
 @media (hover: none) and (pointer: coarse), (max-width: 720px) {
-  #mode-toggle .mode-text { display: none; }
-  #mode-toggle .mode-icon {
-    display: inline-block;
-    font-size: 14px;
-    line-height: 1;
-    letter-spacing: 0;
-  }
-  /* When mode-icon is showing, tighten padding so the icon button matches its peers */
-  #mode-toggle { padding: 4px 8px; min-width: 28px; text-align: center; }
+  #mode-toggle, #timelapse-toggle { display: none !important; }
 }
 
 /* Hourglass lives in the #top-right row beside the display-mode button.

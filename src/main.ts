@@ -64,6 +64,8 @@ const mobileMoodEl = document.getElementById('m-mood') as HTMLButtonElement
 const mobileMoodNextEl = document.getElementById('m-mood-next') as HTMLButtonElement
 const mobileNextEl = document.getElementById('m-next') as HTMLButtonElement
 const mobileThemeEl = document.getElementById('m-theme') as HTMLButtonElement
+const mobileTimelapseEl = document.getElementById('m-timelapse') as HTMLButtonElement
+const mobileModeEl = document.getElementById('m-mode') as HTMLButtonElement
 
 // --- Display modes ---
 type DisplayMode = 'art' | 'read' | 'invert'
@@ -80,6 +82,7 @@ function setDisplayMode(mode: DisplayMode) {
   const icon = modeToggleEl.querySelector('.mode-icon')
   if (text) text.textContent = mode.toUpperCase()
   if (icon) icon.textContent = modeIcon
+  if (mobileModeEl) mobileModeEl.textContent = modeIcon
 }
 
 function cycleDisplayMode() {
@@ -606,6 +609,8 @@ const timelapse = new TimelapseController({
       tlPhysicsUntilMs = performance.now() + TL_ENTRY_SETTLE_MS
       // Crossfade audio: regular bed fades down, time-lapse bed fades up.
       sound.enableTimelapse()
+      // Mirror the controller's aria-pressed onto the mobile-bar button.
+      if (mobileTimelapseEl) mobileTimelapseEl.setAttribute('aria-pressed', 'true')
       // First-time-this-session tooltip explaining the lockout.
       showOneTimeTooltip({
         key: 'ripple.tooltip.timelapse',
@@ -625,6 +630,8 @@ const timelapse = new TimelapseController({
       }
       // Crossfade audio back to the regular ambient.
       sound.disableTimelapse()
+      // Mirror the controller's aria-pressed onto the mobile-bar button.
+      if (mobileTimelapseEl) mobileTimelapseEl.setAttribute('aria-pressed', 'false')
       // Re-render the displayed quote with the era-correct font.
       relayout()
     },
@@ -702,6 +709,8 @@ mobileThemeEl.addEventListener('click', e => {
   closeTagCloud()
   toggleThemeDropdown()
 })
+mobileTimelapseEl.addEventListener('click', () => timelapse.toggle())
+mobileModeEl.addEventListener('click', cycleDisplayMode)
 // Mouse wheel — advance to next quote (acts like Spacebar)
 window.addEventListener('wheel', e => {
   // Let the modal and theme dropdown handle their own scrolling
