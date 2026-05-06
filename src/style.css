@@ -908,44 +908,42 @@ body[data-mood="existential"] { --mood-hue: 250; --mood-sat: 30%; }
    Time-lapse mode — hourglass toggle + scrubber panel
    ──────────────────────────────────────────────────────────── */
 
-#timelapse-toggle {
-  position: fixed;
-  bottom: 22px;
-  right: 22px;
-  z-index: 25;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: 1px solid rgba(var(--chrome), 0.3);
-  color: rgba(var(--chrome), var(--op-button));
-  cursor: pointer;
-  padding: 0;
-  border-radius: 4px;
-  transition: color 0.2s ease, border-color 0.2s ease,
-              background 0.2s ease, transform 0.2s ease;
+/* Display-mode button: ART/READ/INVERT text on desktop, half-moon icon on mobile. */
+#mode-toggle .mode-icon { display: none; }
+@media (hover: none) and (pointer: coarse), (max-width: 720px) {
+  #mode-toggle .mode-text { display: none; }
+  #mode-toggle .mode-icon {
+    display: inline-block;
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: 0;
+  }
+  /* When mode-icon is showing, tighten padding so the icon button matches its peers */
+  #mode-toggle { padding: 4px 8px; min-width: 28px; text-align: center; }
 }
 
-#timelapse-toggle:hover,
-#timelapse-toggle:focus-visible {
-  color: rgba(var(--chrome), var(--op-button-hover));
-  border-color: rgba(var(--chrome), 0.6);
-  outline: none;
+/* Hourglass lives in the #top-right row beside the display-mode button.
+   Inherits #top-right button chrome (border, padding, hover) — only the
+   svg sizing and aria-pressed accent tint are local. */
+#timelapse-toggle {
+  width: 28px;
+  padding: 6px 0;
+  font-size: 12px;
+  letter-spacing: 0;
+  line-height: 1;
 }
 
 #timelapse-toggle[aria-pressed="true"] {
   border-color: rgba(var(--accent), 0.55);
   color: rgba(var(--accent), 0.95);
   background: rgba(var(--accent), 0.08);
-  transform: scale(0.94);
 }
 
 .hourglass-icon {
-  width: 22px;
-  height: 28px;
+  width: 13px;
+  height: 17px;
   display: block;
+  margin: 0 auto;
 }
 
 .hg-sand-top,
@@ -1132,12 +1130,8 @@ canvas#c {
   transition: filter 0.6s ease;
 }
 
-/* Hide hourglass on mobile-bar viewports — lift above the bar instead of overlapping */
+/* Scrubber panel: lift above the mobile control bar so they don't stack on top of each other */
 @media (hover: none) and (pointer: coarse), (max-width: 720px) {
-  #timelapse-toggle {
-    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
-    right: 14px;
-  }
   #timelapse-panel {
     bottom: calc(72px + env(safe-area-inset-bottom, 0px));
     width: calc(100vw - 24px);
