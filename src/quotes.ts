@@ -342,4 +342,32 @@ export class QuoteManager {
   get count(): number {
     return this.filtered.length
   }
+
+  /**
+   * Chronologically-sorted snapshot of every quote in the dataset.
+   * Filters do NOT apply — time-lapse mode iterates the full archive.
+   * ISO YYYY-MM-DD dates sort correctly lexicographically.
+   */
+  chronological(): Quote[] {
+    return [...this.quotes].sort((a, b) => (a.date ?? '').localeCompare(b.date ?? ''))
+  }
+}
+
+/**
+ * Find the most recent quote whose date is <= targetIso (e.g. '2018-08-23').
+ * Quotes must be pre-sorted by date ascending. Returns the last quote when
+ * targetIso is past every entry, the first when it predates them all.
+ */
+export function quoteAtDate(sortedQuotes: Quote[], targetIso: string): Quote | null {
+  if (sortedQuotes.length === 0) return null
+  if (targetIso < sortedQuotes[0].date) return sortedQuotes[0]
+  // Binary search for last index with date <= targetIso
+  let lo = 0
+  let hi = sortedQuotes.length - 1
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1
+    if (sortedQuotes[mid].date <= targetIso) lo = mid
+    else hi = mid - 1
+  }
+  return sortedQuotes[lo]
 }

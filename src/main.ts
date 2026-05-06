@@ -47,6 +47,12 @@ const soundToggleEl = document.getElementById('sound-toggle') as HTMLButtonEleme
 const fullscreenToggleEl = document.getElementById('fullscreen-toggle') as HTMLButtonElement
 const timelapseToggleEl = document.getElementById('timelapse-toggle') as HTMLButtonElement
 const timelapsePanelEl = document.getElementById('timelapse-panel') as HTMLElement
+const tlTrackWrapEl = document.getElementById('tl-track-wrap') as HTMLElement
+const tlTrackEl = document.getElementById('tl-track') as HTMLElement
+const tlFillEl = document.getElementById('tl-fill') as HTMLElement
+const tlPlayheadEl = document.getElementById('tl-playhead') as HTMLElement
+const tlDateEl = document.getElementById('tl-date') as HTMLElement
+const tlTicksEl = document.getElementById('tl-ticks') as HTMLElement
 const tagRowEl = document.getElementById('tag-row') as HTMLElement
 const tagToggleEl = document.getElementById('tag-toggle') as HTMLButtonElement
 const tagLabelEl = document.getElementById('tag-label')!
@@ -362,6 +368,7 @@ function transitionToNext() {
 
 // --- Input ---
 canvas.addEventListener('mousedown', e => {
+  if (timelapse.isActive) return
   mouseDown = true
   lastDragX = e.clientX
   lastDragY = e.clientY
@@ -371,7 +378,7 @@ canvas.addEventListener('mousedown', e => {
 })
 
 canvas.addEventListener('mousemove', e => {
-  if (!mouseDown) return
+  if (!mouseDown || timelapse.isActive) return
   const dx = e.clientX - lastDragX
   const dy = e.clientY - lastDragY
   const dist = Math.sqrt(dx * dx + dy * dy)
@@ -394,6 +401,7 @@ canvas.addEventListener('mouseleave', () => {
 
 // Touch
 canvas.addEventListener('touchstart', e => {
+  if (timelapse.isActive) return
   e.preventDefault()
   const t = e.touches[0]
   mouseDown = true
@@ -405,6 +413,7 @@ canvas.addEventListener('touchstart', e => {
 }, { passive: false })
 
 canvas.addEventListener('touchmove', e => {
+  if (timelapse.isActive) return
   e.preventDefault()
   const t = e.touches[0]
   if (!mouseDown) return
@@ -501,10 +510,53 @@ function toggleFullscreen() {
     document.documentElement.requestFullscreen().catch(() => {})
   }
 }
-// Time-lapse mode (step 1: UI shell only — controller wires into ripple/audio in later steps)
-const timelapse = new TimelapseController(timelapseToggleEl, timelapsePanelEl)
-// Suppress unused warning until later steps reference it
-void timelapse
+// Time-lapse mode (step 2: manual scrubbing — autoplay and audio land later)
+let lockedFont: EraFont | null = null
+
+const timelapse = new TimelapseController({
+  toggleEl: timelapseToggleEl,
+  panelEl: timelapsePanelEl,
+  trackWrapEl: tlTrackWrapEl,
+  trackEl: tlTrackEl,
+  fillEl: tlFillEl,
+  playheadEl: tlPlayheadEl,
+  dateEl: tlDateEl,
+  ticksEl: tlTicksEl,
+  chrono: quotes.chronological(),
+  hooks: {
+    onEnter: () => {
+      // Lock the font that's currently active so it doesn't swap mid-scrub.
+      lockedFont = currentFont
+      // Damp any in-flight ripple so the surface settles before we go quiet.
+      ripple.field.fill(0)
+      ripple.velocity.fill(0)
+      // Reset all word particles to their layout origin so they stop wobbling.
+      for (const w of words) { w.x = w.ox; w.y = w.oy; w.vx = 0; w.vy = 0 }
+    },
+    onExit: () => {
+      lockedFont = null
+      // Re-render the displayed quote with the era-correct font.
+      relayout()
+    },
+    onPositionChange: (_p, quote) => {
+      if (!quote) return
+      // Render this chronological quote without going through the regular
+      // mood/theme filter — we just lay it out and update the side info.
+      words = layoutText(quote.text, W, H, {
+        font: `${getFontSize()}px ${(lockedFont ?? currentFont).family}`,
+        fontSize: getFontSize(),
+        lineHeight: Math.round(getFontSize() * 1.7),
+        padding: getPadding(),
+        offsetY: Math.round(H * 0.35),
+      })
+      // Mirror the side-info column to match the displayed quote.
+      quoteDateEl.textContent = formatDate(quote.date)
+      quoteContextEl.textContent = quote.context
+      quoteFromEl.textContent = quote.from_type ? `from ${quote.from_type}` : ''
+      quoteFontEl.textContent = `set in ${(lockedFont ?? currentFont).label}`
+    },
+  },
+})
 
 if (supportsFullscreen) {
   fullscreenToggleEl.hidden = false
@@ -570,7 +622,8 @@ function render() {
 
   // Draw words
   const fontSize = getFontSize()
-  ctx.font = `${fontSize}px ${currentFont.family}`
+  const drawFont = lockedFont ?? currentFont
+  ctx.font = `${fontSize}px ${drawFont.family}`
   ctx.textBaseline = 'top'
 
   const quote = quotes.current()
@@ -624,6 +677,7 @@ function render() {
 
 // --- Ambient ripples ---
 function ambientRipple() {
+  if (timelapse.isActive) return
   const x = Math.random() * W
   const y = Math.random() * H
   ripple.disturb(x, y, 3, 2)
@@ -640,13 +694,15 @@ function initialSplash() {
 // --- Main loop ---
 function loop() {
   ripple.step()
-  updateParticles(
-    words,
-    (x, y) => ripple.gradient(x, y),
-    0.9,   // ripple force
-    0.015, // spring
-    0.88,  // damping
-  )
+  if (!timelapse.isActive) {
+    updateParticles(
+      words,
+      (x, y) => ripple.gradient(x, y),
+      0.9,   // ripple force
+      0.015, // spring
+      0.88,  // damping
+    )
+  }
   render()
   requestAnimationFrame(loop)
 }
@@ -672,9 +728,9 @@ function init() {
   // Ambient ripples
   setInterval(ambientRipple, 3500)
   
-  // Auto-advance quotes every 12 seconds
+  // Auto-advance quotes every 12 seconds (paused during time-lapse)
   setInterval(() => {
-    if (!mouseDown) transitionToNext()
+    if (!mouseDown && !timelapse.isActive) transitionToNext()
   }, 12000)
 
   loop()
