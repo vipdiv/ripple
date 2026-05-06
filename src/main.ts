@@ -75,12 +75,10 @@ let displayMode: DisplayMode = 'art'
 function setDisplayMode(mode: DisplayMode) {
   displayMode = mode
   document.body.dataset.mode = mode
-  // Mode button has both a text label (desktop) and an icon (mobile);
-  // CSS handles which is visible, JS updates both so they stay in sync.
+  // Both the desktop top-right button and the mobile-bar copy show only the
+  // state-dependent icon (◐ art / ☾ read / ☀ invert) — same glyph, different size.
   const modeIcon = mode === 'invert' ? '☀' : mode === 'read' ? '☾' : '◐'
-  const text = modeToggleEl.querySelector('.mode-text')
   const icon = modeToggleEl.querySelector('.mode-icon')
-  if (text) text.textContent = mode.toUpperCase()
   if (icon) icon.textContent = modeIcon
   if (mobileModeEl) mobileModeEl.textContent = modeIcon
 }

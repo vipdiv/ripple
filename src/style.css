@@ -908,10 +908,20 @@ body[data-mood="existential"] { --mood-hue: 250; --mood-sat: 30%; }
    Time-lapse mode — hourglass toggle + scrubber panel
    ──────────────────────────────────────────────────────────── */
 
-/* Display-mode button: ART/READ/INVERT text on desktop, half-moon icon on mobile.
-   On mobile/touch, the desktop top-right copy is hidden in favor of the
-   #m-mode button in the bottom bar. */
-#mode-toggle .mode-icon { display: none; }
+/* Display-mode button shows only the state-dependent icon (◐ art / ☾ read /
+   ☀ invert) at all sizes. On mobile/touch the desktop button is hidden in
+   favor of #m-mode in the bottom bar. */
+#mode-toggle {
+  width: 28px;
+  padding: 6px 0;
+  font-size: 14px;
+  letter-spacing: 0;
+  line-height: 1;
+}
+#mode-toggle .mode-icon {
+  display: block;
+  text-align: center;
+}
 @media (hover: none) and (pointer: coarse), (max-width: 720px) {
   #mode-toggle, #timelapse-toggle { display: none !important; }
 }
