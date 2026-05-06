@@ -568,6 +568,15 @@ const timelapse = new TimelapseController({
       ripple.velocity.fill(0)
       // Reset all word particles to their layout origin so they stop wobbling.
       for (const w of words) { w.x = w.ox; w.y = w.oy; w.vx = 0; w.vy = 0 }
+      // First-time-this-session tooltip explaining the lockout.
+      showOneTimeTooltip({
+        key: 'ripple.tooltip.timelapse',
+        anchor: 'viewport-top',
+        accent: 'time-lapse mode',
+        text: '— ripples pause until you exit',
+        delayMs: 300,
+        durationMs: 4000,
+      })
     },
     onExit: () => {
       lockedFont = null

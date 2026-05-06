@@ -573,7 +573,8 @@ body[data-mode="invert"] #mobile-bar {
 }
 
 .one-time-tooltip.anchor-bottom-center,
-.one-time-tooltip.anchor-top-center {
+.one-time-tooltip.anchor-top-center,
+.one-time-tooltip.anchor-viewport-top {
   /* keep their inline transform for centering */
 }
 
@@ -583,8 +584,17 @@ body[data-mode="invert"] #mobile-bar {
 }
 
 .one-time-tooltip.anchor-bottom-center.visible,
-.one-time-tooltip.anchor-top-center.visible {
+.one-time-tooltip.anchor-top-center.visible,
+.one-time-tooltip.anchor-viewport-top.visible {
   transform: translateX(-50%) translateY(0);
+}
+
+.one-time-tooltip .tip-accent {
+  color: rgba(var(--accent), 0.95);
+  margin-right: 6px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 10px;
 }
 
 /* Little arrow pointing up at the target for top-right anchor */

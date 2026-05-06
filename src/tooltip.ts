@@ -11,15 +11,22 @@
  * time-lapse mode entry tooltip.
  */
 
-export type TooltipAnchor = 'top-right' | 'bottom-center' | 'top-center'
+export type TooltipAnchor =
+  | 'top-right'
+  | 'bottom-center'
+  | 'top-center'
+  /** Pinned to the top of the viewport, centered horizontally. Ignores target. */
+  | 'viewport-top'
 
 export interface TooltipOptions {
   /** Unique sessionStorage key. */
   key: string
-  /** Element the tooltip points at. */
-  target: HTMLElement
-  /** Tooltip text. The "tap" prefix can be styled via the .accent class if needed. */
+  /** Element the tooltip points at. Required unless anchor is 'viewport-top'. */
+  target?: HTMLElement
+  /** Tooltip text. */
   text: string
+  /** Optional accent-colored prefix rendered before `text`. */
+  accent?: string
   /** Where the tooltip sits relative to the target. */
   anchor?: TooltipAnchor
   /** Milliseconds before the tooltip appears. */
@@ -44,7 +51,15 @@ export function showOneTimeTooltip(opts: TooltipOptions): void {
     const tip = document.createElement('div')
     tip.className = `one-time-tooltip anchor-${anchor}`
     tip.setAttribute('role', 'status')
-    tip.textContent = text
+    if (opts.accent) {
+      const acc = document.createElement('span')
+      acc.className = 'tip-accent'
+      acc.textContent = opts.accent
+      tip.appendChild(acc)
+      tip.appendChild(document.createTextNode(text))
+    } else {
+      tip.textContent = text
+    }
 
     document.body.appendChild(tip)
     positionTooltip(tip, target, anchor)
@@ -80,7 +95,16 @@ export function showOneTimeTooltip(opts: TooltipOptions): void {
   ;(showOneTimeTooltip as unknown as { _last?: number })._last = showAt
 }
 
-function positionTooltip(tip: HTMLElement, target: HTMLElement, anchor: TooltipAnchor): void {
+function positionTooltip(tip: HTMLElement, target: HTMLElement | undefined, anchor: TooltipAnchor): void {
+  if (anchor === 'viewport-top') {
+    tip.style.top = '24px'
+    tip.style.left = '50%'
+    tip.style.right = 'auto'
+    tip.style.bottom = 'auto'
+    tip.style.transform = 'translateX(-50%)'
+    return
+  }
+  if (!target) return
   const rect = target.getBoundingClientRect()
   const margin = 10
   switch (anchor) {
