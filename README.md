@@ -269,7 +269,7 @@ Tap the **hourglass icon** — top-right row on desktop, bottom bar on mobile. T
 Three ways to move through the archive:
 
 - **Press play** — autoplay through every quote in chronological order, August 2004 to April 2026
-- **Tap the speed pill** — cycle through `1x`, `2x`, `4x`, `8x`. At 1x the full 22 years take ~60 seconds. At 8x, ~7.5 seconds
+- **Tap the speed pill** — cycle through `1x`, `2x`, `4x`, `8x`. At 1x the full 22 years take ~120 seconds (calm, contemplative). At 8x, ~15 seconds.
 - **Drag the playhead** — manually scrub anywhere on the timeline. Quote and date update live as you drag
 
 The date readout (`8 / 2004` style — month / year) updates continuously. Tiny ambient ripples fire automatically during playback, scaling with speed — sparse drops at 1x, gentle constant shimmer at 8x.

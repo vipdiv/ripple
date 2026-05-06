@@ -19,7 +19,7 @@ import { quoteAtDate } from './quotes'
 export type Speed = 1 | 2 | 4 | 8
 const SPEED_CYCLE: Speed[] = [1, 2, 4, 8]
 /** 1x covers 0..1 in BASE_TRAVERSAL_SECONDS seconds; faster speeds divide that. */
-const BASE_TRAVERSAL_SECONDS = 60
+const BASE_TRAVERSAL_SECONDS = 120
 /**
  * Cap the per-frame delta so a stalled rAF (tab inactive, iOS Safari touch
  * throttling, GC pause, etc.) can't advance the timeline by an entire second
