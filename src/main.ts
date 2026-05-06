@@ -85,6 +85,9 @@ function cycleDisplayMode() {
 
 // --- Modal ---
 function openInfo() {
+  // If autoplay is running in time-lapse, pause it (keeping the audio bed)
+  // so the user isn't reading while quotes scroll past behind the dim filter.
+  if (timelapse?.isActive && timelapse.isPlaying) timelapse.pause()
   infoModalEl.hidden = false
 }
 function closeInfo() {
@@ -268,7 +271,13 @@ function resize() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
   
   ripple.resize(W, H)
-  relayout()
+  if (timelapse?.isActive && lastTimelapseQuote) {
+    // Re-render the chronological quote at the new center; bypasses the
+    // mood/theme filter that relayout() would apply.
+    renderTimelapseQuote(lastTimelapseQuote)
+  } else {
+    relayout()
+  }
 }
 
 function relayout() {
@@ -512,10 +521,11 @@ function toggleFullscreen() {
     document.documentElement.requestFullscreen().catch(() => {})
   }
 }
-// Time-lapse mode (step 3: manual scrubbing + autoplay with speed cycling)
+// Time-lapse mode
 let lockedFont: EraFont | null = null
 let tlAlpha = 1
 let tlFadeRafId: number | null = null
+let lastTimelapseQuote: { text: string; date: string; context: string; from_type: string } | null = null
 
 function fadeInTimelapseQuote() {
   // 120ms ease-in fade — only used during autoplay quote transitions.
@@ -593,6 +603,7 @@ const timelapse = new TimelapseController({
       relayout()
     },
     onQuoteChange: (quote, autoplay) => {
+      lastTimelapseQuote = quote
       renderTimelapseQuote(quote)
       if (autoplay) fadeInTimelapseQuote()
     },

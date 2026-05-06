@@ -255,9 +255,28 @@ npm run deploy       # deploy to GitHub Pages
 - **F** or click the fullscreen toggle — enter or exit fullscreen (desktop only; mobile already handles this through the OS UI)
 - **♪ sound off / sound on** — toggle ambient sound (off by default; the muted button gently pulses with a faint amber glow so it's easy to spot)
 - **?** or click the info button — about this project
+- **⏳ Hourglass** (bottom right) — open time-lapse mode, scrub through 22 years chronologically
 - Quotes auto-advance every 10 seconds
 - Ambient ripples fire automatically
 - On phones and tablets a thin tappable control bar appears at the bottom (mood, next, themes, mode); sound and info stay in the top right
+
+## Time-lapse mode
+
+A separate way to experience the archive: watch 22 years of email pass by chronologically, like a film of an inbox aging in fast-forward.
+
+Tap the **hourglass icon** in the bottom-right corner. The current ripple settles, the canvas dims slightly, and a scrubber slides up from the bottom. The hourglass itself visually empties from top to bottom as the timeline progresses.
+
+Three ways to move through the archive:
+
+- **Press play** — autoplay through every quote in chronological order, August 2004 to April 2026
+- **Tap the speed pill** — cycle through `1x`, `2x`, `4x`, `8x`. At 1x the full 22 years take ~60 seconds. At 8x, ~7.5 seconds
+- **Drag the playhead** — manually scrub anywhere on the timeline. Quote and date update live as you drag
+
+The date readout (`8 / 2004` style — month / year) updates continuously. Tiny ambient ripples fire automatically during playback, scaling with speed — sparse drops at 1x, gentle constant shimmer at 8x.
+
+**During time-lapse, the regular click-to-ripple interaction is paused.** The cursor changes to default and the canvas dims slightly to signal observation mode. A first-time tooltip appears the first time you enter the mode in a session as a reminder. Mood, theme, and tag filters are bypassed — time-lapse always plays the full archive in date order. Filters restore when you exit.
+
+Tap the hourglass again, or tap anywhere on the dimmed canvas, to exit. You return to whatever quote you stopped on.
 
 ## Sound design
 
@@ -269,6 +288,7 @@ A tap on the speaker icon turns on a generative ambient layer built with the Web
 - The current quote's mood selects a different oscillator waveform, root frequency, filter character, and noise floor — a sad/existential quote sounds darker and grittier than a funny/absurd one. Transitions between moods crossfade smoothly
 - Advancing a quote produces a soft tonal swell, like a breath
 - The **sound off** button at the top right (a music note ♪ next to the label) pulses gently while sound is muted — opacity oscillates between 40% and 90% on a slow ~2.4 second cycle with a faint amber glow. When sound is on, the button reads as **sound on** and sits solid and still next to ART and ?.
+- During time-lapse mode, a separate audio bed crossfades in: a warm low drone plus a soft heartbeat-like pulse. The pulse rate maps to playback speed — roughly 60 BPM at 1x, 75 BPM at 2x, 95 BPM at 4x, 115 BPM at 8x. At 4x and 8x a faint high shimmer creeps in. Speed transitions are smoothed over ~1.5 seconds so the bed never jars. Manual scrubbing doesn't change the pulse rate — only autoplay speed does. The whole bed respects the master mute toggle.
 - The first time you visit, a small tooltip near the sound button reminds you that sound is opt-in. It dismisses on tap and only appears once per browser session.
 
 Sound is **off by default** and only initialized on the first toggle click (browser autoplay policy).
@@ -284,6 +304,8 @@ Quotes are rendered in the actual default font Gmail used during each quote's er
 | 2022-now | Roboto | Closest publicly available match to Google Sans, Gmail's current proprietary interface font |
 
 The font changes automatically as quotes transition between eras. A small "set in Arial" or "set in Roboto" label appears near the quote info as a nod to this history.
+
+During time-lapse mode the font is intentionally locked at whatever was active when the mode was entered. It does not swap when scrubbing across era boundaries — that would feel like a glitch during fast playback. The era-correct font returns the moment time-lapse exits.
 
 ## Tech
 

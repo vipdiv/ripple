@@ -65,6 +65,9 @@ export class TimelapseController {
   private maxMs = 0
   /** Era-boundary positions [0..1] for tick rendering. */
   private eraTickPositions: number[] = []
+  /** Sand-clip rects on the hourglass icon — driven directly by position. */
+  private hgTopRect: SVGRectElement | null = null
+  private hgBotRect: SVGRectElement | null = null
 
   constructor(opts: {
     toggleEl: HTMLButtonElement
@@ -93,6 +96,9 @@ export class TimelapseController {
     this.hooks = opts.hooks ?? {}
     this.setChronological(opts.chrono)
     this.speedEl.textContent = `${this.speed}x`
+    this.hgTopRect = this.toggleEl.querySelector<SVGRectElement>('.hg-top-rect')
+    this.hgBotRect = this.toggleEl.querySelector<SVGRectElement>('.hg-bot-rect')
+    this.updateHourglass(this.position)
 
     this.toggleEl.addEventListener('click', () => this.toggle())
     this.playPauseEl.addEventListener('click', () => this.togglePlay())
@@ -282,6 +288,7 @@ export class TimelapseController {
     const fillPct = `${(this.position * 100).toFixed(3)}%`
     this.fillEl.style.width = fillPct
     this.playheadEl.style.left = fillPct
+    this.updateHourglass(this.position)
 
     const ms = this.minMs + (this.maxMs - this.minMs) * this.position
     const d = new Date(ms)
@@ -300,6 +307,22 @@ export class TimelapseController {
         this.hooks.onQuoteChange?.(quote, this.playing)
       }
     }
+  }
+
+  /**
+   * Drive the SVG sand-clip rects from the position. Top chamber empties
+   * (y goes 3 -> 16, height goes 13 -> 0); bottom fills in lockstep.
+   */
+  private updateHourglass(p: number): void {
+    if (!this.hgTopRect || !this.hgBotRect) return
+    const topY = 3 + 13 * p
+    const topH = 13 * (1 - p)
+    this.hgTopRect.setAttribute('y', topY.toFixed(2))
+    this.hgTopRect.setAttribute('height', topH.toFixed(2))
+    const botY = 29 - 13 * p
+    const botH = 13 * p
+    this.hgBotRect.setAttribute('y', botY.toFixed(2))
+    this.hgBotRect.setAttribute('height', botH.toFixed(2))
   }
 }
 
