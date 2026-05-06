@@ -452,8 +452,6 @@ infoBackdropEl.addEventListener('click', closeInfo)
 // Sound toggle (off by default; first click triggers AudioContext init)
 function refreshSoundButton() {
   const on = sound.isEnabled
-  const icon = on ? '🔊' : '🔇'
-  soundToggleEl.textContent = icon
   soundToggleEl.setAttribute('aria-pressed', on ? 'true' : 'false')
   soundToggleEl.classList.toggle('muted', !on)
   soundToggleEl.title = on ? 'Mute sound' : 'Turn on sound'

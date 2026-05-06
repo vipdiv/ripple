@@ -480,16 +480,24 @@ body[data-mode="invert"] #mobile-bar {
   letter-spacing: 0;
 }
 
+/* Same shape and chrome as #info-button — looks like a peer of ART and ? */
 #sound-toggle {
-  width: 32px;
-  padding: 4px 0;
-  font-size: 14px;
+  width: 28px;
+  padding: 6px 0;
+  font-size: 12px;
   letter-spacing: 0;
   line-height: 1;
   /* Smooth the snap when the .muted animation is removed */
   transition: opacity 0.6s ease, box-shadow 0.6s ease, color 0.3s ease,
               background 0.2s ease, border-color 0.2s ease;
   box-shadow: 0 0 0 0 rgba(201, 168, 106, 0);
+}
+
+#sound-toggle svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+  margin: 0 auto;
 }
 
 #sound-toggle.muted {
@@ -515,11 +523,6 @@ body[data-mode="invert"] #mobile-bar {
     color: #c9a86a;
     box-shadow: 0 0 8px 1px rgba(201, 168, 106, 0.18);
   }
-}
-
-#sound-toggle[aria-pressed="true"] {
-  border-color: rgba(var(--accent), 0.55);
-  color: rgba(var(--accent), 0.95);
 }
 
 #quote-info {
@@ -608,8 +611,9 @@ body[data-mode="invert"] #mobile-bar {
     padding: 4px 8px;
   }
   #info-button { width: 24px; padding: 4px 0; font-size: 11px; }
-  /* 44px minimum tap target for the muted-pulse speaker on phones */
-  #sound-toggle { width: 44px; min-height: 44px; padding: 4px 0; font-size: 16px; }
+  /* 44px minimum tap target for the muted-pulse music note on phones */
+  #sound-toggle { width: 44px; min-height: 44px; padding: 4px 0; }
+  #sound-toggle svg { width: 18px; height: 18px; }
 
   #quote-info {
     bottom: 70px;

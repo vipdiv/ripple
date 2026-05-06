@@ -31,7 +31,11 @@
   </div>
   <div id="top-right">
     <button id="mode-toggle" type="button" title="Cycle display mode (R)">ART</button>
-    <button id="sound-toggle" type="button" title="Toggle sound (off by default)" aria-pressed="false">🔇</button>
+    <button id="sound-toggle" type="button" title="Toggle sound (off by default)" aria-pressed="false" aria-label="Toggle sound">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+      </svg>
+    </button>
     <button id="info-button" type="button" title="About this project" aria-label="About">?</button>
   </div>
   <div id="quote-info">
