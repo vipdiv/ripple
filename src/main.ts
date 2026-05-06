@@ -47,6 +47,8 @@ const soundToggleEl = document.getElementById('sound-toggle') as HTMLButtonEleme
 const fullscreenToggleEl = document.getElementById('fullscreen-toggle') as HTMLButtonElement
 const timelapseToggleEl = document.getElementById('timelapse-toggle') as HTMLButtonElement
 const timelapsePanelEl = document.getElementById('timelapse-panel') as HTMLElement
+const tlPlayPauseEl = document.getElementById('tl-playpause') as HTMLButtonElement
+const tlSpeedEl = document.getElementById('tl-speed') as HTMLButtonElement
 const tlTrackWrapEl = document.getElementById('tl-track-wrap') as HTMLElement
 const tlTrackEl = document.getElementById('tl-track') as HTMLElement
 const tlFillEl = document.getElementById('tl-fill') as HTMLElement
@@ -510,12 +512,45 @@ function toggleFullscreen() {
     document.documentElement.requestFullscreen().catch(() => {})
   }
 }
-// Time-lapse mode (step 2: manual scrubbing — autoplay and audio land later)
+// Time-lapse mode (step 3: manual scrubbing + autoplay with speed cycling)
 let lockedFont: EraFont | null = null
+let tlAlpha = 1
+let tlFadeRafId: number | null = null
+
+function fadeInTimelapseQuote() {
+  // 120ms ease-in fade — only used during autoplay quote transitions.
+  if (tlFadeRafId !== null) cancelAnimationFrame(tlFadeRafId)
+  const t0 = performance.now()
+  tlAlpha = 0
+  const step = () => {
+    const dt = performance.now() - t0
+    tlAlpha = Math.min(1, dt / 120)
+    if (tlAlpha < 1) tlFadeRafId = requestAnimationFrame(step)
+    else tlFadeRafId = null
+  }
+  tlFadeRafId = requestAnimationFrame(step)
+}
+
+function renderTimelapseQuote(quote: { text: string; date: string; context: string; from_type: string }) {
+  const drawFont = lockedFont ?? currentFont
+  words = layoutText(quote.text, W, H, {
+    font: `${getFontSize()}px ${drawFont.family}`,
+    fontSize: getFontSize(),
+    lineHeight: Math.round(getFontSize() * 1.7),
+    padding: getPadding(),
+    offsetY: Math.round(H * 0.35),
+  })
+  quoteDateEl.textContent = formatDate(quote.date)
+  quoteContextEl.textContent = quote.context
+  quoteFromEl.textContent = quote.from_type ? `from ${quote.from_type}` : ''
+  quoteFontEl.textContent = `set in ${drawFont.label}`
+}
 
 const timelapse = new TimelapseController({
   toggleEl: timelapseToggleEl,
   panelEl: timelapsePanelEl,
+  playPauseEl: tlPlayPauseEl,
+  speedEl: tlSpeedEl,
   trackWrapEl: tlTrackWrapEl,
   trackEl: tlTrackEl,
   fillEl: tlFillEl,
@@ -527,6 +562,7 @@ const timelapse = new TimelapseController({
     onEnter: () => {
       // Lock the font that's currently active so it doesn't swap mid-scrub.
       lockedFont = currentFont
+      tlAlpha = 1
       // Damp any in-flight ripple so the surface settles before we go quiet.
       ripple.field.fill(0)
       ripple.velocity.fill(0)
@@ -535,25 +571,17 @@ const timelapse = new TimelapseController({
     },
     onExit: () => {
       lockedFont = null
+      tlAlpha = 1
+      if (tlFadeRafId !== null) {
+        cancelAnimationFrame(tlFadeRafId)
+        tlFadeRafId = null
+      }
       // Re-render the displayed quote with the era-correct font.
       relayout()
     },
-    onPositionChange: (_p, quote) => {
-      if (!quote) return
-      // Render this chronological quote without going through the regular
-      // mood/theme filter — we just lay it out and update the side info.
-      words = layoutText(quote.text, W, H, {
-        font: `${getFontSize()}px ${(lockedFont ?? currentFont).family}`,
-        fontSize: getFontSize(),
-        lineHeight: Math.round(getFontSize() * 1.7),
-        padding: getPadding(),
-        offsetY: Math.round(H * 0.35),
-      })
-      // Mirror the side-info column to match the displayed quote.
-      quoteDateEl.textContent = formatDate(quote.date)
-      quoteContextEl.textContent = quote.context
-      quoteFromEl.textContent = quote.from_type ? `from ${quote.from_type}` : ''
-      quoteFontEl.textContent = `set in ${(lockedFont ?? currentFont).label}`
+    onQuoteChange: (quote, autoplay) => {
+      renderTimelapseQuote(quote)
+      if (autoplay) fadeInTimelapseQuote()
     },
   },
 })
@@ -667,8 +695,9 @@ function render() {
       alpha = Math.min(1, alpha + 0.25)
     }
 
-    // Apply transition alpha
+    // Apply transition alpha (regular mode + time-lapse autoplay crossfade)
     alpha *= transitionAlpha
+    if (timelapse.isActive) alpha *= tlAlpha
 
     ctx.fillStyle = `hsla(${hue}, ${sat}%, ${light}%, ${alpha})`
     ctx.fillText(w.text, w.x, w.y)

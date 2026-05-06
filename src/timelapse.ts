@@ -16,6 +16,11 @@
 import type { Quote } from './quotes'
 import { quoteAtDate } from './quotes'
 
+export type Speed = 1 | 2 | 4 | 8
+const SPEED_CYCLE: Speed[] = [1, 2, 4, 8]
+/** 1x covers 0..1 in BASE_DURATION_S seconds; faster speeds divide that. */
+const BASE_DURATION_S = 60
+
 export interface TimelapseHooks {
   /** Fires before the scrubber slides up. Use to lock font, settle wobble, damp ripple. */
   onEnter?: () => void
@@ -23,15 +28,28 @@ export interface TimelapseHooks {
   onExit?: () => void
   /** Fires whenever position changes (manual scrub or autoplay). */
   onPositionChange?: (p: number, quote: Quote | null, isoDate: string) => void
+  /** Fires only when the resolved quote at the current position changes. */
+  onQuoteChange?: (quote: Quote, autoplay: boolean) => void
+  /** Fires when the speed selector changes. */
+  onSpeedChange?: (speed: Speed) => void
+  /** Fires when autoplay starts/stops. */
+  onPlayingChange?: (playing: boolean) => void
 }
 
 export class TimelapseController {
   private active = false
   private position = 0  // 0..1
   private dragging = false
+  private playing = false
+  private speed: Speed = 1
+  private rafId: number | null = null
+  private lastTickMs = 0
+  private lastResolvedDate: string | null = null
 
   private toggleEl: HTMLButtonElement
   private panelEl: HTMLElement
+  private playPauseEl: HTMLButtonElement
+  private speedEl: HTMLButtonElement
   private trackWrapEl: HTMLElement
   private trackEl: HTMLElement
   private fillEl: HTMLElement
@@ -49,6 +67,8 @@ export class TimelapseController {
   constructor(opts: {
     toggleEl: HTMLButtonElement
     panelEl: HTMLElement
+    playPauseEl: HTMLButtonElement
+    speedEl: HTMLButtonElement
     trackWrapEl: HTMLElement
     trackEl: HTMLElement
     fillEl: HTMLElement
@@ -60,6 +80,8 @@ export class TimelapseController {
   }) {
     this.toggleEl = opts.toggleEl
     this.panelEl = opts.panelEl
+    this.playPauseEl = opts.playPauseEl
+    this.speedEl = opts.speedEl
     this.trackWrapEl = opts.trackWrapEl
     this.trackEl = opts.trackEl
     this.fillEl = opts.fillEl
@@ -68,8 +90,11 @@ export class TimelapseController {
     this.ticksEl = opts.ticksEl
     this.hooks = opts.hooks ?? {}
     this.setChronological(opts.chrono)
+    this.speedEl.textContent = `${this.speed}x`
 
     this.toggleEl.addEventListener('click', () => this.toggle())
+    this.playPauseEl.addEventListener('click', () => this.togglePlay())
+    this.speedEl.addEventListener('click', () => this.cycleSpeed())
 
     // Pointer Events unify mouse and touch. Capture lets us follow the
     // pointer outside the track once a drag has started.
@@ -105,6 +130,7 @@ export class TimelapseController {
 
   exit(): void {
     if (!this.active) return
+    this.pause()
     this.active = false
     this.hooks.onExit?.()
     this.toggleEl.setAttribute('aria-pressed', 'false')
@@ -113,6 +139,69 @@ export class TimelapseController {
     window.setTimeout(() => {
       if (!this.active) this.panelEl.hidden = true
     }, 500)
+  }
+
+  // ── playback ───────────────────────────────────────────────────
+
+  get isPlaying(): boolean {
+    return this.playing
+  }
+
+  get currentSpeed(): Speed {
+    return this.speed
+  }
+
+  togglePlay(): void {
+    if (this.playing) this.pause()
+    else this.play()
+  }
+
+  play(): void {
+    if (!this.active || this.playing) return
+    // At the end of the timeline, play is a no-op — user must drag back.
+    if (this.position >= 1) return
+    this.playing = true
+    document.body.classList.add('timelapse-playing')
+    this.playPauseEl.setAttribute('aria-label', 'Pause')
+    this.lastTickMs = performance.now()
+    this.rafId = requestAnimationFrame(this.tickFrame)
+    this.hooks.onPlayingChange?.(true)
+  }
+
+  pause(): void {
+    if (!this.playing) return
+    this.playing = false
+    document.body.classList.remove('timelapse-playing')
+    this.playPauseEl.setAttribute('aria-label', 'Play')
+    if (this.rafId !== null) cancelAnimationFrame(this.rafId)
+    this.rafId = null
+    this.hooks.onPlayingChange?.(false)
+  }
+
+  cycleSpeed(): void {
+    const i = SPEED_CYCLE.indexOf(this.speed)
+    this.speed = SPEED_CYCLE[(i + 1) % SPEED_CYCLE.length]
+    this.speedEl.textContent = `${this.speed}x`
+    this.speedEl.classList.add('flash')
+    window.setTimeout(() => this.speedEl.classList.remove('flash'), 600)
+    this.hooks.onSpeedChange?.(this.speed)
+  }
+
+  private tickFrame = (): void => {
+    if (!this.playing) return
+    const now = performance.now()
+    const dt = (now - this.lastTickMs) / 1000  // seconds elapsed since last frame
+    this.lastTickMs = now
+    const dp = (dt * this.speed) / BASE_DURATION_S
+    let next = this.position + dp
+    const reachedEnd = next >= 1
+    if (reachedEnd) next = 1
+    this.applyPosition(next, true)
+    if (reachedEnd) {
+      this.pause()
+      return
+    }
+    this.rafId = requestAnimationFrame(this.tickFrame)
   }
 
   /** Replace the dataset (e.g. on hot reload) and rebuild ticks. */
@@ -156,6 +245,8 @@ export class TimelapseController {
 
   private onPointerDown = (e: PointerEvent): void => {
     if (!this.active) return
+    // Manual drag pauses autoplay (per spec — does not auto-resume).
+    if (this.playing) this.pause()
     this.dragging = true
     this.trackWrapEl.classList.add('dragging')
     this.trackWrapEl.setPointerCapture(e.pointerId)
@@ -193,10 +284,16 @@ export class TimelapseController {
     const year = d.getUTCFullYear()
     this.dateEl.textContent = `${month} / ${year}`
 
-    if (emit && this.hooks.onPositionChange) {
+    if (emit) {
       const iso = isoFromMs(ms)
       const quote = quoteAtDate(this.chrono, iso)
-      this.hooks.onPositionChange(this.position, quote, iso)
+      this.hooks.onPositionChange?.(this.position, quote, iso)
+      // Fire onQuoteChange only when the resolved quote actually changes.
+      // We use the source quote's date as identity (cheap, stable).
+      if (quote && quote.date !== this.lastResolvedDate) {
+        this.lastResolvedDate = quote.date
+        this.hooks.onQuoteChange?.(quote, this.playing)
+      }
     }
   }
 }
