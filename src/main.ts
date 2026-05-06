@@ -568,6 +568,8 @@ const timelapse = new TimelapseController({
       ripple.velocity.fill(0)
       // Reset all word particles to their layout origin so they stop wobbling.
       for (const w of words) { w.x = w.ox; w.y = w.oy; w.vx = 0; w.vy = 0 }
+      // Crossfade audio: regular bed fades down, time-lapse bed fades up.
+      sound.enableTimelapse()
       // First-time-this-session tooltip explaining the lockout.
       showOneTimeTooltip({
         key: 'ripple.tooltip.timelapse',
@@ -585,6 +587,8 @@ const timelapse = new TimelapseController({
         cancelAnimationFrame(tlFadeRafId)
         tlFadeRafId = null
       }
+      // Crossfade audio back to the regular ambient.
+      sound.disableTimelapse()
       // Re-render the displayed quote with the era-correct font.
       relayout()
     },
@@ -592,6 +596,7 @@ const timelapse = new TimelapseController({
       renderTimelapseQuote(quote)
       if (autoplay) fadeInTimelapseQuote()
     },
+    onSpeedChange: (speed) => sound.setTimelapseSpeed(speed),
   },
 })
 

@@ -74,6 +74,11 @@ function createPinkNoise(actx: AudioContext): AudioBufferSourceNode {
   return node
 }
 
+export type TimelapseSpeed = 1 | 2 | 4 | 8
+const TL_BPM_FOR_SPEED: Record<TimelapseSpeed, number> = { 1: 60, 2: 75, 4: 95, 8: 115 }
+const TL_DRONE_GAIN_FOR_SPEED: Record<TimelapseSpeed, number> = { 1: 0.06, 2: 0.08, 4: 0.10, 8: 0.12 }
+const TL_SHIMMER_GAIN_FOR_SPEED: Record<TimelapseSpeed, number> = { 1: 0, 2: 0, 4: 0.008, 8: 0.018 }
+
 export class SoundEngine {
   private actx: AudioContext | null = null
   private enabled = false
@@ -82,6 +87,7 @@ export class SoundEngine {
 
   private masterGain!: GainNode
   private convolver!: ConvolverNode
+  private regularBus!: GainNode
   private droneOsc1!: OscillatorNode
   private droneOsc2!: OscillatorNode
   private droneGain!: GainNode
@@ -90,6 +96,20 @@ export class SoundEngine {
   private interactOsc!: OscillatorNode
   private interactGain!: GainNode
   private interactFilter!: BiquadFilterNode
+
+  // Time-lapse bed (drone, heartbeat pulse, high shimmer)
+  private tlBus!: GainNode
+  private tlDroneOsc1!: OscillatorNode
+  private tlDroneOsc2!: OscillatorNode
+  private tlDroneGain!: GainNode
+  private tlDroneFilter!: BiquadFilterNode
+  private tlPulseGain!: GainNode
+  private tlShimmerOsc!: OscillatorNode
+  private tlShimmerGain!: GainNode
+  private tlShimmerFilter!: BiquadFilterNode
+  private tlActive = false
+  private tlSpeed: TimelapseSpeed = 1
+  private pulseTimerId: number | null = null
 
   /** Whether audio is currently active and producing sound. */
   get isEnabled(): boolean {
@@ -170,7 +190,7 @@ export class SoundEngine {
 
     osc.connect(gain)
     gain.connect(this.convolver)
-    gain.connect(this.masterGain)
+    gain.connect(this.regularBus)
 
     osc.start(now)
     osc.stop(now + 0.6)
@@ -271,15 +291,26 @@ export class SoundEngine {
     this.masterGain.gain.value = 0
     this.masterGain.connect(actx.destination)
 
+    // Two parallel buses feed the master so we can crossfade between the
+    // regular drag-driven layer and the time-lapse playback bed without
+    // touching the underlying nodes individually.
+    this.regularBus = actx.createGain()
+    this.regularBus.gain.value = 1
+    this.regularBus.connect(this.masterGain)
+
+    this.tlBus = actx.createGain()
+    this.tlBus.gain.value = 0
+    this.tlBus.connect(this.masterGain)
+
     this.convolver = createReverb(actx, 3, 2.5)
     const reverbGain = actx.createGain()
     reverbGain.gain.value = 0.3
     this.convolver.connect(reverbGain)
-    reverbGain.connect(this.masterGain)
+    reverbGain.connect(this.regularBus)
 
     const dryGain = actx.createGain()
     dryGain.gain.value = 0.7
-    dryGain.connect(this.masterGain)
+    dryGain.connect(this.regularBus)
 
     // Drone path
     this.droneFilter = actx.createBiquadFilter()
@@ -344,6 +375,136 @@ export class SoundEngine {
     this.interactOsc.connect(this.interactGain)
     this.interactOsc.start()
 
+    // ── Time-lapse bed (silent until enableTimelapse() crossfades the bus) ──
+    // Drone: two slightly detuned sine oscillators around 55Hz through a soft lowpass.
+    this.tlDroneFilter = actx.createBiquadFilter()
+    this.tlDroneFilter.type = 'lowpass'
+    this.tlDroneFilter.frequency.value = 380
+    this.tlDroneFilter.Q.value = 0.7
+    this.tlDroneFilter.connect(this.tlBus)
+
+    this.tlDroneGain = actx.createGain()
+    this.tlDroneGain.gain.value = TL_DRONE_GAIN_FOR_SPEED[1]
+    this.tlDroneGain.connect(this.tlDroneFilter)
+
+    this.tlDroneOsc1 = actx.createOscillator()
+    this.tlDroneOsc1.type = 'sine'
+    this.tlDroneOsc1.frequency.value = 55
+    this.tlDroneOsc1.connect(this.tlDroneGain)
+    this.tlDroneOsc1.start()
+
+    this.tlDroneOsc2 = actx.createOscillator()
+    this.tlDroneOsc2.type = 'sine'
+    this.tlDroneOsc2.frequency.value = 55.4
+    this.tlDroneOsc2.connect(this.tlDroneGain)
+    this.tlDroneOsc2.start()
+
+    // Pulse gain — transient ticks (created on each fireTick) feed this gain bus.
+    this.tlPulseGain = actx.createGain()
+    this.tlPulseGain.gain.value = 1
+    this.tlPulseGain.connect(this.tlBus)
+
+    // Shimmer: triangle around 880Hz through a bandpass — silent at 1x/2x.
+    this.tlShimmerFilter = actx.createBiquadFilter()
+    this.tlShimmerFilter.type = 'bandpass'
+    this.tlShimmerFilter.frequency.value = 2200
+    this.tlShimmerFilter.Q.value = 6
+    this.tlShimmerFilter.connect(this.tlBus)
+
+    this.tlShimmerGain = actx.createGain()
+    this.tlShimmerGain.gain.value = 0
+    this.tlShimmerGain.connect(this.tlShimmerFilter)
+
+    this.tlShimmerOsc = actx.createOscillator()
+    this.tlShimmerOsc.type = 'triangle'
+    this.tlShimmerOsc.frequency.value = 880
+    this.tlShimmerOsc.connect(this.tlShimmerGain)
+    this.tlShimmerOsc.start()
+
     this.setMood(this.currentMood)
+  }
+
+  // ── Time-lapse bed control ─────────────────────────────────────
+
+  enableTimelapse(): void {
+    if (!this.actx || this.tlActive) return
+    this.tlActive = true
+    const now = this.actx.currentTime
+    // ~1.2s crossfade between buses
+    this.regularBus.gain.cancelScheduledValues(now)
+    this.regularBus.gain.linearRampToValueAtTime(0, now + 1.2)
+    this.tlBus.gain.cancelScheduledValues(now)
+    this.tlBus.gain.linearRampToValueAtTime(1, now + 1.2)
+    this.applyTimelapseSpeed(this.tlSpeed)
+    this.startPulse()
+  }
+
+  disableTimelapse(): void {
+    if (!this.actx || !this.tlActive) return
+    this.tlActive = false
+    const now = this.actx.currentTime
+    this.regularBus.gain.cancelScheduledValues(now)
+    this.regularBus.gain.linearRampToValueAtTime(1, now + 1.2)
+    this.tlBus.gain.cancelScheduledValues(now)
+    this.tlBus.gain.linearRampToValueAtTime(0, now + 1.2)
+    this.stopPulse()
+  }
+
+  /** Update the time-lapse speed (1 / 2 / 4 / 8). Pulse, drone, shimmer all reflect smoothly. */
+  setTimelapseSpeed(speed: TimelapseSpeed): void {
+    this.tlSpeed = speed
+    this.applyTimelapseSpeed(speed)
+    if (this.tlActive) {
+      // Restart pulse interval at the new tempo. Phase resets but at ambient
+      // volumes the discontinuity is inaudible.
+      this.startPulse()
+    }
+  }
+
+  private applyTimelapseSpeed(speed: TimelapseSpeed): void {
+    if (!this.actx) return
+    const now = this.actx.currentTime
+    // 1.5s smoothing on every gain change so the bed never jars on speed switches.
+    this.tlDroneGain.gain.cancelScheduledValues(now)
+    this.tlDroneGain.gain.linearRampToValueAtTime(TL_DRONE_GAIN_FOR_SPEED[speed], now + 1.5)
+    this.tlShimmerGain.gain.cancelScheduledValues(now)
+    this.tlShimmerGain.gain.linearRampToValueAtTime(TL_SHIMMER_GAIN_FOR_SPEED[speed], now + 1.5)
+  }
+
+  private startPulse(): void {
+    this.stopPulse()
+    if (!this.actx) return
+    const period = 60000 / TL_BPM_FOR_SPEED[this.tlSpeed]
+    // Fire one immediately, then on interval, so the user hears a tick the
+    // moment the bed comes up rather than waiting up to a full period.
+    this.fireTick()
+    this.pulseTimerId = window.setInterval(() => this.fireTick(), period)
+  }
+
+  private stopPulse(): void {
+    if (this.pulseTimerId !== null) {
+      clearInterval(this.pulseTimerId)
+      this.pulseTimerId = null
+    }
+  }
+
+  private fireTick(): void {
+    // Skip oscillator creation entirely when sound is disabled — saves CPU
+    // while time-lapse is active under master mute. The interval keeps
+    // running so unmuting picks back up on the next period.
+    if (!this.actx || !this.enabled) return
+    const now = this.actx.currentTime
+    const osc = this.actx.createOscillator()
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(80, now)
+    osc.frequency.exponentialRampToValueAtTime(35, now + 0.22)
+    const gain = this.actx.createGain()
+    gain.gain.setValueAtTime(0, now)
+    gain.gain.linearRampToValueAtTime(0.16, now + 0.02)
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22)
+    osc.connect(gain)
+    gain.connect(this.tlPulseGain)
+    osc.start(now)
+    osc.stop(now + 0.25)
   }
 }
