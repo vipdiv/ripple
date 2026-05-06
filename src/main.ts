@@ -10,6 +10,7 @@ import { RippleField } from './ripple-field'
 import { layoutText, updateParticles, type WordParticle } from './word-layout'
 import { QuoteManager, MOOD_COLORS, TIMELINE_NARRATIVE, THEMES, ALL_THEMES } from './quotes'
 import { SoundEngine } from './sound'
+import { showOneTimeTooltip } from './tooltip'
 
 // --- Canvas setup ---
 const canvas = document.getElementById('c') as HTMLCanvasElement
@@ -455,6 +456,8 @@ function refreshSoundButton() {
   soundToggleEl.setAttribute('aria-pressed', on ? 'true' : 'false')
   soundToggleEl.classList.toggle('muted', !on)
   soundToggleEl.title = on ? 'Mute sound' : 'Turn on sound'
+  const labelEl = soundToggleEl.querySelector('.sound-label')
+  if (labelEl) labelEl.textContent = on ? 'sound on' : 'sound off'
 }
 soundToggleEl.addEventListener('click', () => {
   sound.toggle()
@@ -464,6 +467,16 @@ soundToggleEl.addEventListener('click', () => {
   refreshSoundButton()
 })
 refreshSoundButton()
+
+// First-time hint: nudge users toward the sound toggle on initial visit.
+showOneTimeTooltip({
+  key: 'ripple.tooltip.sound',
+  target: soundToggleEl,
+  text: 'tap to enable ambient sound',
+  anchor: 'top-right',
+  delayMs: 500,
+  durationMs: 4000,
+})
 
 // Theme dropdown
 themeToggleEl.addEventListener('click', e => {

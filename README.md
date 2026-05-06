@@ -252,7 +252,7 @@ npm run deploy       # deploy to GitHub Pages
 - **Theme dropdown** — filter by life theme (Arts, Career, Family, etc.)
 - **Tag cloud** — when a theme is selected, drill down into subtopics
 - **R** or click the toggle — cycle Art / Read / Invert display modes
-- **♪** — toggle ambient sound (off by default; the muted music-note icon gently pulses with a faint amber glow so it's easy to spot)
+- **♪ sound off / sound on** — toggle ambient sound (off by default; the muted button gently pulses with a faint amber glow so it's easy to spot)
 - **?** or click the info button — about this project
 - Quotes auto-advance every 10 seconds
 - Ambient ripples fire automatically
@@ -267,7 +267,8 @@ A tap on the speaker icon turns on a generative ambient layer built with the Web
 - Dragging opens the filter and raises the volume in real time — speed maps to brightness, vertical position maps to pitch, horizontal position detunes the drone
 - The current quote's mood selects a different oscillator waveform, root frequency, filter character, and noise floor — a sad/existential quote sounds darker and grittier than a funny/absurd one. Transitions between moods crossfade smoothly
 - Advancing a quote produces a soft tonal swell, like a breath
-- The music-note icon at the top right pulses gently while sound is muted — opacity oscillates between 40% and 90% on a slow ~2.4 second cycle with a faint amber glow. When sound is on, the icon is solid and still.
+- The **sound off** button at the top right (a music note ♪ next to the label) pulses gently while sound is muted — opacity oscillates between 40% and 90% on a slow ~2.4 second cycle with a faint amber glow, and the icon shrinks slightly when you flip to **sound on** so the label takes over as the resting state. When sound is on, the button is solid and still.
+- The first time you visit, a small tooltip near the sound button reminds you that sound is opt-in. It dismisses on tap and only appears once per browser session.
 
 Sound is **off by default** and only initialized on the first toggle click (browser autoplay policy).
 

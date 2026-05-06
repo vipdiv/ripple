@@ -480,13 +480,12 @@ body[data-mode="invert"] #mobile-bar {
   letter-spacing: 0;
 }
 
-/* Same shape and chrome as #info-button — looks like a peer of ART and ? */
+/* Same chrome as #info-button / #mode-toggle — looks like a peer of ART and ? */
 #sound-toggle {
-  width: 28px;
-  padding: 6px 0;
-  font-size: 12px;
-  letter-spacing: 0;
-  line-height: 1;
+  /* inherit base #top-right button styling (font/padding/border/color) */
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   /* Smooth the snap when the .muted animation is removed */
   transition: opacity 0.6s ease, box-shadow 0.6s ease, color 0.3s ease,
               background 0.2s ease, border-color 0.2s ease;
@@ -494,10 +493,21 @@ body[data-mode="invert"] #mobile-bar {
 }
 
 #sound-toggle svg {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   display: block;
-  margin: 0 auto;
+  flex-shrink: 0;
+  transition: width 0.4s ease, height 0.4s ease, transform 0.4s ease;
+}
+
+/* Muted icon is at full size — it does the visual work; pulse animates the whole button */
+#sound-toggle.muted svg {
+  width: 20px;
+  height: 20px;
+}
+
+#sound-toggle .sound-label {
+  display: inline-block;
 }
 
 #sound-toggle.muted {
@@ -523,6 +533,71 @@ body[data-mode="invert"] #mobile-bar {
     color: #c9a86a;
     box-shadow: 0 0 8px 1px rgba(201, 168, 106, 0.18);
   }
+}
+
+/* One-time hint tooltip (sound toggle, time-lapse, etc.) */
+.one-time-tooltip {
+  position: fixed;
+  z-index: 60;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: rgba(var(--chrome), 0.95);
+  background: rgba(15, 15, 22, 0.96);
+  border: 1px solid rgba(201, 168, 106, 0.45);
+  padding: 8px 12px;
+  border-radius: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  max-width: min(260px, calc(100vw - 28px));
+  box-shadow: 0 0 14px 0 rgba(201, 168, 106, 0.18);
+}
+
+.one-time-tooltip.anchor-bottom-center,
+.one-time-tooltip.anchor-top-center {
+  /* keep their inline transform for centering */
+}
+
+.one-time-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.one-time-tooltip.anchor-bottom-center.visible,
+.one-time-tooltip.anchor-top-center.visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Little arrow pointing up at the target for top-right anchor */
+.one-time-tooltip.anchor-top-right::before,
+.one-time-tooltip.anchor-top-center::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 14px;
+  width: 10px;
+  height: 10px;
+  background: rgba(15, 15, 22, 0.96);
+  border-left: 1px solid rgba(201, 168, 106, 0.45);
+  border-top: 1px solid rgba(201, 168, 106, 0.45);
+  transform: rotate(45deg);
+}
+
+.one-time-tooltip.anchor-top-center::before {
+  right: auto;
+  left: 50%;
+  margin-left: -5px;
+}
+
+body[data-mode="invert"] .one-time-tooltip {
+  background: #fafaf6;
+  color: rgba(var(--chrome), 0.95);
+}
+body[data-mode="invert"] .one-time-tooltip.anchor-top-right::before,
+body[data-mode="invert"] .one-time-tooltip.anchor-top-center::before {
+  background: #fafaf6;
 }
 
 #quote-info {
@@ -611,9 +686,10 @@ body[data-mode="invert"] #mobile-bar {
     padding: 4px 8px;
   }
   #info-button { width: 24px; padding: 4px 0; font-size: 11px; }
-  /* 44px minimum tap target for the muted-pulse music note on phones */
-  #sound-toggle { width: 44px; min-height: 44px; padding: 4px 0; }
+  /* Inherits #top-right button mobile padding; ensure tap height stays ≥44px */
+  #sound-toggle { min-height: 44px; }
   #sound-toggle svg { width: 18px; height: 18px; }
+  #sound-toggle.muted svg { width: 22px; height: 22px; }
 
   #quote-info {
     bottom: 70px;
