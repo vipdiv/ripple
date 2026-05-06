@@ -499,10 +499,9 @@ body[data-mode="invert"] #mobile-bar {
 #fullscreen-toggle[aria-pressed="true"] .fs-enter { display: none; }
 #fullscreen-toggle[aria-pressed="true"] .fs-exit  { display: block; margin: 0 auto; }
 
-/* Touch devices already handle fullscreen via the OS UI */
-@media (hover: none) and (pointer: coarse) {
-  #fullscreen-toggle { display: none !important; }
-}
+/* Fullscreen button stays visible on mobile; iOS Safari requires the
+   webkit-prefixed Fullscreen API which is feature-detected in main.ts.
+   When neither standard nor webkit is supported, [hidden] applies. */
 
 /* Inherits #top-right button styling — same border, padding, font-size, hover */
 #sound-toggle {
@@ -1171,6 +1170,7 @@ canvas#c {
 /* Very narrow viewports — mobile bar already showing; tighten the sound button proportionally but keep the label */
 @media (max-width: 600px) {
   #top-right { gap: 4px; right: 12px; top: 12px; }
+  #top-right button { padding: 4px 6px; font-size: 9px; }
   #sound-toggle {
     padding: 3px 6px;
     font-size: 8px;
@@ -1178,5 +1178,9 @@ canvas#c {
     gap: 4px;
   }
   #sound-toggle svg { width: 10px; height: 10px; }
+  #fullscreen-toggle, #info-button, #timelapse-toggle { padding: 4px 0; }
+  #fullscreen-toggle svg { width: 12px; height: 12px; }
+  #info-button { width: 22px; }
+  .hourglass-icon { width: 11px; height: 14px; }
   #header { max-width: calc(100vw - 170px); }
 }

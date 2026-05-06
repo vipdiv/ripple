@@ -510,19 +510,34 @@ showOneTimeTooltip({
   durationMs: 4000,
 })
 
-// Fullscreen toggle (desktop only — touch devices handle fullscreen via OS UI)
-const supportsFullscreen = typeof document.documentElement.requestFullscreen === 'function'
+// Fullscreen toggle. Available on both desktop and mobile; iOS Safari needs
+// the webkit-prefixed API, so we feature-detect both and pick whatever's there.
+type FsDoc = Document & {
+  webkitFullscreenElement?: Element | null
+  webkitExitFullscreen?: () => Promise<void> | void
+}
+type FsEl = HTMLElement & {
+  webkitRequestFullscreen?: () => Promise<void> | void
+}
+const fsDoc = document as FsDoc
+const fsRoot = document.documentElement as FsEl
+const requestFs = fsRoot.requestFullscreen?.bind(fsRoot) ?? fsRoot.webkitRequestFullscreen?.bind(fsRoot)
+const exitFs = fsDoc.exitFullscreen?.bind(fsDoc) ?? fsDoc.webkitExitFullscreen?.bind(fsDoc)
+const supportsFullscreen = typeof requestFs === 'function' && typeof exitFs === 'function'
+function fullscreenElement(): Element | null {
+  return fsDoc.fullscreenElement ?? fsDoc.webkitFullscreenElement ?? null
+}
 function refreshFullscreenButton() {
-  const on = !!document.fullscreenElement
+  const on = !!fullscreenElement()
   fullscreenToggleEl.setAttribute('aria-pressed', on ? 'true' : 'false')
   fullscreenToggleEl.title = on ? 'Exit fullscreen (F)' : 'Fullscreen (F)'
 }
 function toggleFullscreen() {
   if (!supportsFullscreen) return
-  if (document.fullscreenElement) {
-    document.exitFullscreen().catch(() => {})
+  if (fullscreenElement()) {
+    Promise.resolve(exitFs!()).catch(() => {})
   } else {
-    document.documentElement.requestFullscreen().catch(() => {})
+    Promise.resolve(requestFs!()).catch(() => {})
   }
 }
 // Time-lapse mode
@@ -642,13 +657,17 @@ const TL_RIPPLE_PROB: Record<1 | 2 | 4 | 8, number> = {
 if (supportsFullscreen) {
   fullscreenToggleEl.hidden = false
   fullscreenToggleEl.addEventListener('click', toggleFullscreen)
-  document.addEventListener('fullscreenchange', () => {
+  // Listen for both standard and webkit-prefixed events so iOS Safari is
+  // covered. Either fires on enter and exit (including Esc on desktop).
+  const onFsChange = () => {
     refreshFullscreenButton()
-    // Fullscreen transitions also fire a window resize, but call ours
-    // directly so the ripple field is guaranteed to know about the new
-    // dimensions.
+    // Fullscreen transitions normally fire a window resize on their own,
+    // but call ours directly so the ripple field is guaranteed to pick up
+    // the new dimensions immediately.
     resize()
-  })
+  }
+  document.addEventListener('fullscreenchange', onFsChange)
+  document.addEventListener('webkitfullscreenchange', onFsChange)
 }
 
 // Theme dropdown
