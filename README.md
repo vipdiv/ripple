@@ -252,19 +252,19 @@ npm run deploy       # deploy to GitHub Pages
 - **Theme dropdown** — filter by life theme (Arts, Career, Family, etc.)
 - **Tag cloud** — when a theme is selected, drill down into subtopics
 - **R** or click the toggle — cycle Art / Read / Invert display modes
-- **F** or click the fullscreen toggle — enter or exit fullscreen (desktop only; mobile already handles this through the OS UI)
-- **♪ sound off / sound on** — toggle ambient sound (off by default; the muted button gently pulses with a faint amber glow so it's easy to spot)
+- **F** or click the fullscreen toggle (⛶) — enter or exit fullscreen (desktop and mobile, including iOS Safari)
+- **♪ off / ♪ on** — toggle ambient sound (off by default; the muted button gently pulses with a faint amber glow so it's easy to spot)
 - **?** or click the info button — about this project
-- **⏳ Hourglass** (bottom right) — open time-lapse mode, scrub through 22 years chronologically
+- **⏳ Hourglass** (top-right row, next to the display-mode button) — open time-lapse mode, scrub through 22 years chronologically
 - Quotes auto-advance every 10 seconds
 - Ambient ripples fire automatically
-- On phones and tablets a thin tappable control bar appears at the bottom (mood, next, themes, mode); sound and info stay in the top right
+- On phones and tablets a thin tappable control bar appears at the bottom (◀ mood ▶, next quote, themes); display mode, sound, fullscreen, hourglass, and info all stay in the top-right row
 
 ## Time-lapse mode
 
 A separate way to experience the archive: watch 22 years of email pass by chronologically, like a film of an inbox aging in fast-forward.
 
-Tap the **hourglass icon** in the bottom-right corner. The current ripple settles, the canvas dims slightly, and a scrubber slides up from the bottom. The hourglass itself visually empties from top to bottom as the timeline progresses.
+Tap the **hourglass icon** in the top-right row, next to the display-mode button. The current ripple settles, the canvas dims slightly, and a scrubber slides up from the bottom. The hourglass itself visually empties from top to bottom as the timeline progresses.
 
 Three ways to move through the archive:
 
@@ -287,7 +287,7 @@ A tap on the speaker icon turns on a generative ambient layer built with the Web
 - Dragging opens the filter and raises the volume in real time — speed maps to brightness, vertical position maps to pitch, horizontal position detunes the drone
 - The current quote's mood selects a different oscillator waveform, root frequency, filter character, and noise floor — a sad/existential quote sounds darker and grittier than a funny/absurd one. Transitions between moods crossfade smoothly
 - Advancing a quote produces a soft tonal swell, like a breath
-- The **sound off** button at the top right (a music note ♪ next to the label) pulses gently while sound is muted — opacity oscillates between 40% and 90% on a slow ~2.4 second cycle with a faint amber glow. When sound is on, the button reads as **sound on** and sits solid and still next to ART and ?.
+- The **♪ off** button at the top right pulses gently while sound is muted — opacity oscillates between 40% and 90% on a slow ~2.4 second cycle with a faint amber glow. When sound is on, the button reads as **♪ on** and sits solid and still next to ART and ?.
 - During time-lapse mode, a separate audio bed crossfades in: a warm low drone plus a soft heartbeat-like pulse. The pulse rate maps to playback speed — roughly 60 BPM at 1x, 75 BPM at 2x, 95 BPM at 4x, 115 BPM at 8x. At 4x and 8x a faint high shimmer creeps in. Speed transitions are smoothed over ~1.5 seconds so the bed never jars. Manual scrubbing doesn't change the pulse rate — only autoplay speed does. The whole bed respects the master mute toggle.
 - The first time you visit, a small tooltip near the sound button reminds you that sound is opt-in. It dismisses on tap and only appears once per browser session.
 
