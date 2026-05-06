@@ -597,8 +597,25 @@ const timelapse = new TimelapseController({
       if (autoplay) fadeInTimelapseQuote()
     },
     onSpeedChange: (speed) => sound.setTimelapseSpeed(speed),
+    onAutoplayTick: (speed) => {
+      // Tiny ambient ripple, probability-per-frame keyed to playback speed.
+      // Shape is much smaller / lower-amplitude than user-click ripples.
+      const prob = TL_RIPPLE_PROB[speed]
+      if (Math.random() < prob) {
+        const x = Math.random() * W
+        const y = Math.random() * H
+        ripple.disturb(x, y, 2, 0.7)
+      }
+    },
   },
 })
+
+const TL_RIPPLE_PROB: Record<1 | 2 | 4 | 8, number> = {
+  1: 0.005,
+  2: 0.012,
+  4: 0.025,
+  8: 0.05,
+}
 
 if (supportsFullscreen) {
   fullscreenToggleEl.hidden = false

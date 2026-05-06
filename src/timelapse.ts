@@ -34,6 +34,8 @@ export interface TimelapseHooks {
   onSpeedChange?: (speed: Speed) => void
   /** Fires when autoplay starts/stops. */
   onPlayingChange?: (playing: boolean) => void
+  /** Fires once per autoplay frame so callers can spawn ambient ripples etc. */
+  onAutoplayTick?: (speed: Speed) => void
 }
 
 export class TimelapseController {
@@ -197,6 +199,9 @@ export class TimelapseController {
     const reachedEnd = next >= 1
     if (reachedEnd) next = 1
     this.applyPosition(next, true)
+    // Autoplay-only hook (manual scrub never reaches here) — used by main.ts
+    // to spawn the speed-scaled tiny ambient ripples.
+    this.hooks.onAutoplayTick?.(this.speed)
     if (reachedEnd) {
       this.pause()
       return
