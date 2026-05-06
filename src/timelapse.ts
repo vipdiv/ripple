@@ -28,6 +28,16 @@ const BASE_TRAVERSAL_SECONDS = 60
  */
 const MAX_FRAME_DT_SECONDS = 0.1
 
+/**
+ * When true, the controller writes a small live readout
+ * (`1x · 14.3s · pos 0.234 · frame 142`) to the #tl-debug element while
+ * time-lapse is active and emits per-frame console logs (throttled to
+ * every 10th frame) so a real-device test can pin down what `dt`,
+ * `delta`, and `position` are actually doing each frame. Flip to false
+ * once the speed bug is fixed.
+ */
+export const TIMELAPSE_DEBUG = true
+
 export interface TimelapseHooks {
   /** Fires before the scrubber slides up. Use to lock font, settle wobble, damp ripple. */
   onEnter?: () => void
@@ -65,7 +75,17 @@ export class TimelapseController {
   private playheadEl: HTMLElement
   private dateEl: HTMLElement
   private ticksEl: HTMLElement
+  private debugEl: HTMLElement | null
   private hooks: TimelapseHooks
+  /** Cumulative ms spent in the playing state during this time-lapse session. */
+  private playElapsedMs = 0
+  /** performance.now() when the current play session started; 0 if paused. */
+  private playStartMs = 0
+  private debugIntervalId: number | null = null
+  /** Frames since play() was last pressed. Resets at each play() call. */
+  private debugFrameCount = 0
+  /** Timestamp of the previous tickFrame, for double-rAF detection. */
+  private debugPrevFrameMs = 0
 
   private chrono: Quote[] = []
   private minMs = 0
@@ -87,6 +107,7 @@ export class TimelapseController {
     playheadEl: HTMLElement
     dateEl: HTMLElement
     ticksEl: HTMLElement
+    debugEl?: HTMLElement | null
     chrono: Quote[]
     hooks?: TimelapseHooks
   }) {
@@ -100,6 +121,7 @@ export class TimelapseController {
     this.playheadEl = opts.playheadEl
     this.dateEl = opts.dateEl
     this.ticksEl = opts.ticksEl
+    this.debugEl = opts.debugEl ?? null
     this.hooks = opts.hooks ?? {}
     this.setChronological(opts.chrono)
     this.speedEl.textContent = `${this.speed}x`
@@ -133,9 +155,12 @@ export class TimelapseController {
   enter(): void {
     if (this.active) return
     this.active = true
+    this.playElapsedMs = 0
+    this.playStartMs = 0
     this.hooks.onEnter?.()
     this.toggleEl.setAttribute('aria-pressed', 'true')
     this.toggleEl.title = 'Exit time-lapse'
+    this.startDebugRender()
     // Settle window — let the surface decay naturally before the dim filter
     // and scrubber slide-up commit. Spec: 'transition into time-lapse should
     // feel like the surface gently calming, not like someone hit pause.'
@@ -157,6 +182,7 @@ export class TimelapseController {
     this.toggleEl.setAttribute('aria-pressed', 'false')
     this.toggleEl.title = 'Time-lapse mode'
     document.body.classList.remove('timelapse-active', 'timelapse-playing')
+    this.stopDebugRender()
     window.setTimeout(() => {
       if (!this.active) this.panelEl.hidden = true
     }, 500)
@@ -184,7 +210,11 @@ export class TimelapseController {
     this.playing = true
     document.body.classList.add('timelapse-playing')
     this.playPauseEl.setAttribute('aria-label', 'Pause')
-    this.lastTickMs = performance.now()
+    const now = performance.now()
+    this.lastTickMs = now
+    this.playStartMs = now
+    this.debugFrameCount = 0
+    this.debugPrevFrameMs = 0
     this.rafId = requestAnimationFrame(this.tickFrame)
     this.hooks.onPlayingChange?.(true)
   }
@@ -192,6 +222,10 @@ export class TimelapseController {
   pause(): void {
     if (!this.playing) return
     this.playing = false
+    if (this.playStartMs > 0) {
+      this.playElapsedMs += performance.now() - this.playStartMs
+      this.playStartMs = 0
+    }
     document.body.classList.remove('timelapse-playing')
     this.playPauseEl.setAttribute('aria-label', 'Play')
     if (this.rafId !== null) cancelAnimationFrame(this.rafId)
@@ -211,12 +245,20 @@ export class TimelapseController {
   private tickFrame = (): void => {
     if (!this.playing) return
     const now = performance.now()
+    // Gap since previous tickFrame run, regardless of clamping. Used for
+    // double-rAF detection: if two callbacks fire within the same frame
+    // (e.g. from a duplicated controller after HMR), the second has a
+    // sub-millisecond gap.
+    const gapSincePrev = this.debugPrevFrameMs > 0 ? now - this.debugPrevFrameMs : -1
+    this.debugPrevFrameMs = now
     // Clamp dt so a stalled frame can't blow through the timeline in one shot.
     const rawDt = (now - this.lastTickMs) / 1000
-    const dt = rawDt > MAX_FRAME_DT_SECONDS ? MAX_FRAME_DT_SECONDS : rawDt
+    const clamped = rawDt > MAX_FRAME_DT_SECONDS
+    const dt = clamped ? MAX_FRAME_DT_SECONDS : rawDt
     this.lastTickMs = now
     // 1x advances 1/60 per second; faster speeds scale linearly.
     const delta = (dt / BASE_TRAVERSAL_SECONDS) * this.speed
+    const positionBefore = this.position
     let next = this.position + delta
     const reachedEnd = next >= 1
     if (reachedEnd) next = 1
@@ -224,6 +266,47 @@ export class TimelapseController {
     // Autoplay-only hook (manual scrub never reaches here) — used by main.ts
     // to spawn the speed-scaled tiny ambient ripples.
     this.hooks.onAutoplayTick?.(this.speed)
+
+    this.debugFrameCount++
+    if (TIMELAPSE_DEBUG) {
+      // First-frame snapshot of constants — proves what the bundler
+      // actually inlined (catches typos, stale builds, weird optimization).
+      if (this.debugFrameCount === 1) {
+        // eslint-disable-next-line no-console
+        console.log('[timelapse] first frame after play():', {
+          BASE_TRAVERSAL_SECONDS,
+          MAX_FRAME_DT_SECONDS,
+          speed: this.speed,
+          speedType: typeof this.speed,
+          rafId: this.rafId,
+        })
+      }
+      // Throttled frame-by-frame log so the console doesn't drown.
+      if (this.debugFrameCount % 10 === 0) {
+        // eslint-disable-next-line no-console
+        console.log('[timelapse]', {
+          frame: this.debugFrameCount,
+          rawDt: +rawDt.toFixed(4),
+          dt: +dt.toFixed(4),
+          clamped,
+          gapSincePrev: +gapSincePrev.toFixed(2),
+          speed: this.speed,
+          delta: +delta.toFixed(6),
+          positionBefore: +positionBefore.toFixed(4),
+          positionAfter: +this.position.toFixed(4),
+        })
+      }
+      // Anytime we see a sub-5ms gap between frames, that's two rAF chains
+      // colliding. Always log it (rare, important).
+      if (gapSincePrev > 0 && gapSincePrev < 5) {
+        // eslint-disable-next-line no-console
+        console.warn('[timelapse] DOUBLE-RAF SUSPECTED:', {
+          frame: this.debugFrameCount,
+          gapMs: +gapSincePrev.toFixed(2),
+        })
+      }
+    }
+
     if (reachedEnd) {
       this.pause()
       return
@@ -323,6 +406,34 @@ export class TimelapseController {
         this.hooks.onQuoteChange?.(quote, this.playing)
       }
     }
+  }
+
+  // ── debug overlay ──────────────────────────────────────────────
+
+  private startDebugRender(): void {
+    if (!TIMELAPSE_DEBUG || !this.debugEl) return
+    this.debugEl.hidden = false
+    this.renderDebug()
+    this.debugIntervalId = window.setInterval(() => this.renderDebug(), 100)
+  }
+
+  private stopDebugRender(): void {
+    if (this.debugIntervalId !== null) {
+      clearInterval(this.debugIntervalId)
+      this.debugIntervalId = null
+    }
+    if (this.debugEl) this.debugEl.hidden = true
+  }
+
+  private renderDebug(): void {
+    if (!this.debugEl) return
+    const liveSessionMs = this.playing && this.playStartMs > 0
+      ? performance.now() - this.playStartMs
+      : 0
+    const elapsedMs = this.playElapsedMs + liveSessionMs
+    const elapsedS = (elapsedMs / 1000).toFixed(1)
+    const pos = this.position.toFixed(3)
+    this.debugEl.textContent = `${this.speed}x · ${elapsedS}s · pos ${pos} · frame ${this.debugFrameCount}`
   }
 
   /**
