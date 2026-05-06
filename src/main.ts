@@ -64,7 +64,6 @@ const mobileMoodEl = document.getElementById('m-mood') as HTMLButtonElement
 const mobileMoodNextEl = document.getElementById('m-mood-next') as HTMLButtonElement
 const mobileNextEl = document.getElementById('m-next') as HTMLButtonElement
 const mobileThemeEl = document.getElementById('m-theme') as HTMLButtonElement
-const mobileModeEl = document.getElementById('m-mode') as HTMLButtonElement
 
 // --- Display modes ---
 type DisplayMode = 'art' | 'read' | 'invert'
@@ -81,7 +80,6 @@ function setDisplayMode(mode: DisplayMode) {
   const icon = modeToggleEl.querySelector('.mode-icon')
   if (text) text.textContent = mode.toUpperCase()
   if (icon) icon.textContent = modeIcon
-  if (mobileModeEl) mobileModeEl.textContent = modeIcon
 }
 
 function cycleDisplayMode() {
@@ -685,8 +683,6 @@ mobileThemeEl.addEventListener('click', e => {
   closeTagCloud()
   toggleThemeDropdown()
 })
-mobileModeEl.addEventListener('click', cycleDisplayMode)
-
 // Mouse wheel — advance to next quote (acts like Spacebar)
 window.addEventListener('wheel', e => {
   // Let the modal and theme dropdown handle their own scrolling
