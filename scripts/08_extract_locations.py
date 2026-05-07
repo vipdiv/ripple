@@ -9,13 +9,29 @@ delivery addresses, restaurant reservations, and explicit city/state
 mentions in transactional emails. Outputs a date->locations map for
 downstream geocoding/merge.
 
+Hard filters applied BEFORE extraction (cuts marketing-blast noise):
+  1. Sender-level: skip pure-marketing senders ("newsletter@", "marketing@",
+     "promo@", "deals@", "news@", etc.). We deliberately do NOT inherit
+     01_parse_mbox.py's full SKIP_SENDERS list because it blocks every
+     "noreply@" address, and legitimate confirmations almost always come
+     from noreply senders.
+  2. Subject-level: skip if the subject contains promotional language
+     ("% off", "sale", "Final Day", "discount", "deal", "Announcing",
+     "Earn miles", "limited time", "introducing", "flash sale", etc.).
+  3. Body-level: require at least one confirmation phrase in subject or
+     body ("reservation confirmed", "boarding pass", "your itinerary",
+     "your trip", "your ride", "out for delivery", etc.). No phrase ->
+     no extraction.
+
 Heuristics (in rough order of confidence):
-  high   — explicit "City, ST" in transactional context (hotels, airlines)
-  high   — known airport code in an airline email (IAH -> Houston, TX)
+  high   — explicit "City, ST" in a confirmation-context email
+  high   — airport-code PAIR ("IAH -> LAX", "IAH-LAX", "IAH to LAX") in
+           an airline confirmation. Bare 3-letter mentions are NOT used,
+           since marketing emails list every destination as a 3-letter
+           code and false-positive cities by the dozen.
   medium — bare city name resolved by an unambiguous default
            (Chicago -> IL; or user-specific Houston -> TX)
   medium — international city name in an explicit travel context
-  low    — currently unused; reserved for body-text fallback (future)
 
 No network calls. No external datasets. Standard library only
 (plus tqdm for the progress bar, same as 01_parse_mbox.py).
@@ -23,6 +39,8 @@ No network calls. No external datasets. Standard library only
 Usage:
   python scripts/08_extract_locations.py "D:\\path\\to\\All mail.mbox"
   python scripts/08_extract_locations.py "...mbox" --limit 1000
+  python scripts/08_extract_locations.py "...mbox" \\
+      --start-date 2018-06-01 --end-date 2018-09-30
 
 Output:
   data/locations.json — dict keyed by ISO date, each value a list of
@@ -132,6 +150,69 @@ RESTAURANT_DOMAINS = {
 }
 
 
+# ─── Promotional / confirmation gates ────────────────────────────────────────
+
+# Sender tokens that indicate a pure marketing list. Confirmation senders
+# almost always use "noreply@" / "notifications@" / "support@", so those are
+# intentionally NOT in this list (cf. 01_parse_mbox.py SKIP_SENDERS, which
+# is fine for sampling human email but would zero out our hit rate here).
+PROMO_SENDER_PATTERNS = (
+    "newsletter", "marketing", "promo", "promotions",
+    "deals@", "offers@", "news@", "newsletter@",
+    "campaigns@", "blast@", "broadcast@",
+)
+
+# Subject phrases that mark an email as a marketing blast. Matched as
+# case-insensitive substrings against the decoded subject. Tuned for the
+# kinds of false positives the v1 script produced (Southwest "40% off",
+# "Announcing Sip and Ship", etc.).
+PROMO_SUBJECT_PATTERNS = (
+    "% off", "$ off", " off!", " off ",
+    "sale", "final day", "final hours",
+    "discount", "discounts",
+    "announcing", "earn miles", "miles bonus",
+    "deal of", " deals", "today's deal",
+    "promotion", "limited time", "exclusive offer",
+    "save up to", "save big", "save on",
+    "new route", "new routes", "new destination",
+    "introducing", "anniversary sale", "flash sale", "blowout",
+    "free shipping on", "today only",
+    "last chance", "don't miss", "ends today", "ends tonight",
+    "special offer", "back by popular demand",
+    "rewards", "double points", "bonus points",
+)
+
+# At least one of these phrases must appear in subject + first 5K of body
+# for the email to be treated as a real confirmation. Without it, we skip
+# extraction entirely. Phrases are matched case-insensitively as substrings.
+CONFIRMATION_PATTERNS = (
+    # hotels
+    "reservation confirmed", "reservation confirmation",
+    "booking confirmed", "booking confirmation",
+    "your reservation", "your booking", "your stay",
+    "thank you for your reservation", "thank you for booking",
+    "we look forward to your stay", "check-in details",
+    # airlines
+    "your trip", "your itinerary", "itinerary for",
+    "flight is confirmed", "flight confirmed",
+    "flight confirmation", "boarding pass", "e-ticket", "eticket",
+    "check-in for your flight", "checked in for your flight",
+    "your e-ticket", "passenger itinerary",
+    # rideshare
+    "trip with uber", "your uber", "your lyft",
+    "lyft ride", "your ride", "your trip receipt",
+    "thanks for riding",
+    # delivery / shipping
+    "order delivered", "out for delivery",
+    "shipping to", "shipped to", "delivery to",
+    "your order has shipped", "package delivered",
+    "your delivery", "your order is on the way",
+    # restaurant
+    "reservation reminder", "your table",
+    "see you on", "you're confirmed for",
+)
+
+
 def _domain_matches(domain: str, domain_set: set[str]) -> bool:
     """True if domain is in the set or is a subdomain of any entry."""
     if domain in domain_set:
@@ -156,6 +237,23 @@ def categorize(domain: str) -> str | None:
     if _domain_matches(domain, RESTAURANT_DOMAINS):
         return "restaurant"
     return None
+
+
+def is_promotional_sender(from_full: str) -> bool:
+    """from_full is the raw From header ('Foo <bar@x.com>')."""
+    a = from_full.lower()
+    return any(p in a for p in PROMO_SENDER_PATTERNS)
+
+
+def is_promotional_subject(subject: str) -> bool:
+    s = subject.lower()
+    return any(p in s for p in PROMO_SUBJECT_PATTERNS)
+
+
+def is_confirmation(subject: str, body: str) -> bool:
+    """Real confirmations contain at least one structural phrase."""
+    text = (subject + "\n" + body[:5000]).lower()
+    return any(p in text for p in CONFIRMATION_PATTERNS)
 
 
 # US states: full name -> 2-letter, plus a set of valid abbreviations.
@@ -330,14 +428,27 @@ CITY_SKIP_WORDS = {
 
 # ─── Regexes ─────────────────────────────────────────────────────────────────
 
-# "City, ST" or "City, State" — city is 1–3 capitalized words.
-CITY_STATE_RE = re.compile(
-    r"\b([A-Z][a-zA-Z]+(?:[\s\-][A-Z][a-zA-Z]+){0,2}),\s+"
-    r"(?:([A-Z]{2})\b|([A-Z][a-z]+(?:\s[A-Z][a-z]+)?))"
-)
+# "City, ST" or "City, Full State Name" — city is 1–3 capitalized words.
+# State token alternates against the actual list of US states so we never
+# match a non-state word and have to skip-and-advance (which silently ate
+# valid matches in v1: "Market St, San Francisco, CA" gobbled "San
+# Francisco" as a fake state and missed the real "San Francisco, CA").
+def _build_city_state_re() -> "re.Pattern[str]":
+    full_names = sorted({name.title() for name in US_STATES.keys()},
+                        key=len, reverse=True)
+    abbrevs = sorted(US_STATE_ABBREVS)
+    state_alt = "|".join(re.escape(s) for s in full_names + abbrevs)
+    return re.compile(
+        r"\b([A-Z][a-zA-Z]+(?:[\s\-][A-Z][a-zA-Z]+){0,2}),\s+"
+        r"(" + state_alt + r")\b"
+    )
 
-# 3-letter uppercase token, plausibly an airport code.
-AIRPORT_RE = re.compile(r"\b([A-Z]{3})\b")
+
+CITY_STATE_RE = _build_city_state_re()
+
+# Pair-separator characters between airport codes ("→", "✈", em/en dash,
+# ASCII hyphen, ">"). The pair finder also accepts the literal word "to".
+AIRPORT_PAIR_SEP_CHARS = "→✈➜>–—"
 
 # Hotel/travel framing phrases: "welcome to X", "your stay in X", etc.
 WELCOME_RE = re.compile(
@@ -483,14 +594,8 @@ def find_city_state(text: str):
             continue
         if len(city) < 3:
             continue
-        state_abbrev = m.group(2)
-        state_full = m.group(3)
-        if state_abbrev and state_abbrev in US_STATE_ABBREVS:
-            state = state_abbrev
-        elif state_full and state_full.lower() in US_STATES:
-            state = US_STATES[state_full.lower()]
-        else:
-            continue
+        token = m.group(2)
+        state = token if token in US_STATE_ABBREVS else US_STATES[token.lower()]
         key = (city.lower(), state)
         if key in seen:
             continue
@@ -498,20 +603,49 @@ def find_city_state(text: str):
         yield city, state
 
 
-def find_airports(text: str):
-    """Yield (city, state, country) from 3-letter airport codes."""
+_CODE_RE = re.compile(r"\b([A-Z]{3})\b")
+_TO_RE = re.compile(r"\bto\b", re.IGNORECASE)
+
+
+def find_airport_pairs(text: str):
+    """Yield (city, state, country) for airport codes appearing in
+    structured origin->destination pair patterns. Bare 3-letter mentions
+    are intentionally ignored — marketing emails list every destination
+    as a 3-letter code, which produced dozens of false positives in v1.
+
+    A "pair" is two known airport codes within 80 characters of each
+    other, with a separator (arrow, en/em dash, hyphen-only span, or the
+    word "to") between them. This handles the common formats:
+      IAH -> LAX
+      IAH-LAX
+      IAH to LAX
+      Houston (IAH) -> Los Angeles (LAX)
+    """
+    code_matches = [
+        (m.start(), m.end(), m.group(1))
+        for m in _CODE_RE.finditer(text)
+        if m.group(1) in AIRPORT_CODES
+    ]
     seen = set()
-    for m in AIRPORT_RE.finditer(text):
-        code = m.group(1)
-        if code not in AIRPORT_CODES:
+    for i in range(len(code_matches) - 1):
+        _, e1, c1 = code_matches[i]
+        s2, _, c2 = code_matches[i + 1]
+        if s2 - e1 > 80:
             continue
-        city, state = AIRPORT_CODES[code]
-        key = (city, state)
-        if key in seen:
+        between = text[e1:s2]
+        has_arrow = any(ch in between for ch in AIRPORT_PAIR_SEP_CHARS)
+        has_dash_only = bool(re.fullmatch(r"\s*-+\s*", between))
+        has_to = _TO_RE.search(between) is not None
+        if not (has_arrow or has_dash_only or has_to):
             continue
-        seen.add(key)
-        country = "US" if state else None
-        yield city, state, country
+        for code in (c1, c2):
+            city, state = AIRPORT_CODES[code]
+            key = (city, state)
+            if key in seen:
+                continue
+            seen.add(key)
+            country = "US" if state else None
+            yield city, state, country
 
 
 def find_welcome_cities(text: str):
@@ -560,15 +694,17 @@ def extract_locations(category: str, subject: str, body: str):
             "source": f"{category} email — explicit city/state",
         })
 
-    # 2) Airport codes — only meaningful in airline emails.
+    # 2) Airport-code PAIRS — only meaningful in airline emails, and only
+    # when origin/destination appear together (filters marketing blasts
+    # that list every airport).
     if category == "airline":
-        for city, state, country in find_airports(text):
+        for city, state, country in find_airport_pairs(text):
             found.append({
                 "city": city,
                 "state": state,
                 "country": country,
                 "confidence": "high",
-                "source": "airline email — airport code",
+                "source": "airline email — airport-code pair",
             })
 
     # 3) "Welcome to X" / "Your trip to X" patterns — promote to high in
@@ -619,7 +755,23 @@ def main() -> int:
         default=str(DEFAULT_OUTPUT),
         help="Output JSON path (default: data/locations.json).",
     )
+    parser.add_argument(
+        "--start-date",
+        default=None,
+        help="Only process emails dated >= this ISO date (YYYY-MM-DD).",
+    )
+    parser.add_argument(
+        "--end-date",
+        default=None,
+        help="Only process emails dated <= this ISO date (YYYY-MM-DD).",
+    )
     args = parser.parse_args()
+
+    iso_re = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+    for label, val in (("--start-date", args.start_date), ("--end-date", args.end_date)):
+        if val and not iso_re.match(val):
+            print(f"Error: {label} must be YYYY-MM-DD, got {val!r}", file=sys.stderr)
+            return 1
 
     mbox_path = Path(args.mbox_path)
     if not mbox_path.exists():
@@ -632,6 +784,7 @@ def main() -> int:
     file_size = mbox_path.stat().st_size
     print(f"Streaming {mbox_path.name} ({file_size / 1e9:.1f} GB)")
     print(f"Limit:    {args.limit or 'none — full scan'}")
+    print(f"Date:     {args.start_date or '...'} -> {args.end_date or '...'}")
     print(f"Output:   {output_path}")
     print("─" * 60)
 
@@ -641,9 +794,15 @@ def main() -> int:
     cities_seen: Counter = Counter()
     total = 0
     matched = 0
+    skipped_promo_sender = 0
+    skipped_promo_subject = 0
+    skipped_no_confirm = 0
+    skipped_out_of_range = 0
     last_progress_at = 0
 
     parser_policy = email.policy.compat32
+    start_date = args.start_date
+    end_date = args.end_date
 
     pbar = tqdm(stream_mbox(mbox_path), unit=" emails", smoothing=0.05)
     for n, raw in pbar:
@@ -665,12 +824,33 @@ def main() -> int:
         if category is None:
             continue
 
+        # Sender-level promo gate. Inexpensive — runs before body parse.
+        raw_from = msg.get("From", "") or ""
+        if is_promotional_sender(raw_from):
+            skipped_promo_sender += 1
+            continue
+
         date = get_date_iso(msg)
         if not date:
             continue
+        if start_date and date < start_date:
+            skipped_out_of_range += 1
+            continue
+        if end_date and date > end_date:
+            skipped_out_of_range += 1
+            continue
 
+        # Subject-level promo gate. Also inexpensive.
         subject = get_subject(msg)
+        if is_promotional_subject(subject):
+            skipped_promo_subject += 1
+            continue
+
+        # Body parse + confirmation-phrase gate.
         body = get_body_text(msg)
+        if not is_confirmation(subject, body):
+            skipped_no_confirm += 1
+            continue
 
         results = extract_locations(category, subject, body)
         if not results:
@@ -699,6 +879,12 @@ def main() -> int:
     print(f"Matched:           {matched:>8,} emails")
     print(f"Dated locations:   {total_loc_entries:>8,}")
     print(f"Unique dates:      {len(locations):>8,}")
+    print()
+    print("Skipped (filters):")
+    print(f"  promo sender     {skipped_promo_sender:>8,}")
+    print(f"  promo subject    {skipped_promo_subject:>8,}")
+    print(f"  no confirm phr.  {skipped_no_confirm:>8,}")
+    print(f"  out of date rng  {skipped_out_of_range:>8,}")
     print()
     print("By category:")
     for cat, n in cat_hits.most_common():
