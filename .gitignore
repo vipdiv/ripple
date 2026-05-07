@@ -35,3 +35,8 @@ data/*_search_*.json
 data/*_failed*.json
 *_failed.json
 *_to_archive.json
+
+# Personal location data exports - never commit
+maps timeline etc/
+*.takeout/
+takeout-*/
