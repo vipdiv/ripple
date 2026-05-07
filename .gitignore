@@ -14,6 +14,7 @@ data/email_stats.json
 # Location-mining output — contains real travel dates and addresses
 data/locations.json
 data/locations_from_reviews.json
+data/locations_from_uber.json
 
 # Keep quotes.json (curated output) but not raw data
 # Uncomment this if you want to commit your curated quotes:
