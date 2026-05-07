@@ -36,6 +36,17 @@ Saved-home / saved-work entries from rider_eater_saved_locations.csv
 are emitted under a synthetic "_saved" date key, since they're
 persistent facts rather than time-bound visits.
 
+Two non-city values that Uber writes into city columns are
+normalized in a single post-parser pass:
+  - "unknown" -> city becomes null. Uber's geocoder failed for the
+    row but lat/lng may still be useful, so the entry is preserved.
+  - "Rockies" (an Uber market-region label, not a city) -> city
+    becomes null, the original label is moved to
+    details.market_region, confidence is downgraded to "low", and
+    needs_verification is set to true. A Rockies row could be either
+    the user's own trip in Colorado or a trip arranged on someone
+    else's behalf, so it has to be hand-checked downstream.
+
 Standard library only.
 
 Usage:
@@ -362,6 +373,34 @@ def parse_rider_trips(path: Path) -> Iterator[tuple[str, dict]]:
             }
 
 
+# City-column values that aren't actually cities. Handled in a single
+# post-parser pass (_normalize_entry) so the rule is in one place
+# regardless of which file the row came from.
+NON_CITY_UNKNOWN = {"unknown"}
+NON_CITY_REGIONS = {"rockies"}  # Uber market-region labels.
+
+
+def _normalize_entry(entry: dict) -> dict:
+    """Move non-city values out of the city field. See module docstring."""
+    raw = entry.get("city")
+    if not raw:
+        return entry
+    val = raw.strip()
+    low = val.lower()
+    if low in NON_CITY_UNKNOWN:
+        entry["city"] = None
+        return entry
+    if low in NON_CITY_REGIONS:
+        entry["city"] = None
+        entry["confidence"] = "low"
+        entry["needs_verification"] = True
+        details = entry.get("details") or {}
+        details["market_region"] = val
+        entry["details"] = details
+        return entry
+    return entry
+
+
 PARSERS = {
     "customer_support_tickets": parse_customer_support_tickets,
     "driver_profile":           parse_driver_profile,
@@ -409,6 +448,7 @@ def main() -> int:
             continue
         n = 0
         for date, entry in PARSERS[label](path):
+            entry = _normalize_entry(entry)
             locations[date].append(entry)
             source_counts[entry["source"]] += 1
             confidence_counts[entry["confidence"]] += 1
@@ -445,7 +485,10 @@ def main() -> int:
     print()
     print("Top 20 cities:")
     for (c, s), n in cities_seen.most_common(20):
-        label = f"{c}, {s}" if s else c
+        if c is None:
+            label = "[no city — see details]"
+        else:
+            label = f"{c}, {s}" if s else c
         print(f"  {label:<35s} {n:>6,}")
     print()
     if skipped_files:
