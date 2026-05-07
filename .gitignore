@@ -11,6 +11,9 @@ data/email_metadata.jsonl
 data/email_samples.jsonl
 data/email_stats.json
 
+# Location-mining output — contains real travel dates and addresses
+data/locations.json
+
 # Keep quotes.json (curated output) but not raw data
 # Uncomment this if you want to commit your curated quotes:
 !data/quotes.json
