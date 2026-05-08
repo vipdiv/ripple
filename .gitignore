@@ -15,6 +15,7 @@ data/email_stats.json
 data/locations.json
 data/locations_from_reviews.json
 data/locations_from_uber.json
+data/locations_from_photos.json
 
 # Keep quotes.json (curated output) but not raw data
 # Uncomment this if you want to commit your curated quotes:
