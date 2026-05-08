@@ -21,6 +21,7 @@ data/locations_from_maps_activity.json
 data/maps_activity_unknown_titles.log
 data/maps_asked_queries_for_review.log
 data/maps_viewed_for_review.log
+data/locations_from_small_maps_sources.json
 
 # Keep quotes.json (curated output) but not raw data
 # Uncomment this if you want to commit your curated quotes:
