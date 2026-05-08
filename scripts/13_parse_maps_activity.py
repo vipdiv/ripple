@@ -82,6 +82,8 @@ except ImportError:
 
 DEFAULT_OUTPUT = Path(__file__).parent.parent / "data" / "locations_from_maps_activity.json"
 DEFAULT_UNKNOWN_LOG = Path(__file__).parent.parent / "data" / "maps_activity_unknown_titles.log"
+DEFAULT_ASKED_LOG = Path(__file__).parent.parent / "data" / "maps_asked_queries_for_review.log"
+DEFAULT_VIEWED_LOG = Path(__file__).parent.parent / "data" / "maps_viewed_for_review.log"
 
 US_STATE_ABBREVS = {
     "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
@@ -119,28 +121,56 @@ def country_for(lat, lng):
 # ─── Title routing ──────────────────────────────────────────────────────────
 
 def classify_title(title: str) -> str:
-    """Return one of: 'type_a', 'type_d', 'type_f', 'skip', 'unknown'.
-    'skip' is silent; 'unknown' lands in the unknown-titles log."""
+    """Return one of: 'type_a', 'type_d', 'type_f', 'skip',
+    'skip_asked', 'skip_viewed', 'unknown'.
+
+    'skip' is a silent skip with no triage log. 'skip_asked' and
+    'skip_viewed' are silent in the main extraction stream but get
+    written to dedicated review logs because some entries in those
+    buckets contain factual data worth a manual second look. 'unknown'
+    lands in the unknown-titles log.
+
+    Order matters: more specific exact-match / prefix-match rules come
+    before the broader catch-alls so a title like 'Viewed your Timeline'
+    silent-skips without falling through to the generic 'Viewed '
+    prefix that triggers the triage log.
+    """
     if not title:
         return "skip"
 
+    # Specific silent skips (no triage).
     if title == "Viewed area in Google Maps":
         return "skip"
-    if title.startswith("Searched for "):
-        return "skip"
-    if title.startswith("Asked Maps when did I visit"):
-        return "skip"
     if title == "Viewed your Timeline":
+        return "skip"
+    if title.startswith("Viewed area around "):
+        return "skip"
+    if title.startswith("Searched for "):
         return "skip"
     if NOTIFICATIONS_RE.match(title):
         return "skip"
 
+    # Whitelist tiers — order vs. the broad Viewed/Asked prefixes below
+    # doesn't matter (the whitelist exact-matches and 'Directions to '
+    # don't overlap with 'Viewed ' or 'Asked Maps ').
     if title == "Used Maps":
         return "type_a"
     if title == "Explored on Google Maps":
         return "type_d"
     if title.startswith("Directions to "):
         return "type_f"
+
+    # Triage skips. 'Asked Maps ' subsumes the older
+    # 'Asked Maps when did I visit' rule — every Asked-Maps entry now
+    # gets logged for manual review since some are meta queries
+    # ("when did I visit X?") that reveal places the user has been.
+    if title.startswith("Asked Maps "):
+        return "skip_asked"
+    # 'Viewed ' is a broad catchall after the more specific rules above.
+    # Catches 'Viewed The Rice Box' etc. — some have full addresses
+    # worth manually recovering.
+    if title.startswith("Viewed "):
+        return "skip_viewed"
 
     # Bare place-name — does not start with any recognized verb.
     if not any(title.startswith(v) for v in KNOWN_VERB_PREFIXES):
@@ -240,22 +270,9 @@ def extract_type_f(item: dict):
         except ValueError:
             lat = lng = None
 
-    # Right-anchored comma split for "..., City, ST ZIP" addresses.
-    city = state = None
-    country = country_for(lat, lng)
-    if address:
-        tokens = [t.strip() for t in address.split(",") if t.strip()]
-        if len(tokens) >= 2:
-            city = tokens[-2]
-            state_zip = tokens[-1].split()
-            if state_zip:
-                cand = state_zip[0]
-                if cand.upper() in US_STATE_ABBREVS:
-                    state = cand.upper()
-                    if country is None:
-                        country = "US"
-                else:
-                    state = cand
+    country_from_coords = country_for(lat, lng)
+    city, state, country_from_addr = parse_directions_address(address)
+    country = country_from_coords or country_from_addr
 
     return {
         "city": city,
@@ -267,6 +284,53 @@ def extract_type_f(item: dict):
         "destination": destination,
         "address": address or None,
     }
+
+
+def parse_directions_address(address: str):
+    """Right-anchored, state-aware parser for Type F addresses.
+
+    Walks comma-separated tokens left-to-right looking for the first one
+    whose first word is a 2-letter US state abbreviation. The token
+    immediately before the state token is the city. Anything after the
+    state token (country suffix, etc.) is discarded. Trailing
+    parentheticals on the city ("Houston (Heights)") are stripped.
+
+    Falls back to the old "last segment is state-zip, second-to-last is
+    city" heuristic if no US state token is found anywhere — preserves
+    best-effort behavior for the rare non-US Type F entry without
+    pretending we got a confident match.
+
+    Returns (city, state, country) where country is "US" when a US state
+    token was found, None otherwise.
+    """
+    if not address:
+        return None, None, None
+    tokens = [t.strip() for t in address.split(",") if t.strip()]
+    if len(tokens) < 2:
+        return None, None, None
+
+    for i, tok in enumerate(tokens):
+        words = tok.split()
+        if not words:
+            continue
+        first = words[0]
+        if len(first) == 2 and first.upper() in US_STATE_ABBREVS:
+            state = first.upper()
+            if i == 0:
+                return None, state, "US"
+            raw_city = tokens[i - 1]
+            city = re.sub(r"\s*\([^)]*\)\s*$", "", raw_city).strip() or None
+            return city, state, "US"
+
+    # Non-US fallback.
+    state_zip = tokens[-1].split()
+    if state_zip:
+        state_cand = state_zip[0]
+        city = tokens[-2] if len(tokens) >= 2 else None
+        if city:
+            city = re.sub(r"\s*\([^)]*\)\s*$", "", city).strip() or None
+        return city, state_cand, None
+    return None, None, None
 
 
 # ─── Main ───────────────────────────────────────────────────────────────────
@@ -282,6 +346,11 @@ def main() -> int:
     )
     p.add_argument("--output", default=str(DEFAULT_OUTPUT))
     p.add_argument("--unknown-log", default=str(DEFAULT_UNKNOWN_LOG))
+    p.add_argument("--asked-log", default=str(DEFAULT_ASKED_LOG),
+                   help="Triage log for 'Asked Maps ...' entries (no dedup).")
+    p.add_argument("--viewed-log", default=str(DEFAULT_VIEWED_LOG),
+                   help="Triage log for 'Viewed ...' entries that fell through "
+                        "the more specific Viewed rules (no dedup).")
     args = p.parse_args()
 
     src = Path(args.activity_path)
@@ -291,8 +360,10 @@ def main() -> int:
 
     output_path = Path(args.output)
     unknown_path = Path(args.unknown_log)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    unknown_path.parent.mkdir(parents=True, exist_ok=True)
+    asked_path = Path(args.asked_log)
+    viewed_path = Path(args.viewed_log)
+    for p_ in (output_path, unknown_path, asked_path, viewed_path):
+        p_.parent.mkdir(parents=True, exist_ok=True)
 
     file_size = src.stat().st_size
     print(f"Streaming {src.name} ({file_size / 1e6:.1f} MB)")
@@ -302,13 +373,24 @@ def main() -> int:
     subtype_counts: Counter = Counter()
     confidence_counts: Counter = Counter()
     cities_seen: Counter = Counter()
-    seen_unknowns: set[str] = set()
-    unknown_log: list[tuple[str, str]] = []
+
+    # Unknown-titles tracking: count occurrences per title (for the
+    # frequency-sorted summary in Task B) AND remember the first-seen
+    # timestamp (for the dedup'd log file).
+    unknown_counts: Counter = Counter()
+    unknown_first_ts: dict[str, str] = {}
+
+    # Triage logs (Tasks E + G): no dedup, every matching entry recorded.
+    asked_log: list[tuple[str, str]] = []
+    viewed_log: list[tuple[str, str]] = []
 
     scanned = 0
     extracted = 0
     skipped = 0
     unknown_count = 0
+    asked_count = 0
+    viewed_count = 0
+    location_history_count = 0  # Task C — count of corroborated extractions.
 
     with open(src, "rb") as f:
         for item in ijson.items(f, "item"):
@@ -324,19 +406,31 @@ def main() -> int:
 
             title = item.get("title") or ""
             cls = classify_title(title)
+            time_str = item.get("time") or ""
 
             if cls == "skip":
                 skipped += 1
                 continue
 
-            if cls == "unknown":
-                unknown_count += 1
-                if title not in seen_unknowns:
-                    seen_unknowns.add(title)
-                    unknown_log.append((title, item.get("time") or ""))
+            if cls == "skip_asked":
+                skipped += 1
+                asked_count += 1
+                asked_log.append((time_str, title))
                 continue
 
-            time_str = item.get("time") or ""
+            if cls == "skip_viewed":
+                skipped += 1
+                viewed_count += 1
+                viewed_log.append((time_str, title))
+                continue
+
+            if cls == "unknown":
+                unknown_count += 1
+                unknown_counts[title] += 1
+                if title not in unknown_first_ts:
+                    unknown_first_ts[title] = time_str
+                continue
+
             date = time_str[:10] if len(time_str) >= 10 else ""
             if not date:
                 skipped += 1
@@ -357,6 +451,8 @@ def main() -> int:
                 continue
 
             corroborated = has_location_history(item.get("locationInfos"))
+            if corroborated:
+                location_history_count += 1
             if partial["subtype"] == "directions_current_location" or corroborated:
                 confidence = "high"
                 needs_verification = False
@@ -399,10 +495,22 @@ def main() -> int:
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(sorted_locs, f, indent=2, ensure_ascii=False)
 
-    # Write deduped unknown-titles log (TSV: <title>\t<first-seen-timestamp>).
+    # Write deduped unknown-titles log (TSV: <title>\t<first-seen-timestamp>),
+    # ordered by frequency descending so the most common patterns are at
+    # the top — convenient when triaging which to add to the whitelist /
+    # skiplist next.
     with open(unknown_path, "w", encoding="utf-8") as f:
-        for title, ts in unknown_log:
-            f.write(f"{title}\t{ts}\n")
+        for title, _count in unknown_counts.most_common():
+            f.write(f"{title}\t{unknown_first_ts.get(title, '')}\n")
+
+    # Triage logs (Tasks E + G). No dedup — every matching entry written
+    # in the order it was encountered.
+    with open(asked_path, "w", encoding="utf-8") as f:
+        for ts, title in asked_log:
+            f.write(f"{ts}\t{title}\n")
+    with open(viewed_path, "w", encoding="utf-8") as f:
+        for ts, title in viewed_log:
+            f.write(f"{ts}\t{title}\n")
 
     total_entries = sum(len(v) for v in locations.values())
     all_dates = sorted(locations.keys())
@@ -412,7 +520,9 @@ def main() -> int:
     print(f"Total scanned:       {scanned:>8,}")
     print(f"Total extracted:     {extracted:>8,}")
     print(f"Total skipped:       {skipped:>8,}")
-    print(f"Total unknown:       {unknown_count:>8,} ({len(seen_unknowns):,} unique)")
+    print(f"  asked-maps triage  {asked_count:>8,}")
+    print(f"  viewed-x triage    {viewed_count:>8,}")
+    print(f"Total unknown:       {unknown_count:>8,} ({len(unknown_counts):,} unique)")
     print()
     print(f"Output entries:      {total_entries:>8,}")
     print(f"Unique dates:        {len(all_dates):>8,}")
@@ -428,6 +538,10 @@ def main() -> int:
     for conf in ("high", "low"):
         if confidence_counts[conf]:
             print(f"  {conf:12s} {confidence_counts[conf]:>6,}")
+    # Task C — show how many extracted entries got upgraded by the
+    # location_history_corroborated override.
+    print(f"  {'corroborated':12s} {location_history_count:>6,}  "
+          f"(of which by Location History source flag)")
     print()
     if cities_seen:
         print("Top 20 cities (extracted entries with non-null city):")
@@ -435,8 +549,19 @@ def main() -> int:
             label = f"{c}, {s}" if s else c
             print(f"  {label:<35s} {n:>6,}")
         print()
+    # Task B — surface the most common unknown title patterns inline so
+    # the user doesn't have to open the log file to decide what to route
+    # next.
+    if unknown_counts:
+        print("Top 20 unknown titles (by frequency):")
+        for title, n in unknown_counts.most_common(20):
+            display = title if len(title) <= 60 else title[:57] + "..."
+            print(f"  {n:>6,}  {display}")
+        print()
     print(f"Wrote {output_path}")
-    print(f"Wrote {unknown_path} ({len(seen_unknowns)} unique titles)")
+    print(f"Wrote {unknown_path}  ({len(unknown_counts)} unique titles)")
+    print(f"Wrote {asked_path}    ({asked_count} entries)")
+    print(f"Wrote {viewed_path}   ({viewed_count} entries)")
     return 0
 
 
