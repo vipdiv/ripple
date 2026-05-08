@@ -44,3 +44,9 @@ data/*_failed*.json
 maps timeline etc/
 *.takeout/
 takeout-*/
+
+inventory.json
+
+inventory.json
+
+inventory.json
