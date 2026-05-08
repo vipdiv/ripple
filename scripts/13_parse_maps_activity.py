@@ -7,7 +7,7 @@ Input: a single JSON array of Google Maps activity records, typically
 ~98MB and 250K-500K entries spanning many years. We can't load this
 into memory; we iterate one record at a time with ijson.items(...).
 
-Three whitelist tiers (extract):
+Four whitelist tiers (extract):
 
   Type A — "Used Maps" / "Used Google Maps" with locationInfos
     Match:    title in {"Used Maps", "Used Google Maps"} AND
@@ -32,6 +32,25 @@ Three whitelist tiers (extract):
     Confidence: high / needs_verification false. This is the
               high-value tier — Google has the user's current
               location at the moment they requested directions.
+
+  Type G — bare place-name with Location History flag
+    Match:    title is non-empty AND doesn't start with any of the
+              recognized verb prefixes (Used / Explored / Directions /
+              Viewed / Searched / Asked) AND locationInfos contains
+              an entry whose source matches "location history"
+              (case-insensitive). Checked in main() BEFORE
+              classify_title so the bare-place silent-skip doesn't
+              pre-empt us; verb-prefixed titles fall through
+              unchanged.
+    Place:    title = the place name (no separate place lookup).
+              titleUrl optionally carries an ftid (older format) or
+              cid (newer format) — extracted to details when present,
+              otherwise null. Neither is required.
+    Coords:   none. The export doesn't carry coords here, but the
+              LH flag is itself a high-confidence presence signal —
+              Google's GPS history is asserting the user was there.
+    Confidence: high / needs_verification false; details.location_
+              history_corroborated is always true for this tier.
 
 Confidence override (applies after every successful extraction):
   If locationInfos has any entry whose source contains the substring
@@ -107,6 +126,11 @@ NOTIFICATIONS_RE = re.compile(r"^\d+ notifications?$")
 CENTER_RE = re.compile(r"center=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)")
 LL_RE = re.compile(r"ll=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)")
 AT_RE = re.compile(r"@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?),\d+(?:\.\d+)?z")
+
+# Place-identifier params Google embeds in titleUrl. Type G entries (bare
+# place-name + Location History flag) carry one of these but no coords.
+FTID_RE = re.compile(r"ftid=([0-9a-fx:]+)", re.IGNORECASE)
+CID_RE = re.compile(r"cid=([0-9a-fx:]+)", re.IGNORECASE)
 
 
 def in_conus(lat: float, lng: float) -> bool:
@@ -295,6 +319,47 @@ def extract_type_f(item: dict):
     }
 
 
+def is_bare_place_name(title: str) -> bool:
+    """True if title is non-empty and starts with none of the recognized
+    Maps verb prefixes — i.e. it would otherwise route to the bare-place
+    silent skip in classify_title."""
+    if not title:
+        return False
+    return not any(title.startswith(v) for v in KNOWN_VERB_PREFIXES)
+
+
+def extract_type_g(item: dict):
+    """Type G: bare place-name with the Location History flag.
+
+    The LH flag is itself the visit signal — Google's GPS history is
+    confirming presence at the place named in the title. titleUrl
+    optionally carries an ftid (older format) or cid (newer format)
+    identifier; we extract whichever is present, neither is required.
+
+    Returns a partial dict on success, or None if the title is empty
+    (the pre-check should already have filtered those out).
+    """
+    title = (item.get("title") or "").strip()
+    if not title:
+        return None
+    title_url = item.get("titleUrl") or ""
+    ftid = None
+    cid = None
+    m = FTID_RE.search(title_url)
+    if m:
+        ftid = m.group(1)
+    else:
+        m = CID_RE.search(title_url)
+        if m:
+            cid = m.group(1)
+    return {
+        "place_name": title,
+        "ftid": ftid,
+        "cid": cid,
+        "subtype": "location_history_place",
+    }
+
+
 def parse_directions_address(address: str):
     """Right-anchored, state-aware parser for Type F addresses.
 
@@ -414,8 +479,50 @@ def main() -> int:
                 continue
 
             title = item.get("title") or ""
-            cls = classify_title(title)
             time_str = item.get("time") or ""
+            location_infos = item.get("locationInfos") or []
+
+            # Type G — bare place-name with Location History flag. Checked
+            # BEFORE classify_title so the bare-place silent-skip doesn't
+            # pre-empt us. Verb-prefixed titles fall through unchanged:
+            #   - "Used Maps" + LH    -> Type A, corroborated=True override
+            #   - "Asked Maps " + LH  -> triage (LH doesn't override triage)
+            #   - "Viewed " + LH      -> triage (same)
+            if is_bare_place_name(title) and has_location_history(location_infos):
+                date = time_str[:10] if len(time_str) >= 10 else ""
+                if not date:
+                    skipped += 1
+                    continue
+                g = extract_type_g(item)
+                if g is None:
+                    skipped += 1
+                    continue
+                entry = {
+                    "city": None,
+                    "state": None,
+                    "country": None,
+                    "lat": None,
+                    "lng": None,
+                    "source": "google_maps_activity",
+                    "confidence": "high",
+                    "needs_verification": False,
+                    "details": {
+                        "activity_subtype": "location_history_place",
+                        "location_history_corroborated": True,
+                        "place_name": g["place_name"],
+                        "ftid": g["ftid"],
+                        "cid": g["cid"],
+                        "iso_timestamp": time_str,
+                    },
+                }
+                locations[date].append(entry)
+                extracted += 1
+                subtype_counts["location_history_place"] += 1
+                confidence_counts["high"] += 1
+                location_history_count += 1
+                continue
+
+            cls = classify_title(title)
 
             if cls == "skip":
                 skipped += 1
@@ -539,7 +646,8 @@ def main() -> int:
         print(f"Date range:          {all_dates[0]} -> {all_dates[-1]}")
     print()
     print("By activity_subtype:")
-    for sub in ("used_maps", "explored", "directions_current_location"):
+    for sub in ("used_maps", "explored", "directions_current_location",
+                "location_history_place"):
         if subtype_counts[sub]:
             print(f"  {sub:32s} {subtype_counts[sub]:>6,}")
     print()
