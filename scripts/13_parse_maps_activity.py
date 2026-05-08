@@ -9,8 +9,9 @@ into memory; we iterate one record at a time with ijson.items(...).
 
 Three whitelist tiers (extract):
 
-  Type A — "Used Maps" with locationInfos
-    Match:    title == "Used Maps" AND locationInfos non-empty.
+  Type A — "Used Maps" / "Used Google Maps" with locationInfos
+    Match:    title in {"Used Maps", "Used Google Maps"} AND
+              locationInfos non-empty.
     Coords:   "center=<lat>,<lng>" inside locationInfos[0].url.
     City:     null (downstream merger reverse-geocodes from coords).
     Confidence: low / needs_verification true (override below).
@@ -153,7 +154,7 @@ def classify_title(title: str) -> str:
     # Whitelist tiers — order vs. the broad Viewed/Asked prefixes below
     # doesn't matter (the whitelist exact-matches and 'Directions to '
     # don't overlap with 'Viewed ' or 'Asked Maps ').
-    if title == "Used Maps":
+    if title in ("Used Maps", "Used Google Maps"):
         return "type_a"
     if title == "Explored on Google Maps":
         return "type_d"
@@ -180,13 +181,21 @@ def classify_title(title: str) -> str:
 
 
 def has_location_history(location_infos) -> bool:
-    """True if any locationInfos entry has source containing 'Location History'."""
+    """True if any locationInfos entry has a source field containing
+    "location history" (case-insensitive).
+
+    Real-world source strings include "Previously saved in your Location
+    History", "From your Location History", and lowercase variants
+    depending on the export year. The May 8 real-data run produced
+    corroborated: 0 because the substring match was title-case-only and
+    silently missed mixed-casing rows. Lowercasing both sides fixes it.
+    """
     if not location_infos:
         return False
     for li in location_infos:
         if not isinstance(li, dict):
             continue
-        if "Location History" in (li.get("source") or ""):
+        if "location history" in (li.get("source") or "").lower():
             return True
     return False
 
