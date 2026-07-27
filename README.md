@@ -239,8 +239,9 @@ The tagger:
 npm install
 npm run dev          # local dev server at localhost:5173
 npm run build        # production build to dist/
-npm run deploy       # deploy to GitHub Pages
 ```
+
+Deployment is automatic: pushing to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy.yml`), which builds the site and publishes it to GitHub Pages.
 
 ---
 
