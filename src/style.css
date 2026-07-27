@@ -847,6 +847,12 @@ body[data-mode="invert"] .info-card {
   margin-bottom: 12px;
 }
 
+.info-card a {
+  color: rgba(var(--accent), 0.9);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .info-card p.controls {
   margin-top: 18px;
   font-size: 10px;
